@@ -1,0 +1,39 @@
+import { LogOut, User } from 'lucide-react';
+import Button from '../ui/Button';
+import Logo from '../ui/Logo';
+import { Plus } from 'lucide-react';
+
+export default function Header() {
+    return (
+        <header className="bg-white border-b border-gray-200 shadow-sm">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div className="flex items-center justify-between">
+                    <Logo className="inline-flex items-center gap-2" />
+                    <div className="flex items-center gap-3">
+                        <Button
+                            className="flex items-center px-3 gap-2 py-2 hover:bg-blue-700 "
+                            styleColor="blue"
+                        >
+                            <Plus className="w-4 h-4" />
+                            <span className="hidden sm:inline">
+                                Создать заявку
+                            </span>
+                        </Button>
+                        <div className="flex items-center gap-2 px-4 py-3 bg-blue-50 rounded-lg">
+                            <User className="w-4 h-4 text-blue-600" />
+                            <span className="text-sm font-medium text-gray-900 hidden sm:inline">
+                                {'Славик'}
+                            </span>
+                        </div>
+                        <Button
+                            styleColor="white"
+                            className="px-4 py-3 shadow-none"
+                        >
+                            <LogOut className="w-4 h-4" />
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </header>
+    );
+}

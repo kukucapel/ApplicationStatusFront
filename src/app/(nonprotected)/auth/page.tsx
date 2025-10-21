@@ -13,7 +13,7 @@ const BUTTONS_SWITCH = [
     ['Регистрация', 'register'],
 ];
 
-export default function Login() {
+export default function Auth() {
     const [page, setPage] = useState(BUTTONS_SWITCH[0][1]);
 
     const onClickSwitchButton = (state: string) => {
@@ -25,7 +25,7 @@ export default function Login() {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-sky-50 p-4">
             <div className="w-full max-w-md">
                 {/* Логотип плюс надпись */}
-                <Logo />
+                <Logo className="text-center mb-8" />
                 <MainBlock>
                     <Switch
                         page={page}

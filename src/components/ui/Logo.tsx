@@ -1,7 +1,11 @@
-export default function Logo() {
+interface LogoProps {
+    className?: string;
+}
+
+export default function Logo({ className }: LogoProps) {
     return (
-        <div className="text-center mb-8 animate-fade-in">
-            <div className="inline-block p-3 bg-blue-100 rounded-full mb-4">
+        <div className={`${className} animate-fade-in`}>
+            <div className="inline-block p-3 bg-blue-100 rounded-full ">
                 <svg
                     className="w-12 h-12 text-blue-600"
                     fill="none"
@@ -16,10 +20,13 @@ export default function Logo() {
                     />
                 </svg>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-                Система обработки заявок
-            </h1>
-            <p className="text-base text-gray-600">Город Калуга</p>
+
+            <div>
+                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+                    Система обработки заявок
+                </h1>
+                <p className="text-base text-gray-600">Город Калуга</p>
+            </div>
         </div>
     );
 }
