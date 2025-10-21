@@ -17,12 +17,14 @@ export default function Switch({
         <div className={`${className} flex justify-between items-center gap-1`}>
             {buttonsList.map((button, index) => (
                 <Button
-                    buttonText={button[0]}
+                    styleColor="white"
                     isActive={page === button[1]}
                     className="w-full py-2"
                     onClick={() => onClickSwitchButton(button[1])}
                     key={index}
-                />
+                >
+                    {button[0]}
+                </Button>
             ))}
         </div>
     );
