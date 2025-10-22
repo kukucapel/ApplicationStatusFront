@@ -1,10 +1,12 @@
+import { apiRequest } from './apiClient';
+
 export interface LoginFormData {
   email: string;
   password: string;
 }
 
 export interface RegisterFormData {
-  name: string;
+  fio: string;
   email: string;
   password: string;
 }
@@ -15,6 +17,8 @@ export const loginUser = async (data: LoginFormData) => {
 };
 
 export const registerUser = async (data: RegisterFormData) => {
-  //доделать
-  console.log('Register');
+  return apiRequest('/auth/signup', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
 };

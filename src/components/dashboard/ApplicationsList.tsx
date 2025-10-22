@@ -55,7 +55,7 @@ export default function ApplicationsList() {
                             className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
                                 activeTab === 'all'
                                     ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600'
-                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                                    : 'cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                             }`}
                         >
                             Все заявки
@@ -67,7 +67,7 @@ export default function ApplicationsList() {
                             className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
                                 activeTab === 'new'
                                     ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600'
-                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                                    : 'cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                             }`}
                         >
                             Поступившие
@@ -79,7 +79,7 @@ export default function ApplicationsList() {
                             className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
                                 activeTab === 'completed'
                                     ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600'
-                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                                    : 'cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                             }`}
                         >
                             Обработаные
@@ -91,7 +91,7 @@ export default function ApplicationsList() {
                             className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
                                 activeTab === 'closed'
                                     ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600'
-                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                                    : 'cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                             }`}
                         >
                             Закрытые
