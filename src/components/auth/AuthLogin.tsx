@@ -64,14 +64,14 @@ export default function AuthLogin() {
             </div>
             <Button
                 className={`mt-7 w-full ${
-                    loading
-                        ? 'cursor-not-allowed'
-                        : 'cursor-pointer bg-blue-600 text-white '
+                    loading ? 'cursor-not-allowed' : 'cursor-pointer'
                 } py-2`}
                 isActive={loading}
-                buttonText="Войти"
+                styleColor="blue"
                 onClick={() => {}}
-            />
+            >
+                {loading ? 'Вход...' : 'Войти'}
+            </Button>
         </form>
     );
 }
