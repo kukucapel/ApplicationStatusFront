@@ -1,6 +1,6 @@
 'use client';
 
-import { LoginFormData } from '@/lib/auth';
+import { LoginFormData, loginUser } from '@/lib/auth';
 import { useState } from 'react';
 import Button from '../ui/Button';
 
@@ -15,19 +15,21 @@ export default function AuthLogin() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
         setForm({ ...form, [e.target.name]: e.target.value });
 
-    const delay = (ms: number) =>
-        new Promise((resolve) => setTimeout(resolve, ms));
-
-    //ДОДЕЛАТЬ
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
-        // ждем 2 секунды
-        await delay(2000);
-
-        setLoading(false);
+        try {
+            const result = await loginUser(form);
+            document.cookie = `token=${result.token}; path=/`;
+            console.log(result.token);
+            window.location.href = 'dashboard';
+        } catch (error: any) {
+            setError('Неправильный логин или пароль');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
