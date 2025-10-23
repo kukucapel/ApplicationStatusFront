@@ -12,8 +12,10 @@ export interface RegisterFormData {
 }
 
 export const loginUser = async (data: LoginFormData) => {
-  //доделать
-  console.log('Login');
+  return apiRequest('/auth/signin', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
 };
 
 export const registerUser = async (data: RegisterFormData) => {
@@ -21,4 +23,8 @@ export const registerUser = async (data: RegisterFormData) => {
     method: 'POST',
     body: JSON.stringify(data),
   });
+};
+
+export const logoutUser = async () => {
+  document.cookie = 'token=; path=/';
 };
