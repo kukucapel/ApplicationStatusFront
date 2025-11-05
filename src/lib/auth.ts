@@ -16,6 +16,7 @@ export const loginUser = async (data: LoginFormData) => {
   return apiRequest('/auth/signin', {
     method: 'POST',
     body: JSON.stringify(data),
+    credentials: 'include',
   });
 };
 
