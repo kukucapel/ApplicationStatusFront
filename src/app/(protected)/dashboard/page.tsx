@@ -13,14 +13,11 @@ export default function Dashboard() {
     return (
         <>
             <Header onClickModal={() => setShowCreateModal(true)} />
-            <CounterApplication />
-            <BodyDashboard />
-            {showCreateModal && (
-                <CreateApplicationModal
-                    onClose={() => setShowCreateModal(false)}
-                    handleSubmit={createApplication}
-                />
-            )}
+
+            <BodyDashboard
+                showCreateModal={showCreateModal}
+                onCloseCreateModal={() => setShowCreateModal(false)}
+            />
         </>
     );
 }
