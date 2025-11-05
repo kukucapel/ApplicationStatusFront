@@ -1,6 +1,7 @@
 import { apiRequest } from './apiClient';
 
 export interface LoginFormData {
+  fio: string;
   email: string;
   password: string;
 }
