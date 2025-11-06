@@ -12,7 +12,7 @@ export default function Dashboard() {
 
     return (
         <>
-            <Header onClickModal={() => setShowCreateModal(true)} />
+            <Header handleClickModal={() => setShowCreateModal(true)} />
 
             <BodyDashboard
                 showCreateModal={showCreateModal}
