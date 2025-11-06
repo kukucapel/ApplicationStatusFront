@@ -1,14 +1,68 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Application } from '@/lib/useAppWS';
 
-export default function ApplicationsList() {
-    const [applications, setApplications] = useState([]);
+interface ApplicationsListProps {
+    applications: any[];
+    connected: boolean;
+    onClickApplicationModal: (app: Application) => void;
+}
+
+export default function ApplicationsList({
+    applications,
+    connected,
+    onClickApplicationModal,
+}: ApplicationsListProps) {
     const [activeTab, setActiveTab] = useState('all');
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [filteredApplications, setFilteredApplications] = useState([]);
-    const [selectedApp, setSelectedApp] = useState(null);
-    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [filters, setFilters] = useState({
+        status: 'all',
+        recipient: 'all',
+        search: '',
+    });
+
+    // console.log(applications);
+
+    useEffect(() => {
+        setLoading(!connected);
+        let filtered = [...applications];
+
+        // Filter by tab
+        if (activeTab === 'new') {
+            filtered = filtered.filter((app) => app.status === 'new');
+        } else if (activeTab === 'completed') {
+            filtered = filtered.filter((app) => app.status === 'completed');
+        } else if (activeTab === 'closed') {
+            filtered = filtered.filter((app) => app.status === 'closed');
+        }
+
+        // Filter by status
+        if (filters.status !== 'all') {
+            filtered = filtered.filter((app) => app.status === filters.status);
+        }
+
+        // Filter by recipient
+        if (filters.recipient !== 'all') {
+            filtered = filtered.filter(
+                (app) => app.recipient === filters.recipient
+            );
+        }
+
+        // Search filter
+        if (filters.search) {
+            const searchLower = filters.search.toLowerCase();
+            filtered = filtered.filter(
+                (app) =>
+                    app.full_name.toLowerCase().includes(searchLower) ||
+                    app.subject.toLowerCase().includes(searchLower) ||
+                    app.description.toLowerCase().includes(searchLower)
+            );
+        }
+
+        setFilteredApplications(filtered as any);
+    }, [applications, activeTab, filters, connected]);
 
     type StatusKey = 'new' | 'in_progress' | 'completed' | 'closed';
 
@@ -35,13 +89,15 @@ export default function ApplicationsList() {
         );
     };
 
-    //   const stats = {
-    //     total: applications.length,
-    //     new: applications.filter((app:) => app.status === 'new').length,
-    //     in_progress: applications.filter((app) => app.status === 'in_progress').length,
-    //     completed: applications.filter((app) => app.status === 'completed').length,
-    //     closed: applications.filter((app) => app.status === 'closed').length,
-    //   };
+    const stats = {
+        total: applications.length,
+        new: applications.filter((app) => app.status === 'new').length,
+        in_progress: applications.filter((app) => app.status === 'in_progress')
+            .length,
+        completed: applications.filter((app) => app.status === 'completed')
+            .length,
+        closed: applications.filter((app) => app.status === 'closed').length,
+    };
 
     return (
         <main className="flex-1">
@@ -58,8 +114,7 @@ export default function ApplicationsList() {
                                     : 'cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                             }`}
                         >
-                            Все заявки
-                            {/* Все заявки ({stats.total}) */}
+                            Все заявки ({stats.total})
                         </button>
                         <button
                             data-testid="tab-new"
@@ -70,8 +125,7 @@ export default function ApplicationsList() {
                                     : 'cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                             }`}
                         >
-                            Поступившие
-                            {/* Поступившие ({stats.new}) */}
+                            Поступившие ({stats.new})
                         </button>
                         <button
                             data-testid="tab-completed"
@@ -82,8 +136,7 @@ export default function ApplicationsList() {
                                     : 'cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                             }`}
                         >
-                            Обработаные
-                            {/* Обработанные ({stats.completed}) */}
+                            Обработанные ({stats.completed})
                         </button>
                         <button
                             data-testid="tab-closed"
@@ -94,8 +147,7 @@ export default function ApplicationsList() {
                                     : 'cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                             }`}
                         >
-                            Закрытые
-                            {/* Закрытые ({stats.closed}) */}
+                            Закрытые ({stats.closed})
                         </button>
                     </div>
                 </div>
@@ -127,46 +179,53 @@ export default function ApplicationsList() {
                         </div>
                     ) : (
                         <div className="space-y-3">
-                            {/* {filteredApplications.map((app) => (
-                      <div
-                        key={app.id}
-                        data-testid={`application-card-${app.id}`}
-                        onClick={() => setSelectedApp(app)}
-                        className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer bg-white"
-                      >
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className={`status-indicator status-${app.status}`}></span>
-                              <span
-                                className={`px-2 py-1 rounded-full text-xs font-medium border ${
-                                  getStatusColor(app.status)
-                                }`}
-                              >
-                                {getStatusText(app.status)}
-                              </span>
-                            </div>
-                            <h3 className="font-semibold text-gray-900 mb-1">
+                            {filteredApplications.map((app: Application) => (
+                                <div
+                                    key={app.id}
+                                    data-testid={`application-card-${app.id}`}
+                                    onClick={() => onClickApplicationModal(app)}
+                                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer bg-white"
+                                >
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span
+                                                    className={`status-indicator status-${app.status}`}
+                                                ></span>
+                                                <span
+                                                    className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                                                        app.status
+                                                    )}`}
+                                                >
+                                                    {getStatusText(app.status)}
+                                                </span>
+                                            </div>
+                                            {/* <h3 className="font-semibold text-gray-900 mb-1">
                               {app.full_name}
-                            </h3>
-                            <p className="text-sm text-gray-600 mb-1">
-                              <span className="font-medium">Тема:</span> {app.subject}
-                            </p>
-                            <p className="text-sm text-gray-500 truncate">
-                              {app.description}
-                            </p>
-                          </div>
-                          <div className="text-right flex-shrink-0">
-                            <div className="text-xs text-gray-500">
-                              {new Date(app.created_at).toLocaleDateString('ru-RU')}
-                            </div>
-                            <div className="text-xs text-blue-600 font-medium mt-1">
+                            </h3> */}
+                                            <p className="text-sm text-gray-600 mb-1">
+                                                <span className="font-medium">
+                                                    Тема:
+                                                </span>{' '}
+                                                {app.theme}
+                                            </p>
+                                            <p className="text-sm text-gray-500 truncate">
+                                                {app.question}
+                                            </p>
+                                        </div>
+                                        <div className="text-right flex-shrink-0">
+                                            <div className="text-xs text-gray-500">
+                                                {new Date(
+                                                    app.created_at
+                                                ).toLocaleString('ru-RU')}
+                                            </div>
+                                            {/* <div className="text-xs text-blue-600 font-medium mt-1">
                               {app.recipient}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))} */}
+                            </div> */}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>

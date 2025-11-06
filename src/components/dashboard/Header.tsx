@@ -2,12 +2,17 @@ import { LogOut, User } from 'lucide-react';
 import Button from '../ui/Button';
 import Logo from '../ui/Logo';
 import { Plus } from 'lucide-react';
+import { logoutUser } from '@/lib/auth';
 
 interface HeaderProps {
     onClickModal: () => void;
 }
 
 export default function Header({ onClickModal }: HeaderProps) {
+    const onClickLogout = async () => {
+        await logoutUser();
+        window.location.href = '/auth';
+    };
     return (
         <header className="bg-white border-b border-gray-200 shadow-sm">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -33,6 +38,7 @@ export default function Header({ onClickModal }: HeaderProps) {
                         <Button
                             styleColor="white"
                             className="px-4 py-3 shadow-none"
+                            onClick={() => onClickLogout()}
                         >
                             <LogOut className="w-4 h-4" />
                         </Button>

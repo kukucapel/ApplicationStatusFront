@@ -10,13 +10,14 @@ export default function Registration() {
         email: '',
         password: '',
     });
-    const [submitPassword, setSubmitPassword] = useState('');
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setError('');
         setForm({ ...form, [e.target.name]: e.target.value });
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,7 +34,10 @@ export default function Registration() {
     };
 
     return (
-        <form className="mt-7" onSubmit={handleSubmit}>
+        <form
+            className="mt-7 flex flex-col transition-all"
+            onSubmit={handleSubmit}
+        >
             <div className="space-y-2">
                 <label htmlFor="fio" className="text-xl font-medium">
                     ФИО
@@ -79,8 +83,15 @@ export default function Registration() {
                     placeholder="*********"
                 />
             </div>
+            <span
+                className={`text-center text-red-500  transition-all justify-self-center mt-3 ${
+                    error ? 'opacity-100' : 'opacity-0'
+                }`}
+            >
+                {error || ''}
+            </span>
             <Button
-                className={`mt-7 w-full ${
+                className={`mt-3 w-full ${
                     loading ? 'cursor-not-allowed' : 'cursor-pointer'
                 } py-2`}
                 isActive={loading}
