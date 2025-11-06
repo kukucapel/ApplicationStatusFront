@@ -2,6 +2,7 @@
 
 import { LoginFormData, loginUser } from '@/lib/auth';
 import { useState } from 'react';
+import { useUser, User } from '@/contexts/UserContext';
 import Button from '../ui/Button';
 
 export default function AuthLogin() {
@@ -10,6 +11,7 @@ export default function AuthLogin() {
         email: '',
         password: '',
     });
+    const { setUser } = useUser();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -23,7 +25,8 @@ export default function AuthLogin() {
 
         try {
             const result = await loginUser(form);
-            // document.cookie = `token=${result.accessToken}; path=/`;
+
+            setUser(result.user as User);
 
             window.location.href = 'dashboard';
         } catch (error: any) {
