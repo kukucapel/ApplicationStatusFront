@@ -28,5 +28,9 @@ export const registerUser = async (data: RegisterFormData) => {
 };
 
 export const logoutUser = async () => {
-  document.cookie = 'token=; path=/';
+  return apiRequest('/auth/logout', {
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify({}),
+  });
 };

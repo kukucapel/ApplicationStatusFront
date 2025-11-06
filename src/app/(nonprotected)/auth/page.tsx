@@ -16,10 +16,10 @@ const BUTTONS_SWITCH = [
 export default function Auth() {
     const [page, setPage] = useState(BUTTONS_SWITCH[0][1]);
 
-    const onClickSwitchButton = (state: string) => {
-        console.log(state);
-        setPage(state);
-    };
+    // const onClickSwitchButton = (state: string) => {
+    //     console.log(state);
+    //     setPage(state);
+    // };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-sky-50 p-4">
@@ -27,16 +27,17 @@ export default function Auth() {
                 {/* Логотип плюс надпись */}
                 <Logo className="text-center mb-8" />
                 <MainBlock>
-                    <Switch
+                    {/* <Switch
                         page={page}
                         onClickSwitchButton={onClickSwitchButton}
                         buttonsList={BUTTONS_SWITCH}
-                    />
-                    {page === BUTTONS_SWITCH[0][1] ? (
+                    /> */}
+                    {/* {page === BUTTONS_SWITCH[0][1] ? (
                         <AuthLogin />
                     ) : (
                         <Registration />
-                    )}
+                    )} */}
+                    <AuthLogin />
                 </MainBlock>
                 <p className="text-center text-sm text-gray-600 mt-6">
                     Автоматизированная система обработки заявок
