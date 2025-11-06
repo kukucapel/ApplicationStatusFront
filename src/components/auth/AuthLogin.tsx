@@ -23,7 +23,7 @@ export default function AuthLogin() {
 
         try {
             const result = await loginUser(form);
-            //   document.cookie = `token=${result.accessToken}; path=/`;
+            // document.cookie = `token=${result.accessToken}; path=/`;
 
             window.location.href = 'dashboard';
         } catch (error: any) {
@@ -34,7 +34,7 @@ export default function AuthLogin() {
     };
 
     return (
-        <form className="mt-7" onSubmit={handleSubmit}>
+        <form className="" onSubmit={handleSubmit}>
             <div className="space-y-2">
                 <label htmlFor="email" className="text-xl font-medium">
                     Email
