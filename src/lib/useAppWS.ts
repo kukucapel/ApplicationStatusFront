@@ -27,7 +27,7 @@ export function useAppWS(token: string | null) {
   useEffect(() => {
     // if (!token) return;
 
-    const ws = new WebSocket('ws://localhost:5000/api/v1/requests/ws');
+    const ws = new WebSocket('ws://localhost:5000/api/v1/user/requests/ws');
     wsRef.current = ws;
     ws.onopen = () => {
       console.log('Connected');

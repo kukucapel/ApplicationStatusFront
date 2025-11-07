@@ -19,6 +19,7 @@ interface UserContextType {
     user: User | null;
     setUser: (user: User) => void;
     logout: () => void;
+    loading: boolean;
 }
 
 interface UserProviderProps {
@@ -29,6 +30,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: UserProviderProps) {
     const [user, setUserState] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
@@ -39,6 +41,7 @@ export function UserProvider({ children }: UserProviderProps) {
                 localStorage.removeItem('user');
             }
         }
+        setLoading(false);
     }, []);
 
     const setUser = (newUser: User) => {
@@ -52,7 +55,7 @@ export function UserProvider({ children }: UserProviderProps) {
     };
 
     return (
-        <UserContext.Provider value={{ user, setUser, logout }}>
+        <UserContext.Provider value={{ user, setUser, logout, loading }}>
             {children}
         </UserContext.Provider>
     );

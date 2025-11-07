@@ -22,7 +22,7 @@ export const updateApplicationStatus = async (
   id: number,
   token: string | null
 ) => {
-  return apiRequest(`/admin/requests/${id}`, {
+  return apiRequest(`/worker/requests/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
     credentials: 'include',

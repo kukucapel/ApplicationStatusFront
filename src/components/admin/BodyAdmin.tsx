@@ -7,8 +7,8 @@ import TableAdmin from './TableAdmin';
 const MENU: [string, string][] = [
     ['Соотрудники', 'employees'],
     ['Роли', 'roles'],
-    ['Структура', 'units'],
-    ['Оценки', 'raitings'],
+    ['Структура', 'units/?as=tree'],
+    // ['Оценки', 'raitings'],
 ];
 
 export default function BodyAdmin() {
