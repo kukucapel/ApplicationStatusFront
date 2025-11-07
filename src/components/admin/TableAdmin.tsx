@@ -11,9 +11,9 @@ interface TableAdminProps {
 }
 
 export default function TableAdmin({ page, MENU }: TableAdminProps) {
-    const [searchModeActive, setSearchModeActive] = useState<boolean>(false);
-    const [editModeActive, setEditModeActive] = useState<boolean>(false);
-    console.log(searchModeActive);
+    const [searchMode, setSearchMode] = useState<boolean>(false);
+    const [editMode, setEditMode] = useState<boolean>(false);
+
     return (
         <main className="flex-1">
             <div className="bg-white rounded-xl shadow-sm border p-6 border-gray-200">
@@ -22,21 +22,35 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
                         {MENU[page][0]}
                     </h2>
                     <div className="flex gap-4 mr-2">
-                        <Search
-                            className="w-5 cursor-pointer"
-                            onClick={() => setSearchModeActive((prev) => !prev)}
-                        />
-                        <Edit className="w-5" />
+                        <div
+                            className={` p-1 rounded-md duration-150 cursor-pointer ${
+                                searchMode
+                                    ? 'bg-blue-600 border border-blue-600 text-white'
+                                    : 'bg-white border border-gray-300 hover:bg-gray-100 '
+                            }`}
+                            onClick={() => setSearchMode((prev) => !prev)}
+                        >
+                            <Search className="w-5" />
+                        </div>
+
+                        <div
+                            className={`p-1 border rounded-md duration-150 cursor-pointer ${
+                                editMode
+                                    ? 'bg-blue-600 border border-blue-600 text-white'
+                                    : 'bg-white border border-gray-300 hover:bg-gray-100 '
+                            }`}
+                            onClick={() => setEditMode((prev) => !prev)}
+                        >
+                            <Edit className="w-5" />
+                        </div>
                     </div>
                 </div>
 
                 <hr className="border-gray-300 mx-6 mb-6" />
                 {page === 0 ? (
                     <TableEmployees
-                        searchModeActive={searchModeActive}
-                        setSearchModeActive={setSearchModeActive}
-                        editModeActive={editModeActive}
-                        setEditModeActive={setEditModeActive}
+                        searchMode={searchMode}
+                        editMode={editMode}
                         page={MENU[page]}
                     />
                 ) : (

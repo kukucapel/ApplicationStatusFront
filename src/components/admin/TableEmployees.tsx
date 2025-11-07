@@ -9,10 +9,8 @@ import { useMemo } from 'react';
 
 interface TableProps {
     page: [string, string];
-    searchModeActive: boolean;
-    setSearchModeActive: (state: boolean) => void;
-    editModeActive: boolean;
-    setEditModeActive: (state: boolean) => void;
+    searchMode: boolean;
+    editMode: boolean;
 }
 
 const HEADER = [
@@ -23,12 +21,11 @@ const HEADER = [
     ['Поздразделение', 'unit_id'],
 ];
 
-export default function TableEmployees({ page }: TableProps) {
+export default function TableEmployees({ page, searchMode }: TableProps) {
     const [items, setItems] = useState<employee[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [sort, setSort] = useState<[number, number]>([0, 0]);
     const [filters, setFilters] = useState<Record<string, string>>({});
-    console.log(sort);
 
     const handleFilterChange = (key: string, value: string) => {
         setFilters((prev) => ({ ...prev, [key]: value }));
@@ -73,6 +70,7 @@ export default function TableEmployees({ page }: TableProps) {
                 setSort={setSort}
                 sort={sort}
                 HEADER={HEADER as [string, string][]}
+                searchMode={searchMode}
             />
             <div className="space-y-2">
                 {sortedItems?.map((emp: employee) => (
