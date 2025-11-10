@@ -4,9 +4,8 @@ import ApplicationsList from './ApplicationsList';
 import FilterSideBar from './FilterSideBar';
 import CounterApplication from './CounterApplication';
 import { useEffect, useState } from 'react';
-import { Application, useAppWS } from '@/lib/useAppWS';
-import CreateApplicationModal from '../modals/CreateApplicationModal';
-import { createApplication } from '@/lib/createApplication';
+import { useAppWS } from '@/lib/useAppWS';
+import { Application } from '@/dtos/ApplicationDto';
 import { ApplicationModal } from '../modals/ApplicationModal';
 
 // interface BodyDashboardProps {

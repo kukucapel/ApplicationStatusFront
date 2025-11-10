@@ -1,19 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-
-export interface Application {
-  applicant_id: number;
-  assigned_employee_id: number | null;
-  assigned_unit_id: number | null;
-  created_at: string;
-  id: number;
-  question: string;
-  status: 'new' | 'in_progress' | 'completed' | 'closed';
-  theme: string;
-  to_send: string;
-  updated_at: string;
-}
+import { Application } from '@/dtos/ApplicationDto';
 
 export function useAppWS(token: string | null) {
   const [connected, setConnected] = useState(false);
@@ -52,13 +40,25 @@ export function useAppWS(token: string | null) {
         case 'error':
           console.error('Ошибка:', msg.payload);
           break;
-        case 'request:status:changed':
-          const { id, new_status } = msg.payload;
+        case 'request:updated':
+          const { id } = msg.payload;
 
+          setApplications((prev) => {
+            const exists = prev.some((app) => app.id === id);
+            if (exists) {
+              // обновляем существующую заявку
+              return prev.map((app) =>
+                app.id === id ? { ...msg.payload } : app
+              );
+            } else {
+              // добавляем новую заявку
+              return [...prev, { ...msg.payload }];
+            }
+          });
+          break;
+        case 'request:removedFromUnit':
           setApplications((prev) =>
-            prev.map((app) =>
-              app.id === id ? { ...app, status: new_status } : app
-            )
+            prev.filter((app) => app.id !== msg.payload.id)
           );
           break;
         default:

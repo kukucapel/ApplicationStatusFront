@@ -1,16 +1,14 @@
+import { ResponseCreateDto } from '@/dtos/ApplicationDto';
 import { apiRequest } from './apiClient';
 import { Status } from './status';
 
 export interface UpdateApplicationDataProps {
   theme?: string;
   question?: string;
-  status?: Status;
-  to_send?: string;
-  applicant_id?: number;
-  assigned_unit_id?: number;
-  assigned_employee_id?: number;
-  created_at?: string;
-  updated_at: string;
+  newStatus?: Status;
+  assignedUnitId?: number;
+  assignedEmployeeId?: number;
+  createdAt?: string;
 }
 export interface UpdateApplicationStatusProps {
   new_status: Status;
@@ -19,15 +17,55 @@ export interface UpdateApplicationStatusProps {
 
 export const updateApplicationStatus = async (
   data: UpdateApplicationStatusProps,
-  id: number,
-  token: string | null
+  id: number
 ) => {
   return apiRequest(`/worker/requests/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
     credentials: 'include',
     headers: {
-      // Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const updateApplication = async (
+  data: UpdateApplicationDataProps,
+  id: number
+) => {
+  return apiRequest(`/worker/requests/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const getApplicationDetail = async (id: number) => {
+  return apiRequest(`/worker/requests/${id}`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+};
+
+export const getApplicationResponses = async (id: number) => {
+  return apiRequest(`/worker/requests/${id}/responses/?order=asc`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+};
+
+export const addApplicationResponse = async (
+  id: number,
+  data: ResponseCreateDto
+) => {
+  return apiRequest(`/worker/requests/${id}/responses/`, {
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify(data),
+    headers: {
       'Content-Type': 'application/json',
     },
   });

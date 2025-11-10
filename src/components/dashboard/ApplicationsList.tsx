@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Application } from '@/lib/useAppWS';
+import { Application } from '@/dtos/ApplicationDto';
 
 interface ApplicationsListProps {
     applications: any[];
@@ -200,9 +200,6 @@ export default function ApplicationsList({
                                                     {getStatusText(app.status)}
                                                 </span>
                                             </div>
-                                            {/* <h3 className="font-semibold text-gray-900 mb-1">
-                              {app.full_name}
-                            </h3> */}
                                             <p className="text-sm text-gray-600 mb-1">
                                                 <span className="font-medium">
                                                     Тема:
@@ -215,9 +212,9 @@ export default function ApplicationsList({
                                         </div>
                                         <div className="text-right flex-shrink-0">
                                             <div className="text-xs text-gray-500">
-                                                {new Date(
-                                                    app.created_at
-                                                ).toLocaleString('ru-RU')}
+                                                {new Date().toLocaleString(
+                                                    'ru-RU'
+                                                )}
                                             </div>
                                             {/* <div className="text-xs text-blue-600 font-medium mt-1">
                               {app.recipient}
