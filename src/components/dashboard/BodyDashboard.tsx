@@ -9,10 +9,10 @@ import CreateApplicationModal from '../modals/CreateApplicationModal';
 import { createApplication } from '@/lib/createApplication';
 import { ApplicationModal } from '../modals/ApplicationModal';
 
-interface BodyDashboardProps {
-    showCreateModal: boolean;
-    onCloseCreateModal: () => void;
-}
+// interface BodyDashboardProps {
+//     showCreateModal: boolean;
+//     onCloseCreateModal: () => void;
+// }
 
 export function getCookie(name: string): string | null {
     const match = document.cookie.match(
@@ -21,16 +21,12 @@ export function getCookie(name: string): string | null {
     return match ? decodeURIComponent(match[2]) : null;
 }
 
-export default function BodyDashboard({
-    showCreateModal,
-    onCloseCreateModal,
-}: BodyDashboardProps) {
+export default function BodyDashboard() {
     const [token, setToken] = useState<string | null>(null);
     const [showApplicationModal, setShowApplicationModal] =
         useState<Application | null>(null);
 
     function onClickApplicationModal(app: Application) {
-        console.log(app);
         setShowApplicationModal(app);
     }
 
@@ -64,12 +60,6 @@ export default function BodyDashboard({
                 </div>
             </div>
 
-            {showCreateModal && (
-                <CreateApplicationModal
-                    onClose={onCloseCreateModal}
-                    handleSubmit={createApplication}
-                />
-            )}
             {showApplicationModal !== null && (
                 <ApplicationModal
                     application={showApplicationModal}

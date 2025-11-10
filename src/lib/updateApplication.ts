@@ -22,12 +22,12 @@ export const updateApplicationStatus = async (
   id: number,
   token: string | null
 ) => {
-  return apiRequest(`/requests/${id}/status`, {
-    method: 'POST',
+  return apiRequest(`/worker/requests/${id}`, {
+    method: 'PATCH',
     body: JSON.stringify(data),
-    // credentials: 'include',
+    credentials: 'include',
     headers: {
-      Authorization: `Bearer ${token}`,
+      // Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
   });

@@ -17,12 +17,17 @@ export interface Application {
 
 export function useAppWS(token: string | null) {
   const [connected, setConnected] = useState(false);
+  const applicationRef = useRef<Application[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    if (!token) return;
-    const ws = new WebSocket('ws://localhost:5000/api/v1/requests/ws');
+    applicationRef.current = applications;
+  }, [applications]);
+  useEffect(() => {
+    // if (!token) return;
+
+    const ws = new WebSocket('ws://localhost:5000/api/v1/user/requests/ws');
     wsRef.current = ws;
     ws.onopen = () => {
       console.log('Connected');
@@ -32,7 +37,7 @@ export function useAppWS(token: string | null) {
 
     ws.onmessage = (event) => {
       const msg = JSON.parse(event.data);
-      console.log('WS message type:', msg.type);
+      // console.log('WS message type:', msg.type);
 
       switch (msg.type) {
         case 'auth:ok':
@@ -47,9 +52,17 @@ export function useAppWS(token: string | null) {
         case 'error':
           console.error('Ошибка:', msg.payload);
           break;
+        case 'request:status:changed':
+          const { id, new_status } = msg.payload;
 
+          setApplications((prev) =>
+            prev.map((app) =>
+              app.id === id ? { ...app, status: new_status } : app
+            )
+          );
+          break;
         default:
-          console.log('Получено:', msg);
+        // console.log('Получено:', msg);
       }
     };
 
