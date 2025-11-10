@@ -1,37 +1,43 @@
 'use client';
 
-import { LoginFormData } from '@/lib/auth';
+import { LoginFormData, loginUser } from '@/lib/auth';
 import { useState } from 'react';
+import { useUser, User } from '@/contexts/UserContext';
 import Button from '../ui/Button';
 
 export default function AuthLogin() {
     const [form, setForm] = useState<LoginFormData>({
+        fio: 'a',
         email: '',
         password: '',
     });
+    const { setUser } = useUser();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
         setForm({ ...form, [e.target.name]: e.target.value });
 
-    const delay = (ms: number) =>
-        new Promise((resolve) => setTimeout(resolve, ms));
-
-    //ДОДЕЛАТЬ
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
-        // ждем 2 секунды
-        await delay(2000);
+        try {
+            const result = await loginUser(form);
 
-        setLoading(false);
+            setUser(result.user as User);
+
+            window.location.href = 'dashboard';
+        } catch (error: any) {
+            setError('Неправильный логин или пароль');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <form className="mt-7" onSubmit={handleSubmit}>
+        <form className="" onSubmit={handleSubmit}>
             <div className="space-y-2">
                 <label htmlFor="email" className="text-xl font-medium">
                     Email

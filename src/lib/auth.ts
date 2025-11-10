@@ -1,20 +1,36 @@
+import { apiRequest } from './apiClient';
+
 export interface LoginFormData {
+  fio: string;
   email: string;
   password: string;
 }
 
 export interface RegisterFormData {
-  name: string;
+  fio: string;
   email: string;
   password: string;
 }
 
 export const loginUser = async (data: LoginFormData) => {
-  //доделать
-  console.log('Login');
+  return apiRequest('/auth/signin', {
+    method: 'POST',
+    body: JSON.stringify(data),
+    credentials: 'include',
+  });
 };
 
 export const registerUser = async (data: RegisterFormData) => {
-  //доделать
-  console.log('Register');
+  return apiRequest('/auth/signup', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+};
+
+export const logoutUser = async () => {
+  return apiRequest('/auth/logout', {
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify({}),
+  });
 };

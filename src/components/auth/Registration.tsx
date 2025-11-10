@@ -1,53 +1,53 @@
 'use client';
 
-import { RegisterFormData } from '@/lib/auth';
+import { RegisterFormData, registerUser } from '@/lib/auth';
 import { useState } from 'react';
 import Button from '../ui/Button';
 
 export default function Registration() {
     const [form, setForm] = useState<RegisterFormData>({
-        name: '',
+        fio: '',
         email: '',
         password: '',
     });
-    const [submitPassword, setSubmitPassword] = useState('');
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setError('');
         setForm({ ...form, [e.target.name]: e.target.value });
-
-    const handleChangeSubmitPassword = (state: string) => {
-        setSubmitPassword(state);
     };
-
-    const delay = (ms: number) =>
-        new Promise((resolve) => setTimeout(resolve, ms));
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
-        // ждем 2 секунды
-        await delay(2000);
-
-        setLoading(false);
+        try {
+            await registerUser(form);
+        } catch (error: any) {
+            setError('Ошибка регистрации');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <form className="mt-7" onSubmit={handleSubmit}>
+        <form
+            className="mt-7 flex flex-col transition-all"
+            onSubmit={handleSubmit}
+        >
             <div className="space-y-2">
-                <label htmlFor="name" className="text-xl font-medium">
+                <label htmlFor="fio" className="text-xl font-medium">
                     ФИО
                 </label>
                 <input
-                    id="name"
-                    name="name"
+                    id="fio"
+                    name="fio"
                     type="text"
                     required
-                    value={form.name}
+                    value={form.fio}
                     onChange={handleChange}
                     className="mt-1 block w-full transition px-3 pt-1 pb-1 border-2 rounded-lg border-gray-200 shadow-md focus:outline-none focus:border-blue-500 focus:ring-blue-500"
                     placeholder="Иванов Иван Иванович"
@@ -83,8 +83,15 @@ export default function Registration() {
                     placeholder="*********"
                 />
             </div>
+            <span
+                className={`text-center text-red-500  transition-all justify-self-center mt-3 ${
+                    error ? 'opacity-100' : 'opacity-0'
+                }`}
+            >
+                {error || ''}
+            </span>
             <Button
-                className={`mt-7 w-full ${
+                className={`mt-3 w-full ${
                     loading ? 'cursor-not-allowed' : 'cursor-pointer'
                 } py-2`}
                 isActive={loading}
