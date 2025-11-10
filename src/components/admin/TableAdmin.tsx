@@ -1,9 +1,10 @@
 'use client';
 
 import { Edit, Search } from 'lucide-react';
-import { useState } from 'react';
-import Table from '../ui/Table';
+import { useEffect, useState } from 'react';
 import TableEmployees from './TableEmployees';
+import { Employee, Role } from '@/dtos/AdminDto';
+import { adminData } from '@/lib/adminData';
 
 interface TableAdminProps {
     page: number;
@@ -12,7 +13,26 @@ interface TableAdminProps {
 
 export default function TableAdmin({ page, MENU }: TableAdminProps) {
     const [searchMode, setSearchMode] = useState<boolean>(false);
-    const [editMode, setEditMode] = useState<boolean>(false);
+    const [editMode, setEditMode] = useState<boolean>(true);
+    const [employeeItems, setEmployeeItems] = useState<Employee[] | null>(null);
+    const [roleItems, setRoleItems] = useState<Role[] | null>(null);
+
+    const loadEmployees = async function () {
+        const employeeData = await adminData('/dispatcher/employees');
+        setEmployeeItems(employeeData.items);
+    };
+
+    useEffect(() => {
+        async function load() {
+            const [employeeData, roleData] = await Promise.all([
+                adminData('/dispatcher/employees'),
+                adminData('/admin/roles'),
+            ]);
+            setRoleItems(roleData.items);
+            setEmployeeItems(employeeData.items);
+        }
+        load();
+    }, []);
 
     return (
         <main className="flex-1">
@@ -49,9 +69,12 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
                 <hr className="border-gray-300 mx-6 mb-6" />
                 {page === 0 ? (
                     <TableEmployees
+                        roleItems={roleItems}
+                        employeeItems={employeeItems}
                         searchMode={searchMode}
                         editMode={editMode}
                         page={MENU[page]}
+                        loadEmployees={loadEmployees}
                     />
                 ) : (
                     ''

@@ -27,7 +27,6 @@ export default function TableHeader({
     const [filterValues, setFilterValues] = useState<Record<string, string>>(
         {}
     );
-    console.log(filterValues);
 
     const handleInputChange = (key: string, value: string) => {
         setFilterValues((prev) => ({ ...prev, [key]: value }));

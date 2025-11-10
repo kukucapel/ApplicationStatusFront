@@ -1,16 +1,22 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { employee } from '@/dtos/AdminDto';
+import { Employee, Role } from '@/dtos/AdminDto';
 import { adminData } from '@/lib/adminData';
 import TableRow from '../ui/Table/TableRow';
 import TableHeader from '../ui/Table/TableHeader';
 import { useMemo } from 'react';
+import ModalMainBody from '../ui/ModalUi/ModalMainBody';
+import ModalAdminMainBody from '../ui/ModalUi/ModalAdminMainBody';
+import ModalAdminEmployee from '../modals/admin/ModalAdminEmployee';
 
 interface TableProps {
     page: [string, string];
     searchMode: boolean;
     editMode: boolean;
+    employeeItems: Employee[] | null;
+    roleItems: Role[] | null;
+    loadEmployees: () => Promise<void>;
 }
 
 const HEADER = [
@@ -21,31 +27,50 @@ const HEADER = [
     ['Поздразделение', 'unit_id'],
 ];
 
-export default function TableEmployees({ page, searchMode }: TableProps) {
-    const [items, setItems] = useState<employee[] | null>(null);
+export default function TableEmployees({
+    page,
+    searchMode,
+    editMode,
+    employeeItems = null,
+    roleItems = null,
+    loadEmployees,
+}: TableProps) {
     const [loading, setLoading] = useState<boolean>(true);
     const [sort, setSort] = useState<[number, number]>([0, 0]);
     const [filters, setFilters] = useState<Record<string, string>>({});
+    const [modalIsActive, setModalIsActive] = useState<number | null>(null);
+    const [modalEmployee, setModalEmployee] = useState<Employee | null>(null);
+
+    console.log(employeeItems);
 
     const handleFilterChange = (key: string, value: string) => {
         setFilters((prev) => ({ ...prev, [key]: value }));
     };
 
     useEffect(() => {
-        async function load() {
-            const data = await adminData(page);
-            setItems(data.items);
+        if (employeeItems !== null && roleItems !== null) {
             setLoading(false);
         }
-        load();
-    }, []);
+    }, [employeeItems, roleItems]);
 
-    const sortedItems = useMemo(() => {
-        if (!items) return [];
+    const filtredAndSortedItems = useMemo(() => {
+        if (!employeeItems) return [];
+
+        const filtered = employeeItems.filter((item) => {
+            return Object.entries(filters).every(([key, value]) => {
+                if (!value || !searchMode) return true;
+
+                const itemValue = String(
+                    (item as any)[key] ?? ''
+                ).toLowerCase();
+                return itemValue.includes(value.toLowerCase());
+            });
+        });
+
         const [fieldIndex, direction] = sort;
         const field = HEADER[fieldIndex][1];
 
-        return [...items].sort((a, b) => {
+        return [...filtered].sort((a, b) => {
             const aVal = (a as any)[field] ?? '';
             const bVal = (b as any)[field] ?? '';
 
@@ -53,7 +78,7 @@ export default function TableEmployees({ page, searchMode }: TableProps) {
             if (aVal > bVal) return direction === 0 ? 1 : -1;
             return 0;
         });
-    }, [items, sort]);
+    }, [employeeItems, filters, searchMode, sort]);
 
     if (loading) {
         return (
@@ -73,8 +98,16 @@ export default function TableEmployees({ page, searchMode }: TableProps) {
                 searchMode={searchMode}
             />
             <div className="space-y-2">
-                {sortedItems?.map((emp: employee) => (
-                    <TableRow key={emp.id} id={emp.id}>
+                {filtredAndSortedItems?.map((emp: Employee) => (
+                    <TableRow
+                        onClickTableModal={() => {
+                            setModalIsActive(emp.id);
+                            setModalEmployee(emp);
+                        }}
+                        editMode={editMode}
+                        key={emp.id}
+                        id={emp.id}
+                    >
                         <div className="grid grid-cols-5 gap-4">
                             <div>{emp.id}</div>
                             <div>{emp.fio || '-'}</div>
@@ -85,6 +118,14 @@ export default function TableEmployees({ page, searchMode }: TableProps) {
                     </TableRow>
                 ))}
             </div>
+            {modalIsActive && modalEmployee && roleItems && (
+                <ModalAdminEmployee
+                    roleItems={roleItems}
+                    loadEmployees={loadEmployees}
+                    employee={modalEmployee}
+                    setModalIsActive={setModalIsActive}
+                />
+            )}
         </div>
     );
 }
