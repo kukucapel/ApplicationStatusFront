@@ -1,9 +1,15 @@
 export interface ApplicationDetailDto {
   applicantId: number;
   assignedEmployeeId: number | null;
-  assignedEmployee: string;
+  assignedEmployee: {
+    id: number;
+    fio: string;
+    email: string;
+    role: string;
+  } | null;
   assignedUnitId: number | null;
   createdAt: string;
+  updatedAt: string;
   id: number;
   question: string;
   status: 'new' | 'in_progress' | 'completed' | 'closed';
@@ -11,6 +17,7 @@ export interface ApplicationDetailDto {
   toSend: string;
   assignedUnit: { id: number; name: string };
   applicant: ApplicantDto;
+  unitName: string;
 }
 export interface ApplicantDto {
   id: number;
@@ -57,4 +64,8 @@ export interface Application {
   theme: string;
   toSend: string;
   updatedAt: string;
+}
+
+export interface ApplicationUnitUpdate {
+  assigned_unit_id: string | null;
 }

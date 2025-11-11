@@ -212,13 +212,12 @@ export default function ApplicationsList({
                                         </div>
                                         <div className="text-right flex-shrink-0">
                                             <div className="text-xs text-gray-500">
-                                                {new Date().toLocaleString(
-                                                    'ru-RU'
-                                                )}
+                                                {new Date(
+                                                    app.createdAt
+                                                ).toLocaleString('ru-RU', {
+                                                    timeZone: 'Europe/Moscow',
+                                                })}
                                             </div>
-                                            {/* <div className="text-xs text-blue-600 font-medium mt-1">
-                              {app.recipient}
-                            </div> */}
                                         </div>
                                     </div>
                                 </div>

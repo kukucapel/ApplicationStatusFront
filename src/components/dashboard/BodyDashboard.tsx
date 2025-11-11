@@ -8,11 +8,6 @@ import { useAppWS } from '@/lib/useAppWS';
 import { Application } from '@/dtos/ApplicationDto';
 import { ApplicationModal } from '../modals/ApplicationModal';
 
-// interface BodyDashboardProps {
-//     showCreateModal: boolean;
-//     onCloseCreateModal: () => void;
-// }
-
 export function getCookie(name: string): string | null {
     const match = document.cookie.match(
         new RegExp('(^| )' + name + '=([^;]+)')
@@ -50,7 +45,7 @@ export default function BodyDashboard() {
             <CounterApplication stats={stats} />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
                 <div className="flex flex-col lg:flex-row gap-6">
-                    <FilterSideBar />
+                    {/* <FilterSideBar /> */}
                     <ApplicationsList
                         applications={applications}
                         connected={connected}

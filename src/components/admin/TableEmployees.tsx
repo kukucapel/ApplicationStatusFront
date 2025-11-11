@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 import ModalMainBody from '../ui/ModalUi/ModalMainBody';
 import ModalAdminMainBody from '../ui/ModalUi/ModalAdminMainBody';
 import ModalAdminEmployee from '../modals/admin/ModalAdminEmployee';
+import { useUser } from '@/contexts/UserContext';
 
 interface TableProps {
     page: [string, string];
@@ -17,6 +18,8 @@ interface TableProps {
     employeeItems: Employee[] | null;
     roleItems: Role[] | null;
     loadEmployees: () => Promise<void>;
+    showAddModal: boolean;
+    setShowAddModal: (newState: boolean) => void;
 }
 
 const HEADER = [
@@ -24,7 +27,7 @@ const HEADER = [
     ['ФИО', 'fio'],
     ['Email', 'email'],
     ['Роль', 'role'],
-    ['Поздразделение', 'unit_id'],
+    ['Поздразделение', 'unit_name'],
 ];
 
 export default function TableEmployees({
@@ -34,12 +37,16 @@ export default function TableEmployees({
     employeeItems = null,
     roleItems = null,
     loadEmployees,
+    showAddModal,
+    setShowAddModal,
 }: TableProps) {
     const [loading, setLoading] = useState<boolean>(true);
     const [sort, setSort] = useState<[number, number]>([0, 0]);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [modalIsActive, setModalIsActive] = useState<number | null>(null);
     const [modalEmployee, setModalEmployee] = useState<Employee | null>(null);
+
+    const { user } = useUser();
 
     console.log(employeeItems);
 
@@ -48,8 +55,14 @@ export default function TableEmployees({
     };
 
     useEffect(() => {
-        if (employeeItems !== null && roleItems !== null) {
-            setLoading(false);
+        if (user?.role === 'admin') {
+            if (employeeItems !== null && roleItems !== null) {
+                setLoading(false);
+            }
+        } else {
+            if (employeeItems !== null) {
+                setLoading(false);
+            }
         }
     }, [employeeItems, roleItems]);
 
@@ -113,7 +126,7 @@ export default function TableEmployees({
                             <div>{emp.fio || '-'}</div>
                             <div>{emp.email}</div>
                             <div>{emp.role || '-'}</div>
-                            <div>{emp.unit_id || '-'}</div>
+                            <div>{emp.unit_name || '-'}</div>
                         </div>
                     </TableRow>
                 ))}
@@ -123,7 +136,15 @@ export default function TableEmployees({
                     roleItems={roleItems}
                     loadEmployees={loadEmployees}
                     employee={modalEmployee}
-                    setModalIsActive={setModalIsActive}
+                    setModalIsActive={() => setModalIsActive(null)}
+                />
+            )}
+            {showAddModal && (
+                <ModalAdminEmployee
+                    roleItems={roleItems}
+                    loadEmployees={loadEmployees}
+                    employee={modalEmployee}
+                    setModalIsActive={() => setShowAddModal(false)}
                 />
             )}
         </div>

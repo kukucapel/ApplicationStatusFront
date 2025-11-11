@@ -15,3 +15,13 @@ export async function updateEmployee(data: EmployeeUpdate, id: number) {
     credentials: 'include',
   });
 }
+export async function addEmployee(data: EmployeeUpdate) {
+  return await apiRequest(`/dispatcher/employees`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}

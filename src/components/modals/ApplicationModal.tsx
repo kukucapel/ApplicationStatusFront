@@ -11,10 +11,14 @@ import {
     Calendar,
     UserPen,
     MapPinHouse,
+    CalendarArrowDown,
+    CalendarArrowUp,
+    UsersRound,
 } from 'lucide-react';
 import {
     Application,
     ApplicationDetailDto,
+    ApplicationUnitUpdate,
     ResponseCreateDto,
     ResponseDto,
 } from '@/dtos/ApplicationDto';
@@ -24,11 +28,17 @@ import {
     UpdateApplicationStatusProps,
     getApplicationResponses,
     addApplicationResponse,
+    getUnitTreeForApplication,
+    UpdateApplicationDataProps,
+    updateApplication,
 } from '@/lib/updateApplication';
 import ModalHeader from '../ui/ModalUi/ModalHeader';
 import ModalMainBody from '../ui/ModalUi/ModalMainBody';
 import Button from '../ui/Button';
 import ModalResponse from '../ui/ModalUi/ModalResponse';
+import { useUser } from '@/contexts/UserContext';
+import { Unit } from '@/dtos/AdminDto';
+import ModalUnitTree from './ModalUnitTree';
 
 interface ApplicationModalProps {
     onClose: () => void;
@@ -45,20 +55,50 @@ export function ApplicationModal({
     const [responseItems, setResponseItems] = useState<ResponseDto[] | null>(
         null
     );
+    const [sortedResponseItems, setSortedResponseItems] = useState<
+        ResponseDto[]
+    >([]);
+    const [sortResponsesFlag, setSortResponsesFlag] = useState<boolean>(true);
     const [showResponseModal, setShowResponseModal] = useState<boolean>(false);
+
+    const [unit, setUnit] = useState<Unit | null>(null);
+    const [showUnitModal, setShowUnitModal] = useState<boolean>(false);
+
     const [loading, setLoading] = useState<boolean>(true);
+
+    const { user } = useUser();
 
     const onCloseResponseModal = () => {
         setShowResponseModal(false);
     };
+    const onCloseUnitModal = () => {
+        setShowUnitModal(false);
+    };
+
     const handleSubmitResponseModal = async (
         e: React.FormEvent,
         data: ResponseCreateDto
     ) => {
         e.preventDefault();
         await addApplicationResponse(application.id, data);
-        await loadResponse();
+        await Promise.all([loadResponse(), loadApplication()]);
         setShowResponseModal(false);
+    };
+
+    const handleSubmitUnit = async (newUnit: UpdateApplicationDataProps) => {
+        await updateApplication(newUnit, applicationItem?.id || application.id);
+        await loadApplication();
+        setShowUnitModal(false);
+    };
+
+    const loadResponse = async () => {
+        setResponseItems((await getApplicationResponses(application.id)).items);
+    };
+    const loadUnit = async () => {
+        setUnit((await getUnitTreeForApplication()).items);
+    };
+    const loadApplication = async () => {
+        setApplicationItem(await getApplicationDetail(application.id));
     };
 
     //загрузка модалки данных
@@ -68,6 +108,8 @@ export function ApplicationModal({
             setResponseItems(
                 (await getApplicationResponses(application.id)).items
             );
+            user?.role !== 'worker' &&
+                setUnit((await getUnitTreeForApplication()).items);
             setLoading(false);
         }
         load();
@@ -79,6 +121,35 @@ export function ApplicationModal({
             document.body.style.overflow = '';
         };
     }, []);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && !showResponseModal) {
+                onClose();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!responseItems) return;
+
+        const sorted = [...responseItems].sort((a, b) => {
+            const timeA = new Date(a.created_at).getTime();
+            const timeB = new Date(b.created_at).getTime();
+
+            return sortResponsesFlag
+                ? timeB - timeA // true → новые → старые
+                : timeA - timeB; // false → старые → новые
+        });
+
+        setSortedResponseItems(sorted);
+    }, [responseItems, sortResponsesFlag]);
 
     const getStatusText = (status: string) => {
         const statusMap = {
@@ -108,23 +179,31 @@ export function ApplicationModal({
         }
     };
 
-    const loadResponse = async () => {
-        setResponseItems((await getApplicationResponses(application.id)).items);
-    };
-
     return (
         !loading &&
         applicationItem && (
             <ModalMainBody>
                 {/* Хедер */}
                 <ModalHeader title="Детали заявки" onClose={onClose}>
-                    <p className="text-gray-400-100 text-sm">
-                        Создано:{' '}
-                        {applicationItem &&
-                            new Date(applicationItem.createdAt).toLocaleString(
-                                'ru-RU'
-                            )}
-                    </p>
+                    <div className="text-gray-400-100 text-sm">
+                        <p>
+                            Создано:{' '}
+                            {applicationItem &&
+                                new Date(
+                                    applicationItem.createdAt
+                                ).toLocaleString('ru-RU')}
+                        </p>
+                        {applicationItem.createdAt !==
+                            applicationItem.updatedAt && (
+                            <p>
+                                Изменено:
+                                {applicationItem &&
+                                    new Date(
+                                        applicationItem.updatedAt
+                                    ).toLocaleString('ru-RU')}
+                            </p>
+                        )}
+                    </div>
                 </ModalHeader>
 
                 {/* Контент */}
@@ -166,7 +245,24 @@ export function ApplicationModal({
                             )}
                         </div>
                     </div>
-
+                    <div className="flex justify-between">
+                        <Button
+                            styleColor="blue"
+                            onClick={() => setShowResponseModal(true)}
+                            className="py-1 flex-grow"
+                        >
+                            Создать ответ
+                        </Button>
+                        {user?.role !== 'worker' && (
+                            <Button
+                                styleColor="blue"
+                                className="py-1 w-[50%]"
+                                onClick={() => setShowUnitModal(true)}
+                            >
+                                Назначить исполнителя
+                            </Button>
+                        )}
+                    </div>
                     {/* Инфа о человеке */}
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
@@ -281,7 +377,7 @@ export function ApplicationModal({
                             <div className="flex items-start gap-2 mb-2">
                                 <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
                                 <p className="text-sm font-medium text-gray-700">
-                                    Детали запроа
+                                    Детали запроса
                                 </p>
                             </div>
                             <p className="text-gray-900 ml-7 whitespace-pre-wrap">
@@ -297,7 +393,7 @@ export function ApplicationModal({
                                 </p>
                             </div>
                             <p className="text-gray-900 ml-7 whitespace-pre-wrap">
-                                {applicationItem.assignedUnit?.name || '-'}
+                                {applicationItem.unitName || '-'}
                             </p>
                         </div>
 
@@ -309,34 +405,64 @@ export function ApplicationModal({
                                 </p>
                             </div>
                             <p className="text-gray-900 ml-7 whitespace-pre-wrap">
-                                {applicationItem.assignedEmployee || '-'}
+                                {applicationItem.assignedEmployee
+                                    ? applicationItem.assignedEmployee.fio
+                                    : '-'}
                             </p>
                         </div>
-                        <Button styleColor="blue" className="py-1 px-2">
-                            Назначить исполнительного
-                        </Button>
+
+                        <div className="bg-blue-50 rounded-lg p-4">
+                            <div className="flex items-start gap-2 mb-2">
+                                <UsersRound className="w-5 h-5 text-blue-600 mt-0.5" />
+                                <p className="text-sm font-medium text-gray-700">
+                                    К кому обращение
+                                </p>
+                            </div>
+                            <p className="text-gray-900 ml-7 whitespace-pre-wrap">
+                                {applicationItem.toSend || '-'}
+                            </p>
+                        </div>
                     </div>
 
+                    {showResponseModal && (
+                        <ModalResponse
+                            handleSubmit={handleSubmitResponseModal}
+                            onClose={onCloseResponseModal}
+                        />
+                    )}
+                    {showUnitModal && unit && (
+                        <ModalUnitTree
+                            selectedNow={applicationItem.assignedUnitId || 0}
+                            unitTree={unit}
+                            handleSubmit={handleSubmitUnit}
+                            onClose={onCloseUnitModal}
+                        />
+                    )}
+
                     {/* Ответы */}
-                    {responseItems?.length !== 0 && (
+                    {sortedResponseItems?.length !== 0 && (
                         <div className="space-y-4">
-                            <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
+                            <h3 className="text-lg font-semibold flex items-end justify-between text-gray-900 border-b pb-2">
                                 Ответы
+                                {sortedResponseItems.length !== 1 && (
+                                    <div
+                                        className="flex cursor-pointer items-center"
+                                        onClick={() =>
+                                            setSortResponsesFlag(
+                                                (prev) => !prev
+                                            )
+                                        }
+                                    >
+                                        {sortResponsesFlag ? (
+                                            <CalendarArrowDown className="w-8 mt-0.5 hover:scale-125 transition-all duration-150" />
+                                        ) : (
+                                            <CalendarArrowUp className="w-8 mt-0.5 hover:scale-125 transition-all duration-150" />
+                                        )}
+                                    </div>
+                                )}
                             </h3>
-                            <Button
-                                styleColor="blue"
-                                onClick={() => setShowResponseModal(true)}
-                                className="py-1 px-2"
-                            >
-                                Создать ответ
-                            </Button>
-                            {showResponseModal && (
-                                <ModalResponse
-                                    handleSubmit={handleSubmitResponseModal}
-                                    onClose={onCloseResponseModal}
-                                />
-                            )}
-                            {responseItems?.map((res) => (
+
+                            {sortedResponseItems?.map((res) => (
                                 <div
                                     className="bg-blue-50 rounded-lg p-4"
                                     key={res.id}
@@ -352,7 +478,9 @@ export function ApplicationModal({
                                             {'Cоздан: '}
                                             {new Date(
                                                 res.created_at
-                                            ).toLocaleString('ru-RU')}
+                                            ).toLocaleString('ru-RU', {
+                                                timeZone: 'UTC',
+                                            })}
                                         </p>
                                     </div>
                                     <p className=" ml-7 whitespace-pre-wrap">

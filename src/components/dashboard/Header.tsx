@@ -56,7 +56,8 @@ export default function Header({ handleClickModal }: HeaderProps) {
                                     : 'Обращения'}
                             </span>
                         </Button>
-                        {user?.role === 'admin' && (
+                        {(user?.role === 'admin' ||
+                            user?.role === 'dispatcher') && (
                             <Button
                                 onClick={handleClickAdmin}
                                 isActive={pathname === '/admin'}

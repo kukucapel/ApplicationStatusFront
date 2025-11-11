@@ -23,8 +23,8 @@ export default function ModalResponse({
     const isActive = form.comment === '';
 
     return (
-        <div className="fixed inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all">
-            <div className="bg-white rounded-l-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto custom-scroll p-10">
+        <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50 p-4 transition-all">
+            <div className="bg-white rounded-l-2xl shadow-2xl max-w-4xl w-full h-[90vh] overflow-y-auto custom-scroll p-10">
                 <div className="mb-7">
                     <div className="flex flex-row justify-between items-center mb-2">
                         <span className="text-xl ">Создание ответа</span>

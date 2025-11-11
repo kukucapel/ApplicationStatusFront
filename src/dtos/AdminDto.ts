@@ -3,13 +3,16 @@ export interface Employee {
   fio?: string | null;
   email?: string;
   role?: string | null;
-  unit_id?: string | null;
+  role_id?: number | null;
+  unit_id?: number | null;
+  unit_name?: string | null;
 }
 export interface EmployeeUpdate {
   fio?: string | null;
   email?: string;
-  role?: string | null;
-  unit_id?: string | null;
+  role_id?: number | null;
+  unit_id?: number | null;
+  password?: string;
 }
 
 export interface Role {

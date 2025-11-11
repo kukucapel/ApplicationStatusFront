@@ -6,7 +6,7 @@ export interface UpdateApplicationDataProps {
   theme?: string;
   question?: string;
   newStatus?: Status;
-  assignedUnitId?: number;
+  assigned_unit_id?: number;
   assignedEmployeeId?: number;
   createdAt?: string;
 }
@@ -69,4 +69,8 @@ export const addApplicationResponse = async (
       'Content-Type': 'application/json',
     },
   });
+};
+
+export const getUnitTreeForApplication = async () => {
+  return apiRequest(`/admin/units`, { method: 'GET', credentials: 'include' });
 };
