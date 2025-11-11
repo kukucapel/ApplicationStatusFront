@@ -4,15 +4,9 @@ import ApplicationsList from './ApplicationsList';
 import FilterSideBar from './FilterSideBar';
 import CounterApplication from './CounterApplication';
 import { useEffect, useState } from 'react';
-import { Application, useAppWS } from '@/lib/useAppWS';
-import CreateApplicationModal from '../modals/CreateApplicationModal';
-import { createApplication } from '@/lib/createApplication';
+import { useAppWS } from '@/lib/useAppWS';
+import { Application } from '@/dtos/ApplicationDto';
 import { ApplicationModal } from '../modals/ApplicationModal';
-
-// interface BodyDashboardProps {
-//     showCreateModal: boolean;
-//     onCloseCreateModal: () => void;
-// }
 
 export function getCookie(name: string): string | null {
     const match = document.cookie.match(
@@ -51,7 +45,7 @@ export default function BodyDashboard() {
             <CounterApplication stats={stats} />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
                 <div className="flex flex-col lg:flex-row gap-6">
-                    <FilterSideBar />
+                    {/* <FilterSideBar /> */}
                     <ApplicationsList
                         applications={applications}
                         connected={connected}

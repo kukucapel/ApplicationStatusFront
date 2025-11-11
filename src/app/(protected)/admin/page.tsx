@@ -8,8 +8,8 @@ export default function Admin() {
     const { user, loading } = useUser();
     const router = useRouter();
     useEffect(() => {
-        if (!loading && user?.role !== 'admin') router.push('dashboard');
+        if (!loading && user?.role === 'worker') router.push('dashboard');
     }, [user, router, loading]);
 
-    return <>{user?.role === 'admin' && <BodyAdmin />}</>;
+    return <>{user?.role !== 'worker' && <BodyAdmin />}</>;
 }
