@@ -13,6 +13,7 @@ export type ResponseEntry = {
   comment: string;
   type: string;
   createdAt: string;
+  rating: number;
 };
 
 export type AttachmentEntry = {
