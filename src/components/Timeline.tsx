@@ -1,22 +1,17 @@
-// components/Timeline.tsx
 'use client';
-import { PropsWithChildren, ReactNode } from 'react';
+import { PropsWithChildren } from 'react';
 
 export function Timeline({ children }: PropsWithChildren) {
-  return (
-    <ol className="relative border-s border-gray-200 pl-4 space-y-4">
-      {children}
-    </ol>
-  );
+  return <ol className="timeline space-y-4">{children}</ol>;
 }
 
 export function TimelineItem({
-  dotClass = 'bg-gray-300',
   children,
+  dotClass = '',
 }: PropsWithChildren<{ dotClass?: string }>) {
   return (
-    <li className="ms-2 relative">
-      <div className={`absolute -start-[7px] mt-1 h-3 w-3 rounded-full ${dotClass}`} />
+    <li className="timeline-item">
+      <div className={`timeline-item-dot ${dotClass}`} />
       <div>{children}</div>
     </li>
   );

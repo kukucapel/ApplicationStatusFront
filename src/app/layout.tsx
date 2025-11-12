@@ -8,7 +8,7 @@ import { UiShellProvider } from '../components/UiShell';
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ru">
-      <body className="bg-gray-50 text-gray-900">
+      <body className="app-body">
         <UiShellProvider>
           <Header />
           {children}

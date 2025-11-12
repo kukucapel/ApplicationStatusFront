@@ -1,10 +1,24 @@
-// types/share.ts
 export type HistoryItem = {
   id: number;
   oldStatus: string | null;
   newStatus: string;
   oldUnitId: number | null;
   newUnitId: number | null;
+  createdAt: string;
+};
+
+export type ResponseEntry = {
+  id: number;
+  authorId: number;
+  comment: string;
+  type: string;
+  createdAt: string;
+};
+
+export type AttachmentEntry = {
+  id: number;
+  url: string;
+  responseId: number | null;
   createdAt: string;
 };
 
@@ -22,4 +36,8 @@ export type ShareApi = {
   };
   history: HistoryItem[];
   expiresAt: string | null;
+
+  // дополнительные поля (опциональные)
+  responses?: ResponseEntry[];
+  attachments?: AttachmentEntry[];
 };
