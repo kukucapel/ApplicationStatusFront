@@ -64,6 +64,7 @@ export interface Application {
   theme: string;
   toSend: string;
   updatedAt: string;
+  unitName: string | null;
 }
 
 export interface ApplicationUnitUpdate {

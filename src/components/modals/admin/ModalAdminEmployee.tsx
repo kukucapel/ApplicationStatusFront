@@ -103,6 +103,13 @@ export default function ModalAdminEmployee({
         load();
     }, []);
 
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, []);
+
     return (
         <ModalAdminMainBody setModalIsActive={setModalIsActive}>
             <form

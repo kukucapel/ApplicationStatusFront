@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { Application } from '@/dtos/ApplicationDto';
+import Button from '../ui/Button';
+import { CalendarArrowDown, CalendarArrowUp } from 'lucide-react';
+import { useUser } from '@/contexts/UserContext';
 
 interface ApplicationsListProps {
     applications: any[];
@@ -22,6 +25,8 @@ export default function ApplicationsList({
         recipient: 'all',
         search: '',
     });
+    const [sortByNewest, setSortByNewest] = useState<boolean>(true);
+    const { user } = useUser();
 
     // console.log(applications);
 
@@ -36,6 +41,8 @@ export default function ApplicationsList({
             filtered = filtered.filter((app) => app.status === 'completed');
         } else if (activeTab === 'closed') {
             filtered = filtered.filter((app) => app.status === 'closed');
+        } else if (activeTab === 'in_progress') {
+            filtered = filtered.filter((app) => app.status === 'in_progress');
         }
 
         // Filter by status
@@ -61,8 +68,14 @@ export default function ApplicationsList({
             );
         }
 
+        filtered.sort((a, b) => {
+            const dateA = new Date(a.createdAt).getTime();
+            const dateB = new Date(b.createdAt).getTime();
+            return sortByNewest ? dateB - dateA : dateA - dateB;
+        });
+
         setFilteredApplications(filtered as any);
-    }, [applications, activeTab, filters, connected]);
+    }, [applications, activeTab, filters, connected, sortByNewest]);
 
     type StatusKey = 'new' | 'in_progress' | 'completed' | 'closed';
 
@@ -103,7 +116,7 @@ export default function ApplicationsList({
         <main className="flex-1">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 {/* Tabs */}
-                <div className="border-b border-gray-200 px-6 pt-4">
+                <div className="border-b flex items-center justify-between border-gray-200 px-6 pt-4">
                     <div className="flex gap-2 overflow-x-auto">
                         <button
                             data-testid="tab-all"
@@ -128,6 +141,17 @@ export default function ApplicationsList({
                             Поступившие ({stats.new})
                         </button>
                         <button
+                            data-testid="tab-in_progress"
+                            onClick={() => setActiveTab('in_progress')}
+                            className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
+                                activeTab === 'in_progress'
+                                    ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600'
+                                    : 'cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                            }`}
+                        >
+                            В работе ({stats.in_progress})
+                        </button>
+                        <button
                             data-testid="tab-completed"
                             onClick={() => setActiveTab('completed')}
                             className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
@@ -150,10 +174,23 @@ export default function ApplicationsList({
                             Закрытые ({stats.closed})
                         </button>
                     </div>
+                    {filteredApplications.length !== 1 &&
+                        filteredApplications.length !== 0 && (
+                            <div
+                                className="cursor-pointer"
+                                onClick={() => setSortByNewest((prev) => !prev)}
+                            >
+                                {sortByNewest ? (
+                                    <CalendarArrowDown className="text-gray-700 w-5 h-5 hover:scale-110 transition-all duration-150" />
+                                ) : (
+                                    <CalendarArrowUp className="text-gray-700 w-5 h-5 hover:scale-110 transition-all duration-150" />
+                                )}
+                            </div>
+                        )}
                 </div>
 
                 {/* Applications */}
-                <div className="p-6">
+                <div className="p-6 select-none">
                     {loading ? (
                         <div className="text-center py-12 text-gray-500">
                             Загрузка заявок...
@@ -210,8 +247,13 @@ export default function ApplicationsList({
                                                 {app.question}
                                             </p>
                                         </div>
+                                        {user?.role !== 'worker' && (
+                                            <div className="max-w-[40%] text-gray-500 pr-10">
+                                                {app.unitName}
+                                            </div>
+                                        )}
                                         <div className="text-right flex-shrink-0">
-                                            <div className="text-xs text-gray-500">
+                                            <div className="text-s text-gray-500">
                                                 {new Date(
                                                     app.createdAt
                                                 ).toLocaleString('ru-RU', {

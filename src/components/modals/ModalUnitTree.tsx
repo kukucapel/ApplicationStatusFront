@@ -32,6 +32,20 @@ function TreeNode({
     const [expanded, setExpanded] = useState<boolean>(false);
 
     const hasChildren = Object.keys(node.children || {}).length > 0;
+
+    useEffect(() => {
+        function hasSelectedChild(n: Unit): boolean {
+            if (n.id === selectedNow) return true;
+            return Object.values(n.children || {}).some((child) =>
+                hasSelectedChild(child)
+            );
+        }
+
+        if (!hasChildren && hasSelectedChild(node)) {
+            setExpanded(true);
+        }
+    }, [node, selectedNow, hasChildren]);
+
     return (
         <div className="ml-4 mt-2">
             <div
@@ -57,7 +71,7 @@ function TreeNode({
                     </span>
                 )}
                 <div
-                    className={`flex items-center gap-2 flex-grow `}
+                    className="flex items-center gap-2 flex-grow"
                     onClick={() => {
                         if (selectedNow !== node.id) {
                             if (newSelected !== node.id) {
@@ -68,7 +82,7 @@ function TreeNode({
                     }}
                 >
                     <Building2 className="w-5" />
-                    <span className="max-w-[70%] ">{node.unit_name}</span>
+                    <span className="max-w-[70%]">{node.unit_name}</span>
 
                     {(selectedNow === node.id || newSelected === node.id) && (
                         <span className="ml-auto text-sm text-gray-500">
@@ -110,35 +124,37 @@ export default function ModalUnitTree({
     }, []);
     return (
         <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50 p-4 transition-all">
-            <div className="bg-white rounded-l-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto custom-scroll p-10">
-                <div className="mb-7 flex justify-between items-center">
-                    <span className="text-xl">
-                        Назначение исполнительного органа
-                    </span>
-                    <Button
-                        styleColor="white"
-                        className="p-1"
-                        onClick={onClose}
-                    >
-                        <X className="w-6 h-6 text-gray-700 transition-colors" />
-                    </Button>
-                </div>
-                <hr className="text-gray-400 mb-4" />
+            <div className="bg-white rounded-l-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+                <div className="px-10 pt-10 overflow-y-auto flex-1 custom-scroll">
+                    <div className="mb-7 flex justify-between items-center">
+                        <span className="text-xl">
+                            Назначение исполнительного органа
+                        </span>
+                        <Button
+                            styleColor="white"
+                            className="p-1"
+                            onClick={onClose}
+                        >
+                            <X className="w-6 h-6 text-gray-700 transition-colors" />
+                        </Button>
+                    </div>
+                    <hr className="text-gray-400 mb-4" />
 
-                {/* Рендерим дерево */}
-                <div className="mb-5">
-                    {Object.values(unitTree).map((node) => (
-                        <TreeNode
-                            setNewUnitName={setNewUnitName}
-                            setNewSelected={setNewSelected}
-                            newSelected={newSelected}
-                            selectedNow={selectedNow}
-                            key={node.id}
-                            node={node}
-                        />
-                    ))}
+                    {/* Рендерим дерево */}
+                    <div className="mb-5">
+                        {Object.values(unitTree).map((node) => (
+                            <TreeNode
+                                setNewUnitName={setNewUnitName}
+                                setNewSelected={setNewSelected}
+                                newSelected={newSelected}
+                                selectedNow={selectedNow}
+                                key={node.id}
+                                node={node}
+                            />
+                        ))}
+                    </div>
                 </div>
-                <div className="transition-all duration-150 flex gap-3 pt-4 border-t">
+                <div className="transition-all sticky px-10 py-4 bottom-0 border-gray-300 duration-150 flex gap-3 border-t">
                     <Button
                         isActive={isActive}
                         styleColor="blue"

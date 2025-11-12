@@ -34,7 +34,7 @@ export default function Header({ handleClickModal }: HeaderProps) {
                 <div className="flex items-center justify-between">
                     <Logo className="inline-flex items-center gap-2" />
                     <div className="flex items-center gap-3">
-                        <Button
+                        {/* <Button
                             className="flex items-center px-3 gap-2 py-2 hover:bg-blue-700 "
                             styleColor={
                                 pathname === '/dashboard' ? 'blue' : 'white'
@@ -51,10 +51,22 @@ export default function Header({ handleClickModal }: HeaderProps) {
                                 <FileText />
                             )}
                             <span className="hidden sm:inline">
-                                {pathname === '/dashboard'
-                                    ? 'Создать заявку'
-                                    : 'Обращения'}
+                                {pathname === '/dashboard' && 'Обращения'}
                             </span>
+                        </Button> */}
+                        <Button
+                            className={`flex items-center px-3 gap-2 py-2 `}
+                            isActive={pathname === '/dashboard'}
+                            styleColor={'white'}
+                            onClick={
+                                pathname === '/dashboard'
+                                    ? () => {}
+                                    : handleClickDashboard
+                            }
+                        >
+                            <FileText />
+
+                            <span className="hidden sm:inline">Обращения</span>
                         </Button>
                         {(user?.role === 'admin' ||
                             user?.role === 'dispatcher') && (
