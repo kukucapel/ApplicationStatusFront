@@ -14,6 +14,10 @@ import { statusLabel } from '@/lib/status';
 import { useUiShell } from '@/components/UiShell';
 import { Star } from 'lucide-react';
 import Button from '@/ui/Button';
+import Raiting from '@/ui/Raiting';
+import ModalMainBody from '@/ui/Modal';
+import Modal from '@/ui/Modal';
+import ModalBodyResponse from '@/ui/ModalBodyResponse';
 
 export default function ShareClient() {
     const search = useSearchParams();
@@ -23,6 +27,7 @@ export default function ShareClient() {
     const [err, setErr] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [rating, setRating] = useState<Record<number, number>>({});
+    const [modalInvite, setModalInvite] = useState<ResponseEntry | null>(null);
 
     // управление видимостью хедера
     const { setShowHeader } = useUiShell?.() ?? {
@@ -48,7 +53,7 @@ export default function ShareClient() {
                 setShowHeader(true);
 
                 const res = await fetch(
-                    `http://127.0.0.1:5000/api/v1/user/share/${encodeURIComponent(
+                    `http://192.168.137.161:5000/api/v1/user/share/${encodeURIComponent(
                         token
                     )}`,
                     { cache: 'no-store' }
@@ -110,13 +115,36 @@ export default function ShareClient() {
     } = data;
     // setResponses(data.responses || []);
 
-    const handleSubnitRaiting = async (
+    const handleSetRating = (id: number, value: number) => {
+        setRating((prev) => ({ ...prev, [id]: value }));
+    };
+
+    const handleSubmitChoise = async (id: number, value: 'yes' | 'no') => {
+        const res = await fetch(
+            `http://192.168.137.161:5000/api/v1/user/share/${encodeURIComponent(
+                token
+            )}/choice`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    responseId: id,
+                    select: value,
+                }),
+                cache: 'no-store',
+            }
+        );
+    };
+
+    const handleSubmitRaiting = async (
         id: number,
         score: number,
         index: number
     ) => {
         const res = await fetch(
-            `http://127.0.0.1:5000/api/v1/user/requests/ratings/external/share/${encodeURIComponent(
+            `http://192.168.137.161:5000/api/v1/user/requests/ratings/external/share/${encodeURIComponent(
                 token
             )}/responses/${id}/rating`,
             {
@@ -144,7 +172,6 @@ export default function ShareClient() {
             });
         }
     };
-
     return (
         <PageContainer>
             {/* Заголовок заявки */}
@@ -194,6 +221,18 @@ export default function ShareClient() {
                     )}
                 </SectionCard>
 
+                {modalInvite && (
+                    <Modal
+                        title={'Детали ответа'}
+                        onClose={() => setModalInvite(null)}
+                    >
+                        <ModalBodyResponse
+                            handleSubmitChoise={handleSubmitChoise}
+                            response={modalInvite}
+                        />
+                    </Modal>
+                )}
+
                 {/* Ответ (если есть) */}
                 {responses.length > 0 && (
                     <SectionCard title="Комментарии ведомства">
@@ -201,91 +240,55 @@ export default function ShareClient() {
                             {responses.slice().map((r, index) => (
                                 <li
                                     key={r.id}
-                                    className="border items-center justify-between border-gray-300 rounded-lg p-4 hover:shadow-md transition-shadow flex bg-white"
+                                    onClick={() => {
+                                        setModalInvite(r);
+                                    }}
+                                    className={`border ${
+                                        r.type === 'invite'
+                                            ? 'border-orange-400'
+                                            : r.type === 'invite_yes'
+                                            ? 'border-green-300'
+                                            : r.type === 'invite_no'
+                                            ? 'border-red-300'
+                                            : 'border-gray-300'
+                                    } items-center justify-between  rounded-lg p-4 hover:shadow-md transition-shadow flex bg-white`}
                                 >
                                     <div>
                                         <div className="text-sm text-[--ink-700] mb-1">
                                             {fmt(r.createdAt)}
                                         </div>
-                                        <div className="text-[--ink-900] whitespace-pre-wrap">
+                                        <div className="text-[--ink-900] hidden md:block whitespace-pre-wrap">
                                             {r.comment}
+                                        </div>
+                                        <div className="text-[--ink-900] md:hidden block whitespace-pre-wrap">
+                                            {r.type === 'none_invite'
+                                                ? 'Промежуточный ответ'
+                                                : 'Приглашение на личный приём'}
                                         </div>
                                     </div>
 
-                                    <div className="">
+                                    <div className="hidden md:block">
                                         {r.rating === null ? (
-                                            <>
-                                                <div className="flex">
-                                                    {[1, 2, 3, 4, 5].map(
-                                                        (el) => (
-                                                            <Star
-                                                                key={el}
-                                                                className={`transition-all duration-150 text-yellow-300 ${
-                                                                    rating[
-                                                                        r.id
-                                                                    ] >= el
-                                                                        ? 'fill-yellow-300'
-                                                                        : 'cursor-pointer hover:scale-110'
-                                                                } ${
-                                                                    rating[
-                                                                        r.id
-                                                                    ] !== el &&
-                                                                    'cursor-pointer hover:scale-110'
-                                                                }`}
-                                                                onClick={
-                                                                    rating[
-                                                                        r.id
-                                                                    ] != el
-                                                                        ? () =>
-                                                                              setRating(
-                                                                                  (
-                                                                                      prev
-                                                                                  ) => ({
-                                                                                      ...prev,
-                                                                                      [r.id]:
-                                                                                          el,
-                                                                                  })
-                                                                              )
-                                                                        : () => {}
-                                                                }
-                                                            />
-                                                        )
-                                                    )}
-                                                </div>
-                                                <button
-                                                    className={`mt-2 rounded-2xl  px-1.5 border-gray-300 transition-all duration-200 ${
-                                                        rating[r.id] != 0
-                                                            ? 'hover:scale-110 shadow-md cursor-pointer'
-                                                            : 'text-gray-400'
-                                                    }`}
-                                                    onClick={() => {
-                                                        handleSubnitRaiting(
-                                                            r.id,
-                                                            rating[r.id],
-                                                            index
-                                                        );
-                                                    }}
-                                                >
-                                                    Оценить ответ
-                                                </button>
-                                            </>
+                                            <Raiting
+                                                type="set"
+                                                handleSetRating={
+                                                    handleSetRating
+                                                }
+                                                handleSubmit={() => {
+                                                    handleSubmitRaiting(
+                                                        r.id,
+                                                        rating[r.id],
+                                                        index
+                                                    );
+                                                }}
+                                                rating={rating}
+                                                id={r.id}
+                                            />
                                         ) : (
-                                            <>
-                                                <div className="flex">
-                                                    {[1, 2, 3, 4, 5].map(
-                                                        (el) => (
-                                                            <Star
-                                                                key={el}
-                                                                className={`transition-all duration-150 text-yellow-300 ${
-                                                                    r.rating >=
-                                                                        el &&
-                                                                    'fill-yellow-300'
-                                                                }`}
-                                                            />
-                                                        )
-                                                    )}
-                                                </div>
-                                            </>
+                                            <Raiting
+                                                type="view"
+                                                responseRating={r.rating}
+                                            />
                                         )}
                                     </div>
                                 </li>
@@ -339,6 +342,7 @@ export default function ShareClient() {
                             history
                                 .slice()
                                 .reverse()
+                                .filter((h) => h.oldStatus !== h.newStatus)
                                 .map((h) => (
                                     <TimelineItem key={h.id}>
                                         <div className="text-sm text-[--ink-900]">
