@@ -39,6 +39,7 @@ import ModalResponse from '../ui/ModalUi/ModalResponse';
 import { useUser } from '@/contexts/UserContext';
 import { Unit } from '@/dtos/AdminDto';
 import ModalUnitTree from './ModalUnitTree';
+import formatDate from '@/lib/formatDate';
 
 interface ApplicationModalProps {
     onClose: () => void;
@@ -189,18 +190,14 @@ export function ApplicationModal({
                         <p>
                             Создано:{' '}
                             {applicationItem &&
-                                new Date(
-                                    applicationItem.createdAt
-                                ).toLocaleString('ru-RU')}
+                                formatDate(application.createdAt)}
                         </p>
                         {applicationItem.createdAt !==
                             applicationItem.updatedAt && (
                             <p>
                                 Изменено:
                                 {applicationItem &&
-                                    new Date(
-                                        applicationItem.updatedAt
-                                    ).toLocaleString('ru-RU')}
+                                    formatDate(application.updatedAt)}
                             </p>
                         )}
                     </div>
@@ -476,11 +473,7 @@ export function ApplicationModal({
                                         </div>
                                         <p className="text-sm font-medium text-gray-700">
                                             {'Cоздан: '}
-                                            {new Date(
-                                                res.created_at
-                                            ).toLocaleString('ru-RU', {
-                                                timeZone: 'UTC',
-                                            })}
+                                            {formatDate(res.created_at)}
                                         </p>
                                     </div>
                                     <p className=" ml-7 whitespace-pre-wrap">

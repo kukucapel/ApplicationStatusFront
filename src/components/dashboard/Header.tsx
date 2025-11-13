@@ -92,6 +92,21 @@ export default function Header({ handleClickModal }: HeaderProps) {
                                 <div className="w-10 h-4 bg-gray-300 rounded animate-pulse"></div>
                             )}
                         </div>
+                        <div className="flex items-center gap-2 px-4 py-3 bg-green-50 rounded-lg">
+                            {user ? (
+                                <div className="flex items-center gap-2 transition-opacity duration-500 opacity-100">
+                                    <span className="text-sm font-medium text-gray-900 hidden sm:inline">
+                                        {user.role === 'worker'
+                                            ? 'Работник'
+                                            : user.role === 'dispatcher'
+                                            ? 'Диспетчер'
+                                            : 'Администратор'}
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className="w-10 h-4 bg-gray-300 rounded animate-pulse"></div>
+                            )}
+                        </div>
                         <Button
                             styleColor="white"
                             className="px-4 py-3 shadow-none"

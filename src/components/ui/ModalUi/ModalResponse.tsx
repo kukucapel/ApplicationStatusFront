@@ -19,7 +19,7 @@ export default function ModalResponse({
 }: ModalResponseProps) {
     const [form, setForm] = useState<ResponseCreateDto>({
         comment: '',
-        type: 'none_invite',
+        type: 'invite',
     });
     const isActive = form.comment === '';
 
@@ -41,20 +41,6 @@ export default function ModalResponse({
                     <div className="flex mt-2 gap-3">
                         <Button
                             styleColor={`${
-                                form.type === 'none_invite' ? 'blue' : 'white'
-                            }`}
-                            onClick={() => {
-                                setForm((prev) => ({
-                                    ...prev,
-                                    type: 'none_invite',
-                                }));
-                            }}
-                            className="px-2 py-1"
-                        >
-                            Ответ без приглашения
-                        </Button>
-                        <Button
-                            styleColor={`${
                                 form.type === 'invite' ? 'blue' : 'white'
                             }`}
                             onClick={() => {
@@ -66,6 +52,20 @@ export default function ModalResponse({
                             className="px-2 py-1"
                         >
                             Приглашение
+                        </Button>
+                        <Button
+                            styleColor={`${
+                                form.type === 'none_invite' ? 'blue' : 'white'
+                            }`}
+                            onClick={() => {
+                                setForm((prev) => ({
+                                    ...prev,
+                                    type: 'none_invite',
+                                }));
+                            }}
+                            className="px-2 py-1"
+                        >
+                            Ответ без приглашения
                         </Button>
                     </div>
                 </div>

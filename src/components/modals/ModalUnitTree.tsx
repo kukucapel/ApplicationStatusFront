@@ -56,8 +56,16 @@ function TreeNode({
                         ? 'bg-green-300'
                         : 'cursor-pointer hover:bg-green-300'
                 }`}
+                onClick={() => {
+                    if (selectedNow !== node.id) {
+                        if (newSelected !== node.id) {
+                            setNewSelected(node.id);
+                            setNewUnitName(node.unit_name);
+                        }
+                    }
+                }}
             >
-                {hasChildren && (
+                {!hasChildren && (
                     <span className="hover:scale-110 rounded-md transition-all duration-150 mr-1 cursor-pointer">
                         {!expanded ? (
                             <ChevronRight
@@ -70,17 +78,7 @@ function TreeNode({
                         )}
                     </span>
                 )}
-                <div
-                    className="flex items-center gap-2 flex-grow"
-                    onClick={() => {
-                        if (selectedNow !== node.id) {
-                            if (newSelected !== node.id) {
-                                setNewSelected(node.id);
-                                setNewUnitName(node.unit_name);
-                            }
-                        }
-                    }}
-                >
+                <div className="flex items-center gap-2 flex-grow">
                     <Building2 className="w-5" />
                     <span className="max-w-[70%]">{node.unit_name}</span>
 

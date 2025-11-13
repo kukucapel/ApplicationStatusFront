@@ -5,6 +5,7 @@ import { Application } from '@/dtos/ApplicationDto';
 import Button from '../ui/Button';
 import { CalendarArrowDown, CalendarArrowUp } from 'lucide-react';
 import { useUser } from '@/contexts/UserContext';
+import formatDate from '@/lib/formatDate';
 
 interface ApplicationsListProps {
     applications: any[];
@@ -254,11 +255,7 @@ export default function ApplicationsList({
                                         )}
                                         <div className="text-right flex-shrink-0">
                                             <div className="text-s text-gray-500">
-                                                {new Date(
-                                                    app.createdAt
-                                                ).toLocaleString('ru-RU', {
-                                                    timeZone: 'Europe/Moscow',
-                                                })}
+                                                {formatDate(app.createdAt)}
                                             </div>
                                         </div>
                                     </div>
