@@ -40,6 +40,7 @@ import { useUser } from '@/contexts/UserContext';
 import { Unit } from '@/dtos/AdminDto';
 import ModalUnitTree from './ModalUnitTree';
 import formatDate from '@/lib/formatDate';
+import { resolveMx } from 'dns';
 
 interface ApplicationModalProps {
     onClose: () => void;
@@ -461,7 +462,15 @@ export function ApplicationModal({
 
                             {sortedResponseItems?.map((res) => (
                                 <div
-                                    className="bg-blue-50 rounded-lg p-4"
+                                    className={`${
+                                        res.type === 'invite_yes'
+                                            ? 'bg-green-50'
+                                            : res.type === 'invite_no'
+                                            ? 'bg-red-50'
+                                            : res.type === 'invite'
+                                            ? 'bg-orange-50'
+                                            : 'bg-blue-50'
+                                    } rounded-lg p-4`}
                                     key={res.id}
                                 >
                                     <div className="flex items-start justify-between gap-2 mb-2">
@@ -478,7 +487,8 @@ export function ApplicationModal({
                                     </div>
                                     <p className=" ml-7 whitespace-pre-wrap">
                                         {'Ответчик: '}
-                                        {res.author.fio}
+                                        {(res.author && res.author.fio) ||
+                                            'Заявитель'}
                                     </p>
                                     <p className="text-gray-900 ml-7 mt-4 whitespace-pre-wrap">
                                         {res.comment}

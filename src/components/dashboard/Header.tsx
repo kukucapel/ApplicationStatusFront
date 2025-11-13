@@ -80,18 +80,18 @@ export default function Header({ handleClickModal }: HeaderProps) {
                                 Управление
                             </Button>
                         )}
-                        <div className="flex items-center gap-2 px-4 py-3 bg-blue-50 rounded-lg">
+                        {/* <div className="flex items-center  gap-2 px-4 py-3 bg-blue-50 rounded-lg">
                             {user ? (
                                 <div className="flex items-center gap-2 transition-opacity duration-500 opacity-100">
                                     <User className="w-4 h-4 text-blue-600" />
-                                    <span className="text-sm font-medium text-gray-900 hidden sm:inline">
+                                    <span className="text-sm font-medium truncate w-20 text-gray-900 hidden sm:inline">
                                         {user.name}
                                     </span>
                                 </div>
                             ) : (
                                 <div className="w-10 h-4 bg-gray-300 rounded animate-pulse"></div>
                             )}
-                        </div>
+                        </div> */}
                         <div className="flex items-center gap-2 px-4 py-3 bg-green-50 rounded-lg">
                             {user ? (
                                 <div className="flex items-center gap-2 transition-opacity duration-500 opacity-100">
