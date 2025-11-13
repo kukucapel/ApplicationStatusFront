@@ -19,6 +19,7 @@ export default function ModalResponse({
 }: ModalResponseProps) {
     const [form, setForm] = useState<ResponseCreateDto>({
         comment: '',
+        type: 'none_invite',
     });
     const isActive = form.comment === '';
 
@@ -37,13 +38,45 @@ export default function ModalResponse({
                         </Button>
                     </div>
                     <hr className="text-gray-400" />
+                    <div className="flex mt-2 gap-3">
+                        <Button
+                            styleColor={`${
+                                form.type === 'none_invite' ? 'blue' : 'white'
+                            }`}
+                            onClick={() => {
+                                setForm((prev) => ({
+                                    ...prev,
+                                    type: 'none_invite',
+                                }));
+                            }}
+                            className="px-2 py-1"
+                        >
+                            Ответ без приглашения
+                        </Button>
+                        <Button
+                            styleColor={`${
+                                form.type === 'invite' ? 'blue' : 'white'
+                            }`}
+                            onClick={() => {
+                                setForm((prev) => ({
+                                    ...prev,
+                                    type: 'invite',
+                                }));
+                            }}
+                            className="px-2 py-1"
+                        >
+                            Приглашение
+                        </Button>
+                    </div>
                 </div>
                 <form
                     className="transition-all duration-150 space-y-4 w-full "
                     onSubmit={(e) => handleSubmit(e, form)}
                 >
                     <div className="flex flex-col">
-                        <label className="text-sm text-gray-500">Ответ</label>
+                        <label className="text-sm text-gray-500 mb-2">
+                            Ответ
+                        </label>
 
                         <textarea
                             name="comment"
