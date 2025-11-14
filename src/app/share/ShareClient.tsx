@@ -266,8 +266,24 @@ export default function ShareClient() {
                                             setModalInvite([index, r])
                                         }
                                     >
-                                        <div className="text-sm text-[--ink-700] mb-1">
-                                            {fmt(r.createdAt)}
+                                        <div className="text-sm flex text-[--ink-700] gap-0.5 mb-1">
+                                            {`${fmt(r.createdAt)} `}
+                                            <span
+                                                className={`font-medium ${
+                                                    r.type === 'invite_yes'
+                                                        ? 'text-green-600'
+                                                        : 'text-red-600'
+                                                }`}
+                                            >
+                                                {r.type === 'invite_yes'
+                                                    ? '· Приглашение принято'
+                                                    : r.type === 'invite_no' &&
+                                                      '· Приглашение отклонено'}
+                                            </span>
+                                            <span className="hidden md:block text-orange-700 font-medium">
+                                                {r.type === 'invite' &&
+                                                    '· Приглашение'}
+                                            </span>
                                         </div>
                                         <div className="text-[--ink-900] hidden md:block whitespace-pre-wrap">
                                             {r.comment}
