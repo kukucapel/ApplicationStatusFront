@@ -57,7 +57,7 @@ export default function Raiting({
                     ))}
                 </div>
                 <button
-                    className={`mt-2 rounded-2xl  px-1.5 border-gray-300 transition-all duration-200 ${
+                    className={`mt-2 rounded-2xl select-none  px-1.5 border-gray-300 transition-all duration-200 ${
                         rating[id] != 0
                             ? 'hover:scale-110 shadow-md cursor-pointer'
                             : 'text-gray-400'

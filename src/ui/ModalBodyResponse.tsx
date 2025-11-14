@@ -2,23 +2,40 @@
 
 import { ResponseEntry } from '@/types/share';
 import Button from './Button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ModalAlert from './ModalAlert';
 import Raiting from './Raiting';
 
 interface ModalBodyResponseProps {
-    response: ResponseEntry;
+    indexResponse: [number, ResponseEntry];
     handleSubmitChoise: (id: number, value: 'yes' | 'no') => void;
+
+    handleSubmitRating: (
+        id: number,
+        raiting: number,
+        index: number
+    ) => Promise<void>;
+    handleSetRating?: (id: number, value: number) => void;
+    rating: Record<number, number>;
 }
 
 export default function ModalBodyResponse({
-    response,
+    indexResponse,
     handleSubmitChoise,
+    handleSetRating,
+    handleSubmitRating,
+    rating,
 }: ModalBodyResponseProps) {
     const [modalState, setModalState] = useState<string>('');
-    if (modalState === 'no') {
-        setModalState('');
-    }
+
+    useEffect(() => {
+        if (modalState === 'no') {
+            setModalState('');
+        }
+    }, [modalState]);
+    if (!indexResponse) return null;
+
+    const [index, response] = indexResponse;
 
     return (
         <div className="space-y-5">
@@ -34,8 +51,28 @@ export default function ModalBodyResponse({
                 <span className="text-gray-500">Комментарий:</span>
                 <p className={`text-lg text-orange-500`}>{response.comment}</p>
             </div>
-            {response.rating !== null && (
-                <Raiting type="view" responseRating={response.rating} />
+            {response.rating !== null ? (
+                <div className="flex flex-col gap-0.5">
+                    <span className="text-gray-500 ">Ваша оценка:</span>
+                    <Raiting type="view" responseRating={response.rating} />
+                </div>
+            ) : (
+                <div className="">
+                    <span className="text-gray-500 ">Оцените ответ:</span>
+                    <Raiting
+                        type="set"
+                        handleSetRating={handleSetRating}
+                        handleSubmit={() => {
+                            handleSubmitRating(
+                                response.id,
+                                rating[response.id],
+                                index
+                            );
+                        }}
+                        rating={rating}
+                        id={response.id}
+                    />
+                </div>
             )}
             {response.type === 'invite' && (
                 <div className="mt-10">

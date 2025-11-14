@@ -12,10 +12,7 @@ import ErrorAlert from '@/components/ErrorAlert';
 import { fmt } from '@/lib/date';
 import { statusLabel } from '@/lib/status';
 import { useUiShell } from '@/components/UiShell';
-import { Star } from 'lucide-react';
-import Button from '@/ui/Button';
 import Raiting from '@/ui/Raiting';
-import ModalMainBody from '@/ui/Modal';
 import Modal from '@/ui/Modal';
 import ModalBodyResponse from '@/ui/ModalBodyResponse';
 
@@ -27,7 +24,9 @@ export default function ShareClient() {
     const [err, setErr] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [rating, setRating] = useState<Record<number, number>>({});
-    const [modalInvite, setModalInvite] = useState<ResponseEntry | null>(null);
+    const [modalInvite, setModalInvite] = useState<
+        [number, ResponseEntry] | null
+    >(null);
 
     // управление видимостью хедера
     const { setShowHeader } = useUiShell?.() ?? {
@@ -136,9 +135,12 @@ export default function ShareClient() {
                 cache: 'no-store',
             }
         );
+        if (res.ok) {
+            setModalInvite(null);
+        }
     };
 
-    const handleSubmitRaiting = async (
+    const handleSubmitRating = async (
         id: number,
         score: number,
         index: number
@@ -159,6 +161,7 @@ export default function ShareClient() {
             }
         );
         if (res.ok) {
+            setModalInvite(null);
             setData((prev) => {
                 if (!prev || !prev.responses) return prev; // если данных нет — ничего не делаем
 
@@ -227,8 +230,11 @@ export default function ShareClient() {
                         onClose={() => setModalInvite(null)}
                     >
                         <ModalBodyResponse
+                            handleSubmitRating={handleSubmitRating}
+                            handleSetRating={handleSetRating}
+                            rating={rating}
                             handleSubmitChoise={handleSubmitChoise}
-                            response={modalInvite}
+                            indexResponse={modalInvite}
                         />
                     </Modal>
                 )}
@@ -241,7 +247,9 @@ export default function ShareClient() {
                                 <li
                                     key={r.id}
                                     onClick={() => {
-                                        setModalInvite(r);
+                                        if (window.innerWidth < 768) {
+                                            setModalInvite([index, r]);
+                                        }
                                     }}
                                     className={`border ${
                                         r.type === 'invite'
@@ -253,7 +261,12 @@ export default function ShareClient() {
                                             : 'border-gray-300'
                                     } items-center justify-between  rounded-lg p-4 hover:shadow-md transition-shadow flex bg-white`}
                                 >
-                                    <div>
+                                    <div
+                                        className="hover:scale-105 cursor-pointer transition-all duration-150"
+                                        onClick={() =>
+                                            setModalInvite([index, r])
+                                        }
+                                    >
                                         <div className="text-sm text-[--ink-700] mb-1">
                                             {fmt(r.createdAt)}
                                         </div>
@@ -275,7 +288,7 @@ export default function ShareClient() {
                                                     handleSetRating
                                                 }
                                                 handleSubmit={() => {
-                                                    handleSubmitRaiting(
+                                                    handleSubmitRating(
                                                         r.id,
                                                         rating[r.id],
                                                         index
