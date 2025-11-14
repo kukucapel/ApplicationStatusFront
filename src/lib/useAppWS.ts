@@ -15,7 +15,7 @@ export function useAppWS(token: string | null) {
   }, [applications]);
 
   const connect = () => {
-    const ws = new WebSocket('ws://localhost:5000/api/v1/worker/ws');
+    const ws = new WebSocket(process.env.NEXT_PUBLIC_WS_URL || '');
     wsRef.current = ws;
 
     ws.onopen = () => {
