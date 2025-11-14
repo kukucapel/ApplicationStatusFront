@@ -122,14 +122,13 @@ export default function ShareClient() {
         const res = await fetch(
             `http://192.168.137.161:5000/api/v1/user/share/${encodeURIComponent(
                 token
-            )}/choice`,
+            )}/responses/${id}/choice`,
             {
-                method: 'POST',
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    responseId: id,
                     select: value,
                 }),
                 cache: 'no-store',
@@ -146,7 +145,7 @@ export default function ShareClient() {
         index: number
     ) => {
         const res = await fetch(
-            `http://192.168.137.161:5000/api/v1/user/requests/ratings/external/share/${encodeURIComponent(
+            `http://192.168.137.161:5000/api/v1/user/share/${encodeURIComponent(
                 token
             )}/responses/${id}/rating`,
             {
