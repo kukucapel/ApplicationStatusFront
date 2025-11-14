@@ -23,7 +23,7 @@ export default function Logo({ className }: LogoProps) {
 
             <div>
                 <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-                    Система обработки заявок
+                    Система обработки личного приёма
                 </h1>
                 <p className="text-base text-gray-600">Город Калуга</p>
             </div>
