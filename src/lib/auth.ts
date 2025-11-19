@@ -1,16 +1,5 @@
 import { apiRequest } from './apiClient';
-
-export interface LoginFormData {
-  fio: string;
-  email: string;
-  password: string;
-}
-
-export interface RegisterFormData {
-  fio: string;
-  email: string;
-  password: string;
-}
+import { LoginFormData, RegisterFormData } from '@/dtos/AuthDto';
 
 export const loginUser = async (data: LoginFormData) => {
   return apiRequest('/auth/signin', {

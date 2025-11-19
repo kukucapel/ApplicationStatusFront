@@ -29,7 +29,7 @@ export default function BodyDashboard() {
         setToken(jwt);
     }, []);
 
-    const { connected, applications, send } = useAppWS(token);
+    const { connected, applications } = useAppWS(token);
     const stats = {
         total: applications.length,
         new: applications.filter((app) => app.status === 'new').length,
