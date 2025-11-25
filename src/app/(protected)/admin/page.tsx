@@ -1,15 +1,42 @@
 'use client';
 
-import BodyAdmin from '@/components/admin/BodyAdmin';
 import { useUser } from '@/contexts/UserContext';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import LeftMenu from '@/components/admin/LeftMenu';
+import TableAdmin from '@/components/admin/TableAdmin';
+
+const MENU: [string, string][] = [
+    ['Соотрудники', 'employees'],
+    // ['Роли', 'roles'],
+    // ['Структура', 'units/?as=tree'],
+    // ['Оценки', 'raitings'],
+];
+
 export default function Admin() {
     const { user, loading } = useUser();
     const router = useRouter();
+
+    const [page, setPage] = useState<number>(0);
+
     useEffect(() => {
         if (!loading && user?.role === 'worker') router.push('dashboard');
     }, [user, router, loading]);
 
-    return <>{user?.role !== 'worker' && <BodyAdmin />}</>;
+    if (user?.role === 'worker') {
+        return;
+    } else {
+        return (
+            <div className="max-w-7xl mt-10 mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+                <div className="flex flex-col lg:flex-row gap-6">
+                    <LeftMenu
+                        page={page}
+                        handleClickMenu={setPage}
+                        MENU={MENU}
+                    />
+                    <TableAdmin page={page} MENU={MENU} />
+                </div>
+            </div>
+        );
+    }
 }

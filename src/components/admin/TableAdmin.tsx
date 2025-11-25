@@ -6,6 +6,7 @@ import TableEmployees from './TableEmployees';
 import { Employee, Role } from '@/dtos/AdminDto';
 import { adminData } from '@/lib/adminData';
 import { useUser } from '@/contexts/UserContext';
+import TableHeader from './TableHeader';
 
 interface TableAdminProps {
     page: number;
@@ -47,42 +48,15 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
     return (
         <main className="flex-1">
             <div className="bg-white rounded-xl shadow-sm border p-6 border-gray-200">
-                <div className="flex items-end justify-between mb-4 px-6">
-                    <h2 className="text-2xl font-bold  text-gray-800">
-                        {MENU[page][0]}
-                    </h2>
-                    <div className="flex gap-4 mr-2">
-                        <div
-                            className={` p-1 rounded-md duration-150 cursor-pointer bg-white border border-gray-300 hover:bg-gray-100`}
-                            onClick={() => setShowAddModal(true)}
-                        >
-                            <Plus className="w-5" />
-                        </div>
-                        <div
-                            className={` p-1 rounded-md duration-150 cursor-pointer ${
-                                searchMode
-                                    ? 'bg-blue-600 border border-blue-600 text-white'
-                                    : 'bg-white border border-gray-300 hover:bg-gray-100 '
-                            }`}
-                            onClick={() => setSearchMode((prev) => !prev)}
-                        >
-                            <Search className="w-5" />
-                        </div>
-
-                        {user?.role === 'admin' && (
-                            <div
-                                className={`p-1 border rounded-md duration-150 cursor-pointer ${
-                                    editMode
-                                        ? 'bg-blue-600 border border-blue-600 text-white'
-                                        : 'bg-white border border-gray-300 hover:bg-gray-100 '
-                                }`}
-                                onClick={() => setEditMode((prev) => !prev)}
-                            >
-                                <Edit className="w-5" />
-                            </div>
-                        )}
-                    </div>
-                </div>
+                <TableHeader
+                    title={MENU[0][0]}
+                    setShowAddModal={setShowAddModal}
+                    role={user?.role}
+                    searchMode={searchMode}
+                    onClickSearch={() => setSearchMode((prev) => !prev)}
+                    editMode={editMode}
+                    onClickEdit={() => setEditMode((prev) => !prev)}
+                />
 
                 <hr className="border-gray-300 mx-6 mb-6" />
                 {page === 0 ? (

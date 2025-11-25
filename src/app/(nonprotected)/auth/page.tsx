@@ -10,6 +10,7 @@ export default function Auth() {
             <div className="w-full max-w-md">
                 {/* Логотип плюс надпись */}
                 <Logo className="text-center mb-8" />
+                {/* Блок аутентификации с возможностью подключения регистрации */}
                 <AuthBlock>
                     <AuthLogin />
                 </AuthBlock>

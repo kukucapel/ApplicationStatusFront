@@ -1,8 +1,9 @@
 interface LogoProps {
     className?: string;
+    title?: string;
 }
 
-export default function Logo({ className }: LogoProps) {
+export default function Logo({ className, title }: LogoProps) {
     return (
         <div className={`${className} animate-fade-in`}>
             <div className="inline-block p-3 bg-blue-100 rounded-full ">
@@ -23,7 +24,7 @@ export default function Logo({ className }: LogoProps) {
 
             <div>
                 <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-                    Система обработки личного приёма
+                    {title || 'Система обработки личного приёма'}
                 </h1>
                 <p className="text-base text-gray-600">Город Калуга</p>
             </div>
