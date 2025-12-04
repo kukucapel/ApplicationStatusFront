@@ -11,12 +11,12 @@ export async function middleware(req: NextRequest) {
     !token &&
     (pathname.startsWith('/dashboard') || pathname.startsWith('/admin'))
   ) {
-    url.pathname = '/status/auth';
+    url.pathname = '/auth';
     return NextResponse.redirect(url);
   }
 
   if (token && pathname.startsWith('/auth')) {
-    url.pathname = '/status/dashboard';
+    url.pathname = '/dashboard';
     return NextResponse.redirect(url);
   }
 
