@@ -391,7 +391,9 @@ export function ApplicationModal({
                                 </p>
                             </div>
                             <p className="text-gray-900 ml-7 whitespace-pre-wrap">
-                                {applicationItem.assignedUnit.name || '-'}
+                                {(applicationItem.assignedUnit &&
+                                    applicationItem.assignedUnit.name) ||
+                                    '-'}
                             </p>
                         </div>
 
