@@ -141,7 +141,7 @@ export default function ShareClient() {
                     }
                 >
                     <p className="whitespace-pre-wrap leading-relaxed text-[--ink-900]">
-                        {request.question || '—'}
+                        {request.theme || '—'}
                     </p>
                 </ShareSectionCard>
                 <ShareSectionCard title="Тип обращения">
