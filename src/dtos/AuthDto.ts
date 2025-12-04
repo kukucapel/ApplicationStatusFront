@@ -1,5 +1,4 @@
 export interface LoginFormData {
-  fio: string;
   email: string;
   password: string;
 }

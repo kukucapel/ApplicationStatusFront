@@ -10,7 +10,6 @@ import ErrorText from '../ui/ErrorText';
 
 export default function AuthLogin() {
     const [form, setForm] = useState<LoginFormData>({
-        fio: 'a',
         email: '',
         password: '',
     });
