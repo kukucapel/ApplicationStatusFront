@@ -20,7 +20,7 @@ export default function Header({ handleClickModal }: HeaderProps) {
 
     const handleClickLogout = async () => {
         await logout();
-        window.location.href = '/auth';
+        router.push('/auth');
     };
     const handleClickAdmin = () => {
         router.push('admin');

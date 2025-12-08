@@ -371,7 +371,7 @@ export function ApplicationModal({
                             </p>
                         </div>
 
-                        <div className="bg-gray-50 rounded-lg p-4">
+                        {/* <div className="bg-gray-50 rounded-lg p-4">
                             <div className="flex items-start gap-2 mb-2">
                                 <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
                                 <p className="text-sm font-medium text-gray-700">
@@ -381,7 +381,7 @@ export function ApplicationModal({
                             <p className="text-gray-900 ml-7 whitespace-pre-wrap">
                                 {applicationItem.question || '-'}
                             </p>
-                        </div>
+                        </div> */}
 
                         <div className="bg-blue-50 rounded-lg p-4">
                             <div className="flex items-start gap-2 mb-2">
@@ -391,7 +391,9 @@ export function ApplicationModal({
                                 </p>
                             </div>
                             <p className="text-gray-900 ml-7 whitespace-pre-wrap">
-                                {applicationItem.unitName || '-'}
+                                {(applicationItem.assignedUnit &&
+                                    applicationItem.assignedUnit.name) ||
+                                    '-'}
                             </p>
                         </div>
 
@@ -409,7 +411,7 @@ export function ApplicationModal({
                             </p>
                         </div>
 
-                        <div className="bg-blue-50 rounded-lg p-4">
+                        {/* <div className="bg-blue-50 rounded-lg p-4">
                             <div className="flex items-start gap-2 mb-2">
                                 <UsersRound className="w-5 h-5 text-blue-600 mt-0.5" />
                                 <p className="text-sm font-medium text-gray-700">
@@ -419,7 +421,7 @@ export function ApplicationModal({
                             <p className="text-gray-900 ml-7 whitespace-pre-wrap">
                                 {applicationItem.toSend || '-'}
                             </p>
-                        </div>
+                        </div> */}
                     </div>
 
                     {showResponseModal && (

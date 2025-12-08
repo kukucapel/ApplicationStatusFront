@@ -72,6 +72,9 @@ export default function ShareClient() {
             setError(null);
             try {
                 const res = await getShareApplication(token);
+                if (!res) {
+                    setError(404);
+                }
                 document.title = `Заявка №${res.request.id}`;
                 setData(res);
             } catch {
@@ -95,11 +98,11 @@ export default function ShareClient() {
         const msg =
             error === 404
                 ? 'Срок действия ссылки истёк.'
-                : error === 500
-                ? ''
-                : 'Ссылка не найдена или истекла.';
+                : error == 500
+                ? 'Ссылка не найдена или истекла.'
+                : '';
 
-        return <>{msg}</>;
+        return <span className="text-2xl text-red-800">{msg}</span>;
     }
     const {
         request,
@@ -141,7 +144,7 @@ export default function ShareClient() {
                     }
                 >
                     <p className="whitespace-pre-wrap leading-relaxed text-[--ink-900]">
-                        {request.question || '—'}
+                        {request.theme || '—'}
                     </p>
                 </ShareSectionCard>
                 <ShareSectionCard title="Тип обращения">
