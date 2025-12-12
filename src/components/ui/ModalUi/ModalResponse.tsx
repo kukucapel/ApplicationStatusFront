@@ -49,7 +49,7 @@ export default function ModalResponse({
                                     type: 'invite',
                                 }));
                             }}
-                            className="px-2 py-1"
+                            className="px-2 py-2"
                         >
                             Приглашение
                         </Button>

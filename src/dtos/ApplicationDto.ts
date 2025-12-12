@@ -15,7 +15,7 @@ export interface ApplicationDetailDto {
   status: 'new' | 'in_progress' | 'completed' | 'closed';
   theme: string;
   toSend: string;
-  assignedUnit?: { id: number; name: string };
+  assignedUnit?: { id: number; name: string } | null;
   applicant: ApplicantDto;
   unitName: string;
 }

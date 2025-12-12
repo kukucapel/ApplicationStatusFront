@@ -1,7 +1,6 @@
 'use client';
 
 import ApplicationsList from './ApplicationsList';
-import FilterSideBar from './FilterSideBar';
 import CounterApplication from './CounterApplication';
 import { useEffect, useState } from 'react';
 import { useAppWS } from '@/lib/useAppWS';
