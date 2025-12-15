@@ -61,7 +61,6 @@ export default function ModalAdminEmployee({
     ) => {
         setError('');
         setSuccessfully('');
-        console.log(e.target.value);
         setForm({ ...form, [e.target.name]: e.target.value });
     };
     const handleSubmitChangeUnit = (
