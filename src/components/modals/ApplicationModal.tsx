@@ -323,6 +323,12 @@ export function ApplicationModal({
                             />
                             <ModalBodyBlockField
                                 typeStyle={2}
+                                nameField="Суть обращения"
+                                valueField={applicationItem.question || '-'}
+                                icon={FileText}
+                            />
+                            <ModalBodyBlockField
+                                typeStyle={2}
                                 nameField="Исполнительный орган"
                                 valueField={
                                     applicationItem.assignedUnit?.name || '-'
