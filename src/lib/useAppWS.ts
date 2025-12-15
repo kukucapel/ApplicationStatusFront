@@ -39,10 +39,6 @@ export function useAppWS(token: string | null) {
           setApplications(msg.payload.items);
           break;
 
-        case 'error':
-          console.error('Ошибка:', msg.payload);
-          break;
-
         case 'request:updated': {
           const { id } = msg.payload;
 

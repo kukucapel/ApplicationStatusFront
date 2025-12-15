@@ -41,6 +41,11 @@ import { Unit } from '@/dtos/AdminDto';
 import ModalUnitTree from './ModalUnitTree';
 import formatDate from '@/lib/formatDate';
 import { resolveMx } from 'dns';
+import Modal from '../ui/NewModalUi/Modal';
+import ModalBody from '../ui/NewModalUi/ModalBody';
+import ModalBodyBlock from '../ui/NewModalUi/ModalBodyBlock';
+import ModalBodyBlockField from '../ui/NewModalUi/ModalBodyBlockField';
+import ModalAlert from './ModalAlert';
 
 interface ApplicationModalProps {
     onClose: () => void;
@@ -70,12 +75,17 @@ export function ApplicationModal({
 
     const { user } = useUser();
 
+    const [alert, setAlert] = useState<string | null>(null);
+
     const onCloseResponseModal = () => {
         setShowResponseModal(false);
     };
     const onCloseUnitModal = () => {
         setShowUnitModal(false);
     };
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+    });
 
     const handleSubmitResponseModal = async (
         e: React.FormEvent,
@@ -178,14 +188,14 @@ export function ApplicationModal({
         } catch (error) {
         } finally {
             setUpdating(false);
+            setAlert(null);
         }
     };
 
     return (
         !loading &&
         applicationItem && (
-            <ModalMainBody>
-                {/* Хедер */}
+            <Modal>
                 <ModalHeader title="Детали заявки" onClose={onClose}>
                     <div className="text-gray-400-100 text-sm">
                         <p>
@@ -205,14 +215,19 @@ export function ApplicationModal({
                 </ModalHeader>
 
                 {/* Контент */}
-                <div className="p-6 space-y-6">
-                    <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
-                        <h3 className="text-sm font-semibold text-gray-700 mb-3">
-                            Текущий статус
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                            {['new', 'in_progress', 'completed', 'closed'].map(
-                                (status) => (
+                <div>
+                    <ModalBody>
+                        <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+                            <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                                Текущий статус
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                                {[
+                                    'new',
+                                    'in_progress',
+                                    'completed',
+                                    'closed',
+                                ].map((status) => (
                                     <button
                                         key={status}
                                         data-testid={`status-btn-${status}`}
@@ -220,11 +235,7 @@ export function ApplicationModal({
                                             updating ||
                                             application.status === status
                                         }
-                                        onClick={() =>
-                                            handleStatusChange(
-                                                status as UpdateApplicationStatusProps['new_status']
-                                            )
-                                        }
+                                        onClick={() => setAlert(status)}
                                         className={` ${
                                             application.status === status
                                                 ? status === 'new'
@@ -239,268 +250,189 @@ export function ApplicationModal({
                                     >
                                         {getStatusText(status)}
                                     </button>
-                                )
-                            )}
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                    <div className="flex justify-between">
-                        <Button
-                            styleColor="blue"
-                            onClick={() => setShowResponseModal(true)}
-                            className="py-1 flex-grow"
-                        >
-                            Создать ответ
-                        </Button>
-                        {user?.role !== 'worker' && (
+                        <div className="flex justify-between">
                             <Button
                                 styleColor="blue"
-                                className="py-1 w-[50%]"
-                                onClick={() => setShowUnitModal(true)}
+                                onClick={() => setShowResponseModal(true)}
+                                className="py-2 flex-grow"
                             >
-                                Назначить исполнителя
+                                Создать ответ
                             </Button>
-                        )}
-                    </div>
-                    {/* Инфа о человеке */}
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
-                            Информация о заявителе
-                        </h3>
-                        <div className="grid sm:grid-cols-2 gap-4">
-                            <div className="flex items-start gap-3">
-                                <User className="w-5 h-5 text-blue-600 mt-0.5" />
-                                <div>
-                                    <p className="text-sm text-gray-600">ФИО</p>
-                                    <p className="font-medium text-gray-900">
-                                        {applicationItem.applicant.fio || '-'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start gap-3">
-                                <Mail className="w-5 h-5 text-blue-600 mt-0.5" />
-                                <div>
-                                    <p className="text-sm text-gray-600">
-                                        Email
-                                    </p>
-                                    <p className="font-medium text-gray-900">
-                                        {applicationItem.applicant.email || '-'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start gap-3">
-                                <Phone className="w-5 h-5 text-blue-600 mt-0.5" />
-                                <div>
-                                    <p className="text-sm text-gray-600">
-                                        Телефон
-                                    </p>
-                                    <p className="font-medium text-gray-900">
-                                        {applicationItem.applicant.phone || '-'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start gap-3">
-                                <MapPinHouse className="w-5 h-5 text-blue-600 mt-0.5" />
-                                <div>
-                                    <p className="text-sm text-gray-600">
-                                        Адрес регистрации
-                                    </p>
-                                    <p className="font-medium text-gray-900">
-                                        {applicationItem.applicant.address1 ||
-                                            '-'}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <MapPinHouse className="w-5 h-5 text-blue-600 mt-0.5" />
-                                <div>
-                                    <p className="text-sm text-gray-600">
-                                        Адрес проживания
-                                    </p>
-                                    <p className="font-medium text-gray-900">
-                                        {applicationItem.applicant.address2 ||
-                                            '-'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start gap-3">
-                                <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
-                                <div>
-                                    <p className="text-sm text-gray-600">
-                                        Индекс регистрации
-                                    </p>
-                                    <p className="font-medium text-gray-900">
-                                        {applicationItem.applicant
-                                            .postalCode1 || '-'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start gap-3">
-                                <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
-                                <div>
-                                    <p className="text-sm text-gray-600">
-                                        Индекс проживания
-                                    </p>
-                                    <p className="font-medium text-gray-900">
-                                        {applicationItem.applicant
-                                            .postalCode2 || '-'}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Заявка */}
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center justify-between border-b pb-2">
-                            Детали обращения
-                        </h3>
-                        <div className="bg-blue-50 rounded-lg p-4">
-                            <div className="flex items-start gap-2 mb-2">
-                                <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
-                                <p className="text-sm font-medium text-gray-700">
-                                    Тема
-                                </p>
-                            </div>
-                            <p className="text-gray-900 ml-7">
-                                {applicationItem.theme || '-'}
-                            </p>
-                        </div>
-
-                        {/* <div className="bg-gray-50 rounded-lg p-4">
-                            <div className="flex items-start gap-2 mb-2">
-                                <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
-                                <p className="text-sm font-medium text-gray-700">
-                                    Детали запроса
-                                </p>
-                            </div>
-                            <p className="text-gray-900 ml-7 whitespace-pre-wrap">
-                                {applicationItem.question || '-'}
-                            </p>
-                        </div> */}
-
-                        <div className="bg-blue-50 rounded-lg p-4">
-                            <div className="flex items-start gap-2 mb-2">
-                                <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
-                                <p className="text-sm font-medium text-gray-700">
-                                    Исполнительный орган
-                                </p>
-                            </div>
-                            <p className="text-gray-900 ml-7 whitespace-pre-wrap">
-                                {(applicationItem.assignedUnit &&
-                                    applicationItem.assignedUnit.name) ||
-                                    '-'}
-                            </p>
-                        </div>
-
-                        <div className="bg-gray-50 rounded-lg p-4">
-                            <div className="flex items-start gap-2 mb-2">
-                                <UserPen className="w-5 h-5 text-blue-600 mt-0.5" />
-                                <p className="text-sm font-medium text-gray-700">
-                                    Исполнитель
-                                </p>
-                            </div>
-                            <p className="text-gray-900 ml-7 whitespace-pre-wrap">
-                                {applicationItem.assignedEmployee
-                                    ? applicationItem.assignedEmployee.fio
-                                    : '-'}
-                            </p>
-                        </div>
-
-                        {/* <div className="bg-blue-50 rounded-lg p-4">
-                            <div className="flex items-start gap-2 mb-2">
-                                <UsersRound className="w-5 h-5 text-blue-600 mt-0.5" />
-                                <p className="text-sm font-medium text-gray-700">
-                                    К кому обращение
-                                </p>
-                            </div>
-                            <p className="text-gray-900 ml-7 whitespace-pre-wrap">
-                                {applicationItem.toSend || '-'}
-                            </p>
-                        </div> */}
-                    </div>
-
-                    {showResponseModal && (
-                        <ModalResponse
-                            handleSubmit={handleSubmitResponseModal}
-                            onClose={onCloseResponseModal}
-                        />
-                    )}
-                    {showUnitModal && unit && (
-                        <ModalUnitTree
-                            selectedNow={applicationItem.assignedUnitId || 0}
-                            unitTree={unit}
-                            handleSubmit={handleSubmitUnit}
-                            onClose={onCloseUnitModal}
-                        />
-                    )}
-
-                    {/* Ответы */}
-                    {sortedResponseItems?.length !== 0 && (
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold flex items-end justify-between text-gray-900 border-b pb-2">
-                                Ответы
-                                {sortedResponseItems.length !== 1 && (
-                                    <div
-                                        className="flex cursor-pointer items-center"
-                                        onClick={() =>
-                                            setSortResponsesFlag(
-                                                (prev) => !prev
-                                            )
-                                        }
-                                    >
-                                        {sortResponsesFlag ? (
-                                            <CalendarArrowDown className="w-8 mt-0.5 hover:scale-125 transition-all duration-150" />
-                                        ) : (
-                                            <CalendarArrowUp className="w-8 mt-0.5 hover:scale-125 transition-all duration-150" />
-                                        )}
-                                    </div>
-                                )}
-                            </h3>
-
-                            {sortedResponseItems?.map((res) => (
-                                <div
-                                    className={`${
-                                        res.type === 'invite_yes'
-                                            ? 'bg-green-50'
-                                            : res.type === 'invite_no'
-                                            ? 'bg-red-50'
-                                            : res.type === 'invite'
-                                            ? 'bg-orange-50'
-                                            : 'bg-blue-50'
-                                    } rounded-lg p-4`}
-                                    key={res.id}
+                            {user?.role !== 'worker' && (
+                                <Button
+                                    styleColor="blue"
+                                    className="py-2 w-[50%]"
+                                    onClick={() => setShowUnitModal(true)}
                                 >
-                                    <div className="flex items-start justify-between gap-2 mb-2">
-                                        <div className="flex items-start gap-2">
-                                            <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
+                                    Назначить исполнителя
+                                </Button>
+                            )}
+                        </div>
+
+                        <ModalBodyBlock title="Информация о заявителе">
+                            <ModalBodyBlockField
+                                nameField="ФИО"
+                                valueField={applicationItem.applicant.fio}
+                                icon={User}
+                            />
+
+                            <ModalBodyBlockField
+                                nameField="Email"
+                                valueField={applicationItem.applicant.email}
+                                icon={Mail}
+                            />
+                            <ModalBodyBlockField
+                                nameField="Телефон"
+                                valueField={applicationItem.applicant.phone}
+                                icon={Phone}
+                            />
+                            <ModalBodyBlockField
+                                nameField="Адрес регистрации"
+                                valueField={applicationItem.applicant.address1}
+                                icon={MapPin}
+                            />
+                            <ModalBodyBlockField
+                                nameField="Адрес проживания"
+                                valueField={applicationItem.applicant.address2}
+                                icon={MapPin}
+                            />
+                            <ModalBodyBlockField
+                                nameField="Индекс регистрации"
+                                valueField={
+                                    applicationItem.applicant.postalCode1 || '-'
+                                }
+                                icon={FileText}
+                            />
+                            <ModalBodyBlockField
+                                nameField="Индекс проживания"
+                                valueField={
+                                    applicationItem.applicant.postalCode2 || '-'
+                                }
+                                icon={FileText}
+                            />
+                        </ModalBodyBlock>
+                        <ModalBodyBlock typeStyle={2} title="Детали обращения">
+                            <ModalBodyBlockField
+                                typeStyle={2}
+                                nameField="Тема"
+                                valueField={applicationItem.theme || '-'}
+                                icon={FileText}
+                            />
+                            <ModalBodyBlockField
+                                typeStyle={2}
+                                nameField="Суть обращения"
+                                valueField={applicationItem.question || '-'}
+                                icon={FileText}
+                            />
+                            <ModalBodyBlockField
+                                typeStyle={2}
+                                nameField="Исполнительный орган"
+                                valueField={
+                                    applicationItem.assignedUnit?.name || '-'
+                                }
+                                icon={FileText}
+                                bgColor="g"
+                            />
+                            <ModalBodyBlockField
+                                typeStyle={2}
+                                nameField="Исполнитель"
+                                valueField={
+                                    applicationItem.assignedEmployee?.fio || '-'
+                                }
+                                icon={UserPen}
+                            />
+                        </ModalBodyBlock>
+                        {/* Ответы */}
+                        {sortedResponseItems?.length !== 0 && (
+                            <div className="space-y-4">
+                                <h3 className="text-lg font-semibold flex items-end justify-between text-gray-900 border-b pb-2">
+                                    Ответы
+                                    {sortedResponseItems.length !== 1 && (
+                                        <div
+                                            className="flex cursor-pointer items-center"
+                                            onClick={() =>
+                                                setSortResponsesFlag(
+                                                    (prev) => !prev
+                                                )
+                                            }
+                                        >
+                                            {sortResponsesFlag ? (
+                                                <CalendarArrowDown className="w-8 mt-0.5 hover:scale-125 transition-all duration-150" />
+                                            ) : (
+                                                <CalendarArrowUp className="w-8 mt-0.5 hover:scale-125 transition-all duration-150" />
+                                            )}
+                                        </div>
+                                    )}
+                                </h3>
+
+                                {sortedResponseItems?.map((res) => (
+                                    <div
+                                        className={`${
+                                            res.type === 'invite_yes'
+                                                ? 'bg-green-50'
+                                                : res.type === 'invite_no'
+                                                ? 'bg-red-50'
+                                                : res.type === 'invite'
+                                                ? 'bg-orange-50'
+                                                : 'bg-blue-50'
+                                        } rounded-lg p-4`}
+                                        key={res.id}
+                                    >
+                                        <div className="flex items-start justify-between gap-2 mb-2">
+                                            <div className="flex items-start gap-2">
+                                                <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
+                                                <p className="text-sm font-medium text-gray-700">
+                                                    Ответ
+                                                </p>
+                                            </div>
                                             <p className="text-sm font-medium text-gray-700">
-                                                Ответ
+                                                {'Cоздан: '}
+                                                {formatDate(res.created_at)}
                                             </p>
                                         </div>
-                                        <p className="text-sm font-medium text-gray-700">
-                                            {'Cоздан: '}
-                                            {formatDate(res.created_at)}
+                                        <p className=" ml-7 whitespace-pre-wrap">
+                                            {'Ответчик: '}
+                                            {(res.author && res.author.fio) ||
+                                                'Заявитель'}
+                                        </p>
+                                        <p className="text-gray-900 ml-7 mt-4 whitespace-pre-wrap">
+                                            {res.comment}
                                         </p>
                                     </div>
-                                    <p className=" ml-7 whitespace-pre-wrap">
-                                        {'Ответчик: '}
-                                        {(res.author && res.author.fio) ||
-                                            'Заявитель'}
-                                    </p>
-                                    <p className="text-gray-900 ml-7 mt-4 whitespace-pre-wrap">
-                                        {res.comment}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                                ))}
+                            </div>
+                        )}
+                    </ModalBody>
                 </div>
-            </ModalMainBody>
+
+                {showResponseModal && (
+                    <ModalResponse
+                        handleSubmit={handleSubmitResponseModal}
+                        onClose={onCloseResponseModal}
+                    />
+                )}
+                {showUnitModal && unit && (
+                    <ModalUnitTree
+                        selectedNow={applicationItem.assignedUnitId || 0}
+                        unitTree={unit}
+                        handleSubmit={handleSubmitUnit}
+                        onClose={onCloseUnitModal}
+                    />
+                )}
+                {alert && (
+                    <ModalAlert
+                        onClose={() => setAlert(null)}
+                        handleSubmit={() =>
+                            handleStatusChange(
+                                alert as UpdateApplicationStatusProps['new_status']
+                            )
+                        }
+                    />
+                )}
+            </Modal>
         )
     );
 }

@@ -9,12 +9,12 @@ export default function Auth() {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-sky-50 p-4">
             <div className="w-full max-w-md">
                 {/* Логотип плюс надпись */}
-                <Logo className="text-center mb-8" />
+                <Logo typeLogo={3} className="text-center mb-8" />
                 {/* Блок аутентификации с возможностью подключения регистрации */}
                 <AuthBlock>
                     <AuthLogin />
                 </AuthBlock>
-                <p className="text-center text-sm text-gray-600 mt-6">
+                <p className="text-center text-sm select-none text-gray-600 mt-6">
                     Автоматизированная система обработки заявок
                 </p>
             </div>
