@@ -221,7 +221,7 @@ export default function ApplicationsList({
                                                 </span>{' '}
                                                 {app.theme}
                                             </p>
-                                            <p className="text-sm text-gray-500 truncate">
+                                            <p className="text-sm text-gray-500 line-clamp-2">
                                                 {app.question}
                                             </p>
                                         </div>
