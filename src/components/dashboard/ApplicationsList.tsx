@@ -46,29 +46,6 @@ export default function ApplicationsList({
             filtered = filtered.filter((app) => app.status === 'in_progress');
         }
 
-        // Filter by status
-        if (filters.status !== 'all') {
-            filtered = filtered.filter((app) => app.status === filters.status);
-        }
-
-        // Filter by recipient
-        if (filters.recipient !== 'all') {
-            filtered = filtered.filter(
-                (app) => app.recipient === filters.recipient
-            );
-        }
-
-        // Search filter
-        if (filters.search) {
-            const searchLower = filters.search.toLowerCase();
-            filtered = filtered.filter(
-                (app) =>
-                    app.full_name.toLowerCase().includes(searchLower) ||
-                    app.subject.toLowerCase().includes(searchLower) ||
-                    app.description.toLowerCase().includes(searchLower)
-            );
-        }
-
         filtered.sort((a, b) => {
             const dateA = new Date(a.createdAt).getTime();
             const dateB = new Date(b.createdAt).getTime();
@@ -76,7 +53,7 @@ export default function ApplicationsList({
         });
 
         setFilteredApplications(filtered as any);
-    }, [applications, activeTab, filters, connected, sortByNewest]);
+    }, [applications, activeTab, connected, sortByNewest]);
 
     type StatusKey = 'new' | 'in_progress' | 'completed' | 'closed';
 

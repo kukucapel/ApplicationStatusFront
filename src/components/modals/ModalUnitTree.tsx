@@ -65,7 +65,7 @@ function TreeNode({
                     }
                 }}
             >
-                {!hasChildren && (
+                {hasChildren && (
                     <span className="hover:scale-110 rounded-md transition-all duration-150 mr-1 cursor-pointer">
                         {!expanded ? (
                             <ChevronRight

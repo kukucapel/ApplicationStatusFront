@@ -34,7 +34,12 @@ export default function AuthLogin() {
 
             window.location.href = 'dashboard';
         } catch (error: any) {
-            setError('Неправильный логин или пароль');
+            console.log(error);
+            if (error === 'Internal Server Error') {
+                setError('Сервер недоступен');
+            } else {
+                setError('Неправильный логин или пароль');
+            }
         } finally {
             setLoading(false);
         }
