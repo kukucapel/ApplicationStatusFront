@@ -22,7 +22,10 @@ export interface Role {
   name?: string;
   updated_at?: string;
 }
-
+export interface RoleUpdate {
+  description?: string;
+  name?: string;
+}
 export interface Unit {
   id: number;
   unit_name: string;

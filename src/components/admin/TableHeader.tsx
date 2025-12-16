@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus, Edit, Search } from 'lucide-react';
+import { Plus, Edit, Search, Trash } from 'lucide-react';
 
 interface TableHeaderProps {
     title: string;
@@ -10,6 +10,8 @@ interface TableHeaderProps {
     onClickSearch: () => void;
     editMode: boolean;
     onClickEdit: () => void;
+    deleteMode: boolean;
+    onClickDelete: () => void;
 }
 export default function TableHeader({
     title,
@@ -19,6 +21,8 @@ export default function TableHeader({
     onClickEdit,
     searchMode,
     onClickSearch,
+    deleteMode,
+    onClickDelete,
 }: TableHeaderProps) {
     return (
         <div className="flex items-end justify-between mb-4 px-6">
@@ -51,6 +55,18 @@ export default function TableHeader({
                         onClick={onClickEdit}
                     >
                         <Edit className="w-5" />
+                    </div>
+                )}
+                {role === 'admin' && (
+                    <div
+                        className={`p-1 border rounded-md duration-150 cursor-pointer ${
+                            deleteMode
+                                ? 'bg-blue-600 border border-blue-600 text-white'
+                                : 'bg-white border border-gray-300 hover:bg-gray-100 '
+                        }`}
+                        onClick={onClickDelete}
+                    >
+                        <Trash className="w-5" />
                     </div>
                 )}
             </div>

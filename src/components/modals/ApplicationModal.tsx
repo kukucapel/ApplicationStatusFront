@@ -45,7 +45,7 @@ import Modal from '../ui/NewModalUi/Modal';
 import ModalBody from '../ui/NewModalUi/ModalBody';
 import ModalBodyBlock from '../ui/NewModalUi/ModalBodyBlock';
 import ModalBodyBlockField from '../ui/NewModalUi/ModalBodyBlockField';
-import ModalAlert from './ModalAlert';
+import ModalSubmit from './ModalSubmit';
 
 interface ApplicationModalProps {
     onClose: () => void;
@@ -423,7 +423,7 @@ export function ApplicationModal({
                     />
                 )}
                 {alert && (
-                    <ModalAlert
+                    <ModalSubmit
                         onClose={() => setAlert(null)}
                         handleSubmit={() =>
                             handleStatusChange(

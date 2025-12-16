@@ -46,7 +46,9 @@ export default function TableHeader({
     };
 
     return (
-        <div className="grid grid-cols-5 gap-2 font-semibold text-gray-700 border-b border-gray-300 pb-2 mb-2 mx-1">
+        <div
+            className={`grid grid-cols-${HEADER.length} gap-2 font-semibold text-gray-700 border-b border-gray-300 pb-2 mb-2 mx-1`}
+        >
             {HEADER.map(([title, key], index) => (
                 <div
                     className={`flex items-center w-full gap-1 select-none`}

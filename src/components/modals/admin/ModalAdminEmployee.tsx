@@ -89,6 +89,7 @@ export default function ModalAdminEmployee({
                     : await addEmployee(form);
             await loadEmployees();
             setSuccessfully('Успешно сохранено');
+            setModalIsActive();
         } catch {
             setError('Не удалось сохранить');
         } finally {

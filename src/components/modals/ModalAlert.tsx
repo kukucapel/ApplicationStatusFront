@@ -4,30 +4,44 @@ import Button from '../ui/Button';
 
 interface ModalAlertProps {
     onClose: () => void;
-    handleSubmit: () => Promise<void>;
+    title?: string;
+    subTitle: string;
 }
 
-export default function ModalAlert({ onClose, handleSubmit }: ModalAlertProps) {
+export default function ModalAlert({
+    onClose,
+    title,
+    subTitle,
+}: ModalAlertProps) {
     return (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-lg p-6 w-80">
-                <h2 className="text-lg font-semibold mb-4">Вы уверены?</h2>
-                <div className="flex justify-end gap-4">
-                    <Button
-                        styleColor="blue"
-                        className="px-9 py-2 "
-                        onClick={handleSubmit}
-                    >
-                        Да
-                    </Button>
-                    <Button
-                        styleColor="white"
-                        className="px-8 py-2"
-                        onClick={onClose}
-                    >
-                        Нет
-                    </Button>
-                </div>
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+            onClick={onClose}
+        >
+            <div className="relative w-80 rounded-2xl bg-white p-6 shadow-2xl animate-scaleIn">
+                <button
+                    onClick={onClose}
+                    className="absolute cursor-pointer right-3 top-3 text-gray-400 hover:text-gray-600 transition"
+                >
+                    ✕
+                </button>
+
+                {/* Заголовок */}
+                <h2 className="mb-2 text-xl font-semibold text-gray-900">
+                    {title || 'Предупреждение'}
+                </h2>
+
+                {/* Текст */}
+                <p className="mb-5 text-sm text-gray-600">{subTitle}</p>
+
+                {/* Действие */}
+                <Button
+                    styleColor="white"
+                    className="px-8 py-2"
+                    onClick={onClose}
+                >
+                    Понятно
+                </Button>
             </div>
         </div>
     );

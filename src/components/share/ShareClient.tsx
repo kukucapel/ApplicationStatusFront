@@ -46,14 +46,12 @@ export default function ShareClient() {
             const res = await setShareRating(id, score, token);
             setModalInvite(null);
             setData((prev) => {
-                if (!prev || !prev.responses) return prev; // если данных нет — ничего не делаем
+                if (!prev || !prev.responses) return prev;
 
-                // создаём новую копию массива responses
                 const updatedResponses = prev.responses.map((res, i) =>
                     i === index ? { ...res, rating: score } : res
                 );
 
-                // возвращаем новый объект состояния
                 return { ...prev, responses: updatedResponses };
             });
         } catch {}
@@ -277,12 +275,16 @@ export default function ShareClient() {
                                         Загружено {formatDate(a.createdAt)}
                                     </div>
                                     <a
-                                        href={a.url}
+                                        href={a.url.split('\n')[1]}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-sm font-medium text-[color:var(--brand-700)] underline underline-offset-4 hover:opacity-80"
                                     >
-                                        Открыть документ
+                                        {
+                                            a.url
+                                                .split('\n')[0]
+                                                .split('Приложить файл: ')[1]
+                                        }
                                     </a>
                                 </li>
                             ))}

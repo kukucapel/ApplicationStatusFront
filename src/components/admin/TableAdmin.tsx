@@ -7,6 +7,7 @@ import { Employee, Role } from '@/dtos/AdminDto';
 import { adminData } from '@/lib/adminData';
 import { useUser } from '@/contexts/UserContext';
 import TableHeader from './TableHeader';
+import TableRoles from './TableRoles';
 
 interface TableAdminProps {
     page: number;
@@ -20,6 +21,7 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
     const [editMode, setEditMode] = useState<boolean>(
         user?.role === 'admin' && true
     );
+    const [deleteMode, setDeleteMode] = useState<boolean>(false);
     const [showAddModal, setShowAddModal] = useState<boolean>(false);
 
     const [employeeItems, setEmployeeItems] = useState<Employee[] | null>(null);
@@ -28,6 +30,10 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
     const loadEmployees = async function () {
         const employeeData = await adminData('/dispatcher/employees');
         setEmployeeItems(employeeData.items);
+    };
+    const loadRoles = async function () {
+        const roleData = await adminData('/admin/roles');
+        setRoleItems(roleData.items);
     };
 
     useEffect(() => {
@@ -49,13 +55,21 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
         <main className="flex-1">
             <div className="bg-white rounded-xl shadow-sm border p-6 border-gray-200">
                 <TableHeader
-                    title={MENU[0][0]}
+                    title={MENU[page][0]}
                     setShowAddModal={setShowAddModal}
                     role={user?.role}
                     searchMode={searchMode}
                     onClickSearch={() => setSearchMode((prev) => !prev)}
                     editMode={editMode}
-                    onClickEdit={() => setEditMode((prev) => !prev)}
+                    onClickEdit={() => {
+                        deleteMode && setDeleteMode(false);
+                        setEditMode((prev) => !prev);
+                    }}
+                    deleteMode={deleteMode}
+                    onClickDelete={() => {
+                        editMode && setEditMode(false);
+                        setDeleteMode((prev) => !prev);
+                    }}
                 />
 
                 <hr className="border-gray-300 mx-6 mb-6" />
@@ -67,8 +81,20 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
                         employeeItems={employeeItems}
                         searchMode={searchMode}
                         editMode={editMode}
+                        deleteMode={deleteMode}
                         page={MENU[page]}
                         loadEmployees={loadEmployees}
+                    />
+                ) : page === 1 && user?.role === 'admin' ? (
+                    <TableRoles
+                        deleteMode={deleteMode}
+                        showAddModal={showAddModal}
+                        setShowAddModal={setShowAddModal}
+                        roleItems={roleItems}
+                        searchMode={searchMode}
+                        editMode={editMode}
+                        page={MENU[page]}
+                        loadRoles={loadRoles}
                     />
                 ) : (
                     ''

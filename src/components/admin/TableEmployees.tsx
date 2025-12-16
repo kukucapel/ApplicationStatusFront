@@ -10,6 +10,7 @@ import ModalMainBody from '../ui/ModalUi/ModalMainBody';
 import ModalAdminMainBody from '../ui/ModalUi/ModalAdminMainBody';
 import ModalAdminEmployee from '../modals/admin/ModalAdminEmployee';
 import { useUser } from '@/contexts/UserContext';
+import { Trash2 } from 'lucide-react';
 
 interface TableProps {
     page: [string, string];
@@ -19,6 +20,7 @@ interface TableProps {
     roleItems: Role[] | null;
     loadEmployees: () => Promise<void>;
     showAddModal: boolean;
+    deleteMode: boolean;
     setShowAddModal: (newState: boolean) => void;
 }
 
@@ -38,6 +40,7 @@ export default function TableEmployees({
     roleItems = null,
     loadEmployees,
     showAddModal,
+    deleteMode,
     setShowAddModal,
 }: TableProps) {
     const [loading, setLoading] = useState<boolean>(true);
@@ -48,13 +51,12 @@ export default function TableEmployees({
 
     const { user } = useUser();
 
-    console.log(employeeItems);
-
     const handleFilterChange = (key: string, value: string) => {
         setFilters((prev) => ({ ...prev, [key]: value }));
     };
 
     useEffect(() => {
+        setShowAddModal(false);
         if (user?.role === 'admin') {
             if (employeeItems !== null && roleItems !== null) {
                 setLoading(false);
@@ -113,6 +115,7 @@ export default function TableEmployees({
             <div className="space-y-2">
                 {filtredAndSortedItems?.map((emp: Employee) => (
                     <TableRow
+                        deleteMode={deleteMode}
                         onClickTableModal={() => {
                             setModalIsActive(emp.id);
                             setModalEmployee(emp);
@@ -128,6 +131,15 @@ export default function TableEmployees({
                             <div>{emp.role || '-'}</div>
                             <div>{emp.unit_name || '-'}</div>
                         </div>
+                        {deleteMode && (
+                            <button
+                                onClick={() => {}}
+                                className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
+        "
+                            >
+                                <Trash2 size={18} />
+                            </button>
+                        )}
                     </TableRow>
                 ))}
             </div>
@@ -136,7 +148,10 @@ export default function TableEmployees({
                     roleItems={roleItems}
                     loadEmployees={loadEmployees}
                     employee={modalEmployee}
-                    setModalIsActive={() => setModalIsActive(null)}
+                    setModalIsActive={() => {
+                        setModalEmployee(null);
+                        setModalIsActive(null);
+                    }}
                 />
             )}
             {showAddModal && (
@@ -144,7 +159,10 @@ export default function TableEmployees({
                     roleItems={roleItems}
                     loadEmployees={loadEmployees}
                     employee={modalEmployee}
-                    setModalIsActive={() => setShowAddModal(false)}
+                    setModalIsActive={() => {
+                        setModalEmployee(null);
+                        setShowAddModal(false);
+                    }}
                 />
             )}
         </div>
