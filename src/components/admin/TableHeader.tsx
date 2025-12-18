@@ -61,7 +61,7 @@ export default function TableHeader({
                     <div
                         className={`p-1 border rounded-md duration-150 cursor-pointer ${
                             deleteMode
-                                ? 'bg-blue-600 border border-blue-600 text-white'
+                                ? 'bg-red-600 border border-red-600 text-white'
                                 : 'bg-white border border-gray-300 hover:bg-gray-100 '
                         }`}
                         onClick={onClickDelete}

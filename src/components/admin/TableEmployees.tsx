@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Employee, Role } from '@/dtos/AdminDto';
-import { adminData } from '@/lib/adminData';
+import { adminData, deleteEmployee } from '@/lib/adminData';
 import TableRow from '../ui/Table/TableRow';
 import TableHeader from '../ui/Table/TableHeader';
 import { useMemo } from 'react';
@@ -11,6 +11,7 @@ import ModalAdminMainBody from '../ui/ModalUi/ModalAdminMainBody';
 import ModalAdminEmployee from '../modals/admin/ModalAdminEmployee';
 import { useUser } from '@/contexts/UserContext';
 import { Trash2 } from 'lucide-react';
+import ModalSubmit from '../modals/ModalSubmit';
 
 interface TableProps {
     page: [string, string];
@@ -48,8 +49,15 @@ export default function TableEmployees({
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [modalIsActive, setModalIsActive] = useState<number | null>(null);
     const [modalEmployee, setModalEmployee] = useState<Employee | null>(null);
+    const [modalSubmit, setModalSubmit] = useState<number | null>(null);
 
     const { user } = useUser();
+
+    const handleDelete = async (id: number) => {
+        await deleteEmployee(id);
+        setModalSubmit(null);
+        await loadEmployees();
+    };
 
     const handleFilterChange = (key: string, value: string) => {
         setFilters((prev) => ({ ...prev, [key]: value }));
@@ -124,7 +132,7 @@ export default function TableEmployees({
                         key={emp.id}
                         id={emp.id}
                     >
-                        <div className="grid grid-cols-5 gap-4">
+                        <div className="grid grid-cols-[60px_1fr_1fr_1fr_1fr] gap-4">
                             <div>{emp.id}</div>
                             <div>{emp.fio || '-'}</div>
                             <div>{emp.email}</div>
@@ -133,7 +141,9 @@ export default function TableEmployees({
                         </div>
                         {deleteMode && (
                             <button
-                                onClick={() => {}}
+                                onClick={() => {
+                                    setModalSubmit(emp.id);
+                                }}
                                 className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
         "
                             >
@@ -154,6 +164,7 @@ export default function TableEmployees({
                     }}
                 />
             )}
+            {}
             {showAddModal && (
                 <ModalAdminEmployee
                     roleItems={roleItems}
@@ -163,6 +174,12 @@ export default function TableEmployees({
                         setModalEmployee(null);
                         setShowAddModal(false);
                     }}
+                />
+            )}
+            {modalSubmit && (
+                <ModalSubmit
+                    handleSubmit={() => handleDelete(modalSubmit)}
+                    onClose={() => setModalSubmit(null)}
                 />
             )}
         </div>

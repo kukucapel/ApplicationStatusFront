@@ -28,13 +28,11 @@ export async function addEmployee(data: EmployeeUpdate) {
     },
   });
 }
-export async function removeEmployee(id: number) {
+export async function deleteEmployee(id: number) {
   return await apiRequest(`/admin/employees/${id}`, {
     method: 'DELETE',
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    body: '1',
   });
 }
 
@@ -62,8 +60,6 @@ export async function deleteRole(id: number) {
   return await apiRequest(`/admin/roles/${id}`, {
     method: 'DELETE',
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    body: '1',
   });
 }

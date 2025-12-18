@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Role } from '@/dtos/AdminDto';
-import { adminData } from '@/lib/adminData';
+import { adminData, deleteRole } from '@/lib/adminData';
 import TableRow from '../ui/Table/TableRow';
 import TableHeader from '../ui/Table/TableHeader';
 import { useMemo } from 'react';
@@ -11,6 +11,8 @@ import ModalAdminMainBody from '../ui/ModalUi/ModalAdminMainBody';
 import ModalAdminEmployee from '../modals/admin/ModalAdminEmployee';
 import { useUser } from '@/contexts/UserContext';
 import ModalAdminRoles from '../modals/admin/ModalAdminRoles';
+import { Trash2 } from 'lucide-react';
+import ModalSubmit from '../modals/ModalSubmit';
 
 interface TableProps {
     page: [string, string];
@@ -42,7 +44,14 @@ export default function TableRoles({
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [modalIsActive, setModalIsActive] = useState<number | null>(null);
     const [modalRole, setModalRole] = useState<Role | null>(null);
+    const [modalSubmit, setModalSubmit] = useState<number | null>(null);
     const { user } = useUser();
+
+    const handleDelete = async (id: number) => {
+        await deleteRole(id);
+        setModalSubmit(null);
+        await loadRoles();
+    };
 
     const handleFilterChange = (key: string, value: string) => {
         setFilters((prev) => ({ ...prev, [key]: value }));
@@ -111,11 +120,23 @@ export default function TableRoles({
                         key={role.id}
                         id={role.id}
                     >
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-[60px_1fr_1fr] gap-4">
                             <div>{role.id}</div>
                             <div>{role.name || '-'}</div>
                             <div>{role.description || '-'}</div>
                         </div>
+
+                        {deleteMode && (
+                            <button
+                                onClick={() => {
+                                    setModalSubmit(role.id);
+                                }}
+                                className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
+        "
+                            >
+                                <Trash2 size={18} />
+                            </button>
+                        )}
                     </TableRow>
                 ))}
             </div>
@@ -137,6 +158,12 @@ export default function TableRoles({
                         setModalRole(null);
                         setShowAddModal(false);
                     }}
+                />
+            )}
+            {modalSubmit && (
+                <ModalSubmit
+                    handleSubmit={() => handleDelete(modalSubmit)}
+                    onClose={() => setModalSubmit(null)}
                 />
             )}
         </div>

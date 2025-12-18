@@ -45,9 +45,12 @@ export default function TableHeader({
         }
     };
 
+    const gridTemplateColumns = `50px ${'1fr '.repeat(HEADER.length - 1)}`;
+
     return (
         <div
-            className={`grid grid-cols-${HEADER.length} gap-2 font-semibold text-gray-700 border-b border-gray-300 pb-2 mb-2 mx-1`}
+            className={`grid gap-2 font-semibold text-gray-700 border-b border-gray-300 pb-2 mb-2 mx-1`}
+            style={{ gridTemplateColumns }}
         >
             {HEADER.map(([title, key], index) => (
                 <div
