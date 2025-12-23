@@ -225,17 +225,17 @@ export default function CreateApplicationModal({
                 {/* Footer */}
                 <div className="flex gap-3 pt-4 border-t">
                     <Button
+                        styleColor="blue"
+                        className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    >
+                        {loading ? 'Создание...' : 'Создать заявку'}
+                    </Button>
+                    <Button
                         onClick={onClose}
                         styleColor="blue"
                         className="flex-1 py-2 hover:bg-blue-700"
                     >
                         Отмена
-                    </Button>
-                    <Button
-                        styleColor="blue"
-                        className="flex-1 bg-blue-600 hover:bg-blue-700"
-                    >
-                        {loading ? 'Создание...' : 'Создать заявку'}
                     </Button>
                 </div>
             </form>

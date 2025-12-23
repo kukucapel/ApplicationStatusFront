@@ -7,6 +7,7 @@ import { CalendarArrowDown, CalendarArrowUp } from 'lucide-react';
 import { useUser } from '@/contexts/UserContext';
 import formatDate from '@/lib/formatDate';
 import FilterSideBar from './FilterSideBar';
+import CreateApplicationModal from '../modals/CreateApplicationModal';
 
 interface ApplicationsListProps {
     applications: any[];
@@ -29,6 +30,9 @@ export default function ApplicationsList({
     });
     const [sortByNewest, setSortByNewest] = useState<boolean>(true);
     const { user } = useUser();
+    const [createModal, setCreateModal] = useState<boolean>(false);
+
+    const handleSubmitCreateModal = () => {};
 
     // console.log(applications);
 
@@ -104,6 +108,7 @@ export default function ApplicationsList({
     return (
         <div className="flex flex-col lg:flex-row gap-6">
             <FilterSideBar
+                setCreateModal={() => setCreateModal(true)}
                 uniqueToSend={[
                     ...new Set(applications.map((app) => app.toSend)),
                 ]}
@@ -310,6 +315,12 @@ export default function ApplicationsList({
                         )}
                     </div>
                 </div>
+                {createModal && (
+                    <CreateApplicationModal
+                        handleSubmit={handleSubmitCreateModal}
+                        onClose={() => setCreateModal(false)}
+                    />
+                )}
             </main>
         </div>
     );

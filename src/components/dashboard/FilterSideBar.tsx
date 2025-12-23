@@ -14,6 +14,7 @@ interface FilterSideBarProps {
     countApp: number;
     setActiveTab: (newState: string) => void;
     uniqueToSend: string[];
+    setCreateModal: () => void;
 }
 
 export default function FilterSideBar({
@@ -22,6 +23,7 @@ export default function FilterSideBar({
     setActiveTab,
     uniqueToSend,
     countApp,
+    setCreateModal,
 }: FilterSideBarProps) {
     return (
         <aside className="lg:w-64 space-y-4">
@@ -130,6 +132,13 @@ export default function FilterSideBar({
                     )}
                 </div>
             </div>
+            <Button
+                styleColor="blue"
+                onClick={setCreateModal}
+                className="w-[100%] py-2"
+            >
+                Создать заявку
+            </Button>
         </aside>
     );
 }
