@@ -338,6 +338,13 @@ export function ApplicationModal({
                             />
                             <ModalBodyBlockField
                                 typeStyle={2}
+                                nameField="К кому приём"
+                                valueField={applicationItem.toSend || '-'}
+                                icon={FileText}
+                                bgColor="g"
+                            />
+                            <ModalBodyBlockField
+                                typeStyle={2}
                                 nameField="Исполнитель"
                                 valueField={
                                     applicationItem.assignedEmployee?.fio || '-'
