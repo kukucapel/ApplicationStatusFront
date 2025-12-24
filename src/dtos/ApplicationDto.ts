@@ -6,7 +6,10 @@ export interface ApplicationDetailDto {
   createdAt: string;
   updatedAt: string;
   toPosition: {
-    //тут employee {}
+    employee: {
+      fio: string;
+      login: string;
+    };
     id: number;
     kind: string;
     title: {
@@ -16,7 +19,7 @@ export interface ApplicationDetailDto {
     };
     unit: {
       id: number;
-      name: string;
+      unit_name: string;
       path: string;
     } | null;
   };
