@@ -6,13 +6,6 @@ import { useEffect, useState } from 'react';
 import LeftMenu from '@/components/admin/LeftMenu';
 import TableAdmin from '@/components/admin/TableAdmin';
 
-const MENU: [string, string][] = [
-    ['Соотрудники', 'employees'],
-    // ['Роли', 'roles'],
-    // ['Структура', 'units/?as=tree'],
-    // ['Оценки', 'raitings'],
-];
-
 export default function Admin() {
     const { user, loading } = useUser();
     const router = useRouter();
@@ -23,7 +16,13 @@ export default function Admin() {
         if (!loading && user?.role === 'worker') router.push('dashboard');
     }, [user, router, loading]);
 
-    if (user?.role === 'worker') {
+    const MENU: [string, string][] = [
+        ['Соотрудники', 'employees'],
+        // ['Структура', 'units/?as=tree'],
+        // ['Оценки', 'raitings'],
+    ];
+    if (user?.role === 'admin') MENU.push(['Роли', 'roles']);
+    if (user?.role !== 'admin') {
         return;
     } else {
         return (

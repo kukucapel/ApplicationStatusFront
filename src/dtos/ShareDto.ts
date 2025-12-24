@@ -3,42 +3,57 @@ export interface ShareRequestDto {
   theme: string;
   question: string;
   status: string;
-  toSend: string;
-  createdAt: string;
-  updatedAt: string;
-  assignedUnitId: number | null;
-  unitName: string | null;
+  created_at: string;
+  updated_at: string;
+  expires_at: string;
+  to_position: {
+    id: number;
+    title: {
+      id: number;
+      name: string;
+      kind: string;
+    };
+    employee: {
+      id: number;
+      fio: string;
+    };
+    unit: {
+      id: number;
+      unit_name: string;
+      path: string;
+    };
+  };
 }
 
 export interface ShareResponseDto {
   id: number;
-  authorId: number;
+  author_user_id: number;
   comment: string;
   type: string;
   rating: number | null;
-  createdAt: string;
+  created_at: string;
 }
 
 export interface ShareAttachmentsDto {
   id: number;
   url: string;
-  responseId: number | null;
-  createdAt: string;
+  response_id: number | null;
+  created_at: string;
 }
 
 export interface ShareHistoryDto {
   id: number;
-  oldStatus: string | null;
-  newStatus: string | null;
-  oldUnitId: number | null;
-  newUnitId: number | null;
+  old_status: string | null;
+  new_status: string | null;
+  old_unitId: number | null;
+  new_unitId: number | null;
   type:
     | 'status_changed'
     | 'assignment_changed'
     | 'response_created'
     | 'attachment_uploaded'
     | null;
-  createdAt: string;
+  created_at: string;
 }
 
 export interface ShareApplicationDto {
@@ -46,5 +61,5 @@ export interface ShareApplicationDto {
   responses: [] | ShareResponseDto[];
   attachments: [] | ShareAttachmentsDto[];
   history: [] | ShareHistoryDto[];
-  expiresAt: any;
+  expires_at: any;
 }

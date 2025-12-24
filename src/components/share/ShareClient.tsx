@@ -46,14 +46,12 @@ export default function ShareClient() {
             const res = await setShareRating(id, score, token);
             setModalInvite(null);
             setData((prev) => {
-                if (!prev || !prev.responses) return prev; // если данных нет — ничего не делаем
+                if (!prev || !prev.responses) return prev;
 
-                // создаём новую копию массива responses
                 const updatedResponses = prev.responses.map((res, i) =>
                     i === index ? { ...res, rating: score } : res
                 );
 
-                // возвращаем новый объект состояния
                 return { ...prev, responses: updatedResponses };
             });
         } catch {}
@@ -107,7 +105,7 @@ export default function ShareClient() {
     const {
         request,
         history,
-        expiresAt,
+        expires_at,
         responses = [],
         attachments = [],
     } = data;
@@ -119,16 +117,16 @@ export default function ShareClient() {
                     {request.theme}
                 </h1>
                 <div className="text-sm text-[--ink-700]">
-                    №{request.id} • создано {formatDate(request.createdAt)}
-                    {request.unitName ? (
-                        <> • ведомство: {request.unitName}</>
+                    №{request.id} • создано {formatDate(request.created_at)}
+                    {request.to_position.unit.unit_name ? (
+                        <> • {request.to_position.unit.unit_name}</>
                     ) : null}
                 </div>
                 <div className="flex flex-wrap items-center gap-2 mt-1">
                     <StatusBadge value={request.status} />
-                    {expiresAt && (
+                    {expires_at && (
                         <span className="pill">
-                            Ссылка действует до {formatDate(expiresAt)}
+                            Ссылка действует до {formatDate(expires_at)}
                         </span>
                     )}
                 </div>
@@ -139,7 +137,7 @@ export default function ShareClient() {
                     subtitle={
                         <span>
                             Последнее обновление:{' '}
-                            {formatDate(request.updatedAt)}
+                            {formatDate(request.updated_at)}
                         </span>
                     }
                 >
@@ -147,10 +145,13 @@ export default function ShareClient() {
                         {request.theme || '—'}
                     </p>
                 </ShareSectionCard>
-                <ShareSectionCard title="Тип обращения">
-                    {request.toSend ? (
+                <ShareSectionCard title="К кому обращение">
+                    {request.to_position ? (
                         <div className="prose prose-sm max-w-none text-[--ink-900] whitespace-pre-wrap">
-                            {request.toSend}
+                            <span className="font-medium">
+                                {request.to_position.employee.fio}
+                            </span>{' '}
+                            • {request.to_position.unit.unit_name}
                         </div>
                     ) : (
                         <div className="text-sm text-[--ink-700]">
@@ -203,7 +204,7 @@ export default function ShareClient() {
                                         }
                                     >
                                         <div className="text-sm flex text-[--ink-700] gap-0.5 mb-1">
-                                            {`${formatDate(r.createdAt)} `}
+                                            {`${formatDate(r.created_at)} `}
                                             <span
                                                 className={`font-medium ${
                                                     r.type === 'invite_yes'
@@ -274,15 +275,19 @@ export default function ShareClient() {
                                     className="border border-gray-300 rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
                                 >
                                     <div className="text-sm text-[--ink-700] mb-1">
-                                        Загружено {formatDate(a.createdAt)}
+                                        Загружено {formatDate(a.created_at)}
                                     </div>
                                     <a
-                                        href={a.url}
+                                        href={a.url.split('\n')[1]}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-sm font-medium text-[color:var(--brand-700)] underline underline-offset-4 hover:opacity-80"
                                     >
-                                        Открыть документ
+                                        {
+                                            a.url
+                                                .split('\n')[0]
+                                                .split('Приложить файл: ')[1]
+                                        }
                                     </a>
                                 </li>
                             ))}
@@ -297,7 +302,7 @@ export default function ShareClient() {
                             <div className="text-sm text-[--ink-900]">
                                 Создано{' '}
                                 <span className="text-[--ink-700]">
-                                    ({formatDate(request.createdAt)})
+                                    ({formatDate(request.created_at)})
                                 </span>
                             </div>
                         </TimelineItem>
@@ -305,22 +310,25 @@ export default function ShareClient() {
                         {history.length ? (
                             history
                                 .slice()
-                                .reverse()
-                                .filter((h) => h.oldStatus !== h.newStatus)
+                                .filter(
+                                    (h) =>
+                                        h.old_status !== h.new_status &&
+                                        h.old_status
+                                )
                                 .map((h) => (
                                     <TimelineItem key={h.id}>
                                         <div className="text-sm text-[--ink-900]">
-                                            {statusLabel[h.oldStatus ?? ''] ??
-                                                h.oldStatus ??
+                                            {statusLabel[h.old_status ?? ''] ??
+                                                h.old_status ??
                                                 '—'}{' '}
                                             →{' '}
                                             <span className="font-medium">
                                                 {statusLabel[
-                                                    h.newStatus ?? ''
-                                                ] ?? h.newStatus}
+                                                    h.new_status ?? ''
+                                                ] ?? h.new_status}
                                             </span>{' '}
                                             <span className="text-[--ink-700]">
-                                                ({formatDate(h.createdAt)})
+                                                ({formatDate(h.created_at)})
                                             </span>
                                         </div>
                                     </TimelineItem>

@@ -6,7 +6,7 @@ export interface UpdateApplicationDataProps {
   theme?: string;
   question?: string;
   newStatus?: Status;
-  assigned_unit_id?: number;
+  to_position_id?: number;
   assignedEmployeeId?: number;
   createdAt?: string;
 }
@@ -19,7 +19,7 @@ export const updateApplicationStatus = async (
   data: UpdateApplicationStatusProps,
   id: number
 ) => {
-  return apiRequest(`/worker/requests/${id}`, {
+  return apiRequest(`/requests/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
     credentials: 'include',
@@ -33,7 +33,7 @@ export const updateApplication = async (
   data: UpdateApplicationDataProps,
   id: number
 ) => {
-  return apiRequest(`/worker/requests/${id}`, {
+  return apiRequest(`/requests/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
     credentials: 'include',
@@ -44,14 +44,14 @@ export const updateApplication = async (
 };
 
 export const getApplicationDetail = async (id: number) => {
-  return apiRequest(`/worker/requests/${id}`, {
+  return apiRequest(`/requests/${id}`, {
     method: 'GET',
     credentials: 'include',
   });
 };
 
 export const getApplicationResponses = async (id: number) => {
-  return apiRequest(`/worker/requests/${id}/responses/?order=asc`, {
+  return apiRequest(`/requests/${id}/responses`, {
     method: 'GET',
     credentials: 'include',
   });
@@ -61,7 +61,7 @@ export const addApplicationResponse = async (
   id: number,
   data: ResponseCreateDto
 ) => {
-  return apiRequest(`/worker/requests/${id}/responses/`, {
+  return apiRequest(`/requests/${id}/responses`, {
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify(data),
@@ -72,5 +72,15 @@ export const addApplicationResponse = async (
 };
 
 export const getUnitTreeForApplication = async () => {
-  return apiRequest(`/admin/units`, { method: 'GET', credentials: 'include' });
+  return apiRequest(`/org/units-tree`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+};
+
+export const getCuratorsTreeForApplication = async () => {
+  return apiRequest(`/org/units/curators-tree`, {
+    method: 'GET',
+    credentials: 'include',
+  });
 };

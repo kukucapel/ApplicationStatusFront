@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Employee, Role } from '@/dtos/AdminDto';
-import { adminData } from '@/lib/adminData';
+import { adminData, deleteEmployee } from '@/lib/adminData';
 import TableRow from '../ui/Table/TableRow';
 import TableHeader from '../ui/Table/TableHeader';
 import { useMemo } from 'react';
@@ -10,6 +10,8 @@ import ModalMainBody from '../ui/ModalUi/ModalMainBody';
 import ModalAdminMainBody from '../ui/ModalUi/ModalAdminMainBody';
 import ModalAdminEmployee from '../modals/admin/ModalAdminEmployee';
 import { useUser } from '@/contexts/UserContext';
+import { Trash2 } from 'lucide-react';
+import ModalSubmit from '../modals/ModalSubmit';
 
 interface TableProps {
     page: [string, string];
@@ -19,6 +21,7 @@ interface TableProps {
     roleItems: Role[] | null;
     loadEmployees: () => Promise<void>;
     showAddModal: boolean;
+    deleteMode: boolean;
     setShowAddModal: (newState: boolean) => void;
 }
 
@@ -27,7 +30,6 @@ const HEADER = [
     ['ФИО', 'fio'],
     ['Email', 'email'],
     ['Роль', 'role'],
-    ['Поздразделение', 'unit_name'],
 ];
 
 export default function TableEmployees({
@@ -38,6 +40,7 @@ export default function TableEmployees({
     roleItems = null,
     loadEmployees,
     showAddModal,
+    deleteMode,
     setShowAddModal,
 }: TableProps) {
     const [loading, setLoading] = useState<boolean>(true);
@@ -45,16 +48,22 @@ export default function TableEmployees({
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [modalIsActive, setModalIsActive] = useState<number | null>(null);
     const [modalEmployee, setModalEmployee] = useState<Employee | null>(null);
+    const [modalSubmit, setModalSubmit] = useState<number | null>(null);
 
     const { user } = useUser();
 
-    console.log(employeeItems);
+    const handleDelete = async (id: number) => {
+        await deleteEmployee(id);
+        setModalSubmit(null);
+        await loadEmployees();
+    };
 
     const handleFilterChange = (key: string, value: string) => {
         setFilters((prev) => ({ ...prev, [key]: value }));
     };
 
     useEffect(() => {
+        setShowAddModal(false);
         if (user?.role === 'admin') {
             if (employeeItems !== null && roleItems !== null) {
                 setLoading(false);
@@ -72,10 +81,13 @@ export default function TableEmployees({
         const filtered = employeeItems.filter((item) => {
             return Object.entries(filters).every(([key, value]) => {
                 if (!value || !searchMode) return true;
-
-                const itemValue = String(
-                    (item as any)[key] ?? ''
-                ).toLowerCase();
+                let itemValue;
+                if (key === 'role') {
+                    itemValue = String(item.user?.role ?? '');
+                } else {
+                    itemValue = String((item as any)[key] ?? '').toLowerCase();
+                }
+                console.log(itemValue);
                 return itemValue.includes(value.toLowerCase());
             });
         });
@@ -84,8 +96,15 @@ export default function TableEmployees({
         const field = HEADER[fieldIndex][1];
 
         return [...filtered].sort((a, b) => {
-            const aVal = (a as any)[field] ?? '';
-            const bVal = (b as any)[field] ?? '';
+            let aVal, bVal;
+
+            if (field === 'role') {
+                aVal = a.user?.role ?? '';
+                bVal = b.user?.role ?? '';
+            } else {
+                aVal = (a as any)[field] ?? '';
+                bVal = (b as any)[field] ?? '';
+            }
 
             if (aVal < bVal) return direction === 0 ? -1 : 1;
             if (aVal > bVal) return direction === 0 ? 1 : -1;
@@ -111,40 +130,67 @@ export default function TableEmployees({
                 searchMode={searchMode}
             />
             <div className="space-y-2">
-                {filtredAndSortedItems?.map((emp: Employee) => (
-                    <TableRow
-                        onClickTableModal={() => {
-                            setModalIsActive(emp.id);
-                            setModalEmployee(emp);
-                        }}
-                        editMode={editMode}
-                        key={emp.id}
-                        id={emp.id}
-                    >
-                        <div className="grid grid-cols-5 gap-4">
-                            <div>{emp.id}</div>
-                            <div>{emp.fio || '-'}</div>
-                            <div>{emp.email}</div>
-                            <div>{emp.role || '-'}</div>
-                            <div>{emp.unit_name || '-'}</div>
-                        </div>
-                    </TableRow>
-                ))}
+                {filtredAndSortedItems?.map(
+                    (emp: Employee) =>
+                        emp.user && (
+                            <TableRow
+                                deleteMode={deleteMode}
+                                onClickTableModal={() => {
+                                    setModalIsActive(emp.id);
+                                    setModalEmployee(emp);
+                                }}
+                                editMode={editMode}
+                                key={emp.id}
+                                id={emp.id}
+                            >
+                                <div className="grid grid-cols-[60px_1fr_1fr_1fr] gap-4">
+                                    <div>{emp.id}</div>
+                                    <div>{emp.fio || '-'}</div>
+                                    <div>{emp.email}</div>
+                                    <div>{emp.user?.role || '-'}</div>
+                                </div>
+                                {deleteMode && (
+                                    <button
+                                        onClick={() => {
+                                            setModalSubmit(emp.id);
+                                        }}
+                                        className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
+        "
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                )}
+                            </TableRow>
+                        )
+                )}
             </div>
             {modalIsActive && modalEmployee && roleItems && (
                 <ModalAdminEmployee
                     roleItems={roleItems}
                     loadEmployees={loadEmployees}
                     employee={modalEmployee}
-                    setModalIsActive={() => setModalIsActive(null)}
+                    setModalIsActive={() => {
+                        setModalEmployee(null);
+                        setModalIsActive(null);
+                    }}
                 />
             )}
+            {}
             {showAddModal && (
                 <ModalAdminEmployee
                     roleItems={roleItems}
                     loadEmployees={loadEmployees}
                     employee={modalEmployee}
-                    setModalIsActive={() => setShowAddModal(false)}
+                    setModalIsActive={() => {
+                        setModalEmployee(null);
+                        setShowAddModal(false);
+                    }}
+                />
+            )}
+            {modalSubmit && (
+                <ModalSubmit
+                    handleSubmit={() => handleDelete(modalSubmit)}
+                    onClose={() => setModalSubmit(null)}
                 />
             )}
         </div>

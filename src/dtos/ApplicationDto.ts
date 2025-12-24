@@ -1,23 +1,37 @@
 export interface ApplicationDetailDto {
-  applicantId: number;
-  assignedEmployeeId: number | null;
-  assignedEmployee: {
+  id: number;
+  status: 'new' | 'in_progress' | 'completed' | 'closed';
+  theme: string;
+  question: string;
+  createdAt: string;
+  updatedAt: string;
+  toPosition: {
+    employee: {
+      fio: string;
+      login: string;
+    };
+    id: number;
+    kind: string;
+    title: {
+      id: number;
+      name: string;
+      kind: string;
+    };
+    unit: {
+      id: number;
+      unit_name: string;
+      path: string;
+    } | null;
+  };
+  assignedUserId: number;
+  assignedUser: {
     id: number;
     fio: string;
     email: string;
     role: string;
   } | null;
-  assignedUnitId: number | null;
-  createdAt: string;
-  updatedAt: string;
-  id: number;
-  question: string;
-  status: 'new' | 'in_progress' | 'completed' | 'closed';
-  theme: string;
-  toSend: string;
-  assignedUnit?: { id: number; name: string } | null;
+
   applicant: ApplicantDto;
-  unitName: string;
 }
 export interface ApplicantDto {
   id: number;
@@ -54,17 +68,37 @@ export interface ResponseCreateDto {
 }
 
 export interface Application {
-  applicantId: number;
-  assignedEmployeeId: number | null;
-  assignedUnitId: number | null;
+  // applicantId: number;
+  assignedUser: {
+    employee: {
+      id: number;
+      fio: string;
+      role: string;
+    } | null;
+    id: number;
+    login: string;
+    role: string;
+  } | null;
   createdAt: string;
   id: number;
   question: string;
   status: 'new' | 'in_progress' | 'completed' | 'closed';
   theme: string;
-  toSend: string;
+  toPosition: {
+    employee: {
+      fio: string;
+      login: string;
+    };
+    id: number;
+    kind: string;
+    title: string;
+    unit: {
+      id: number;
+      unit_name: string;
+      path: string;
+    } | null;
+  };
   updatedAt: string;
-  unitName: string | null;
 }
 
 export interface ApplicationUnitUpdate {

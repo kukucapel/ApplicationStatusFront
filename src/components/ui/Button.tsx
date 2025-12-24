@@ -6,6 +6,7 @@ interface ButtonProps {
     styleColor: string;
     onClick?: () => void;
     children?: ReactNode;
+    type?: 'button' | 'submit' | 'reset';
 }
 
 export default function Button({
@@ -14,6 +15,7 @@ export default function Button({
     styleColor,
     onClick,
     children,
+    type = 'submit',
 }: ButtonProps) {
     return (
         <button
@@ -32,6 +34,7 @@ export default function Button({
             }
             disabled={isActive ? true : false}
             onClick={onClick}
+            type={type}
         >
             {children}
         </button>
