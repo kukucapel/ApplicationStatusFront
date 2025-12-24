@@ -22,7 +22,7 @@ export default function Admin() {
         // ['Оценки', 'raitings'],
     ];
     if (user?.role === 'admin') MENU.push(['Роли', 'roles']);
-    if (user?.role === 'worker') {
+    if (user?.role !== 'admin') {
         return;
     } else {
         return (

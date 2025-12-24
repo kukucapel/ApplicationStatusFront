@@ -71,8 +71,7 @@ export default function Header({}: HeaderProps) {
 
                             <span className="hidden sm:inline">Обращения</span>
                         </Button>
-                        {(user?.role === 'admin' ||
-                            user?.role === 'dispatcher') && (
+                        {user?.role === 'admin' && (
                             <Button
                                 onClick={handleClickAdmin}
                                 isActive={pathname === '/admin'}
@@ -94,7 +93,7 @@ export default function Header({}: HeaderProps) {
                                 {user ? (
                                     <div className="flex items-center gap-2 min-w-0">
                                         <p className="text-sm font-medium text-gray-900 hidden sm:inline truncate">
-                                            {user.name}
+                                            {user.fio}
                                         </p>
                                     </div>
                                 ) : (

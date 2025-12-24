@@ -30,7 +30,6 @@ const HEADER = [
     ['ФИО', 'fio'],
     ['Email', 'email'],
     ['Роль', 'role'],
-    ['Поздразделение', 'unit_name'],
 ];
 
 export default function TableEmployees({
@@ -82,10 +81,13 @@ export default function TableEmployees({
         const filtered = employeeItems.filter((item) => {
             return Object.entries(filters).every(([key, value]) => {
                 if (!value || !searchMode) return true;
-
-                const itemValue = String(
-                    (item as any)[key] ?? ''
-                ).toLowerCase();
+                let itemValue;
+                if (key === 'role') {
+                    itemValue = String(item.user?.role ?? '');
+                } else {
+                    itemValue = String((item as any)[key] ?? '').toLowerCase();
+                }
+                console.log(itemValue);
                 return itemValue.includes(value.toLowerCase());
             });
         });
@@ -94,8 +96,15 @@ export default function TableEmployees({
         const field = HEADER[fieldIndex][1];
 
         return [...filtered].sort((a, b) => {
-            const aVal = (a as any)[field] ?? '';
-            const bVal = (b as any)[field] ?? '';
+            let aVal, bVal;
+
+            if (field === 'role') {
+                aVal = a.user?.role ?? '';
+                bVal = b.user?.role ?? '';
+            } else {
+                aVal = (a as any)[field] ?? '';
+                bVal = (b as any)[field] ?? '';
+            }
 
             if (aVal < bVal) return direction === 0 ? -1 : 1;
             if (aVal > bVal) return direction === 0 ? 1 : -1;
@@ -121,37 +130,39 @@ export default function TableEmployees({
                 searchMode={searchMode}
             />
             <div className="space-y-2">
-                {filtredAndSortedItems?.map((emp: Employee) => (
-                    <TableRow
-                        deleteMode={deleteMode}
-                        onClickTableModal={() => {
-                            setModalIsActive(emp.id);
-                            setModalEmployee(emp);
-                        }}
-                        editMode={editMode}
-                        key={emp.id}
-                        id={emp.id}
-                    >
-                        <div className="grid grid-cols-[60px_1fr_1fr_1fr_1fr] gap-4">
-                            <div>{emp.id}</div>
-                            <div>{emp.fio || '-'}</div>
-                            <div>{emp.email}</div>
-                            <div>{emp.role || '-'}</div>
-                            <div>{emp.unit_name || '-'}</div>
-                        </div>
-                        {deleteMode && (
-                            <button
-                                onClick={() => {
-                                    setModalSubmit(emp.id);
+                {filtredAndSortedItems?.map(
+                    (emp: Employee) =>
+                        emp.user && (
+                            <TableRow
+                                deleteMode={deleteMode}
+                                onClickTableModal={() => {
+                                    setModalIsActive(emp.id);
+                                    setModalEmployee(emp);
                                 }}
-                                className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
-        "
+                                editMode={editMode}
+                                key={emp.id}
+                                id={emp.id}
                             >
-                                <Trash2 size={18} />
-                            </button>
-                        )}
-                    </TableRow>
-                ))}
+                                <div className="grid grid-cols-[60px_1fr_1fr_1fr] gap-4">
+                                    <div>{emp.id}</div>
+                                    <div>{emp.fio || '-'}</div>
+                                    <div>{emp.email}</div>
+                                    <div>{emp.user?.role || '-'}</div>
+                                </div>
+                                {deleteMode && (
+                                    <button
+                                        onClick={() => {
+                                            setModalSubmit(emp.id);
+                                        }}
+                                        className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
+        "
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                )}
+                            </TableRow>
+                        )
+                )}
             </div>
             {modalIsActive && modalEmployee && roleItems && (
                 <ModalAdminEmployee

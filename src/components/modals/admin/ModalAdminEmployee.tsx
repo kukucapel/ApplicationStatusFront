@@ -8,7 +8,7 @@ import { addEmployee, updateEmployee } from '@/lib/adminData';
 import { useEffect, useState } from 'react';
 import { Unit } from '@/dtos/AdminDto';
 import { getUnitTreeForApplication } from '@/lib/updateApplication';
-import ModalUnitTree from '../ModalUnitTree';
+// import ModalUnitTree from '../ModalUnitTree';
 
 interface ModalAdminEmployeeProps {
     employee: Employee | null;
@@ -28,25 +28,18 @@ export default function ModalAdminEmployee({
     const [form, setForm] = useState<EmployeeUpdate>({
         fio: employee?.fio || '',
         email: employee?.email || '',
-        role_id: employee?.role_id || 2,
-        unit_id: employee?.unit_id || 0,
+        role_id: employee?.user?.role_id || 2,
         password: '',
     });
-    const [unitName, setUnitName] = useState<string | null>(
-        employee?.unit_name || null
-    );
+
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
     const [successfully, setSuccessfully] = useState<string>('');
 
-    const [showUnit, setShowUnit] = useState<boolean>(false);
-    const [unit, setUnit] = useState<Unit | null>(null);
-
     const isActive: boolean = employee
         ? (form.fio === employee.fio &&
               form.email === employee.email &&
-              form.role_id == employee.role_id &&
-              form.unit_id === employee.unit_id) ||
+              form.role_id == employee?.user?.role_id) ||
           form.fio === '' ||
           form.email === ''
         : !(
@@ -63,14 +56,14 @@ export default function ModalAdminEmployee({
         setSuccessfully('');
         setForm({ ...form, [e.target.name]: e.target.value });
     };
-    const handleSubmitChangeUnit = (
-        newSelected: number,
-        newUnitName: string
-    ) => {
-        setForm({ ...form, unit_id: newSelected });
-        setShowUnit(false);
-        setUnitName(newUnitName);
-    };
+    // const handleSubmitChangeUnit = (
+    //     newSelected: number,
+    //     newUnitName: string
+    // ) => {
+    //     setForm({ ...form, unit_id: newSelected });
+    //     setShowUnit(false);
+    //     setUnitName(newUnitName);
+    // };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -97,10 +90,10 @@ export default function ModalAdminEmployee({
         }
     };
     useEffect(() => {
-        const load = async () =>
-            user?.role !== 'worker' &&
-            setUnit((await getUnitTreeForApplication()).items);
-        load();
+        // const load = async () =>
+        //     user?.role !== 'worker' &&
+        //     setUnit((await getUnitTreeForApplication()).items);
+        // load();
     }, []);
 
     useEffect(() => {
@@ -191,15 +184,15 @@ export default function ModalAdminEmployee({
                 )}
 
                 {/* Подразделение */}
-                {showUnit && unit && (
+                {/* {showUnit && unit && (
                     <ModalUnitTree
                         selectedNow={form?.unit_id || employee?.unit_id || 0}
                         unitTree={unit}
                         handleChange={handleSubmitChangeUnit}
                         onClose={() => setShowUnit(false)}
                     ></ModalUnitTree>
-                )}
-                <div className="flex flex-col">
+                )} */}
+                {/* <div className="flex flex-col">
                     <label className="text-sm text-gray-500">
                         {' '}
                         Выбрать поздразделение
@@ -219,7 +212,7 @@ export default function ModalAdminEmployee({
                             ? unitName
                             : employee?.unit_name || 'Выбрать поздразделение'}
                     </span>
-                </div>
+                </div> */}
 
                 {error && (
                     <div>

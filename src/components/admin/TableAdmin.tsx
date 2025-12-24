@@ -28,19 +28,19 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
     const [roleItems, setRoleItems] = useState<Role[] | null>(null);
 
     const loadEmployees = async function () {
-        const employeeData = await adminData('/dispatcher/employees');
+        const employeeData = await adminData('/employees');
         setEmployeeItems(employeeData.items);
     };
     const loadRoles = async function () {
-        const roleData = await adminData('/admin/roles');
+        const roleData = await adminData('/roles');
         setRoleItems(roleData.items);
     };
 
     useEffect(() => {
         async function load() {
             const [employeeData, roleData] = await Promise.all([
-                adminData('/dispatcher/employees'),
-                user?.role === 'admin' && adminData('/admin/roles'),
+                adminData('/employees'),
+                user?.role === 'admin' && adminData('/roles'),
             ]);
             if (user?.role === 'admin') {
                 setRoleItems(roleData.items);

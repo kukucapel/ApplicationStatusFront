@@ -31,21 +31,20 @@ import {
     getUnitTreeForApplication,
     UpdateApplicationDataProps,
     updateApplication,
+    getCuratorsTreeForApplication,
 } from '@/lib/updateApplication';
 import ModalHeader from '../ui/ModalUi/ModalHeader';
-import ModalMainBody from '../ui/ModalUi/ModalMainBody';
 import Button from '../ui/Button';
 import ModalResponse from '../ui/ModalUi/ModalResponse';
 import { useUser } from '@/contexts/UserContext';
-import { Unit } from '@/dtos/AdminDto';
-import ModalUnitTree from './ModalUnitTree';
+import { Curator, Unit } from '@/dtos/AdminDto';
 import formatDate from '@/lib/formatDate';
-import { resolveMx } from 'dns';
 import Modal from '../ui/NewModalUi/Modal';
 import ModalBody from '../ui/NewModalUi/ModalBody';
 import ModalBodyBlock from '../ui/NewModalUi/ModalBodyBlock';
 import ModalBodyBlockField from '../ui/NewModalUi/ModalBodyBlockField';
 import ModalSubmit from './ModalSubmit';
+import ModalCuratorTree from './ModalCuratorTree';
 
 interface ApplicationModalProps {
     onClose: () => void;
@@ -68,7 +67,7 @@ export function ApplicationModal({
     const [sortResponsesFlag, setSortResponsesFlag] = useState<boolean>(true);
     const [showResponseModal, setShowResponseModal] = useState<boolean>(false);
 
-    const [unit, setUnit] = useState<Unit | null>(null);
+    const [unit, setUnit] = useState<Curator[] | null>(null);
     const [showUnitModal, setShowUnitModal] = useState<boolean>(false);
 
     const [loading, setLoading] = useState<boolean>(true);
@@ -106,8 +105,8 @@ export function ApplicationModal({
     const loadResponse = async () => {
         setResponseItems((await getApplicationResponses(application.id)).items);
     };
-    const loadUnit = async () => {
-        setUnit((await getUnitTreeForApplication()).items);
+    const loadTree = async () => {
+        setUnit((await getCuratorsTreeForApplication()).items);
     };
     const loadApplication = async () => {
         setApplicationItem(await getApplicationDetail(application.id));
@@ -121,7 +120,7 @@ export function ApplicationModal({
                 (await getApplicationResponses(application.id)).items
             );
             user?.role !== 'worker' &&
-                setUnit((await getUnitTreeForApplication()).items);
+                setUnit((await getCuratorsTreeForApplication()).items);
             setLoading(false);
         }
         load();
@@ -267,7 +266,7 @@ export function ApplicationModal({
                                     className="py-2 w-[50%]"
                                     onClick={() => setShowUnitModal(true)}
                                 >
-                                    Назначить исполнителя
+                                    Передать приём
                                 </Button>
                             )}
                         </div>
@@ -326,8 +325,9 @@ export function ApplicationModal({
                                 nameField="Суть обращения"
                                 valueField={applicationItem.question || '-'}
                                 icon={FileText}
+                                bgColor="g"
                             />
-                            <ModalBodyBlockField
+                            {/* <ModalBodyBlockField
                                 typeStyle={2}
                                 nameField="Исполнительный орган"
                                 valueField={
@@ -335,22 +335,24 @@ export function ApplicationModal({
                                 }
                                 icon={FileText}
                                 bgColor="g"
-                            />
+                            /> */}
                             <ModalBodyBlockField
                                 typeStyle={2}
                                 nameField="К кому приём"
-                                valueField={applicationItem.toSend || '-'}
+                                valueField={
+                                    `${applicationItem.toPosition.employee.fio} • ${applicationItem.toPosition.unit?.unit_name}` ||
+                                    '-'
+                                }
                                 icon={FileText}
-                                bgColor="g"
                             />
-                            <ModalBodyBlockField
+                            {/* <ModalBodyBlockField
                                 typeStyle={2}
                                 nameField="Исполнитель"
                                 valueField={
-                                    applicationItem.assignedEmployee?.fio || '-'
+                                    applicationItem.assignedUser?.fio || '-'
                                 }
                                 icon={UserPen}
-                            />
+                            /> */}
                         </ModalBodyBlock>
                         {/* Ответы */}
                         {sortedResponseItems?.length !== 0 && (
@@ -422,8 +424,8 @@ export function ApplicationModal({
                     />
                 )}
                 {showUnitModal && unit && (
-                    <ModalUnitTree
-                        selectedNow={applicationItem.assignedUnitId || 0}
+                    <ModalCuratorTree
+                        selectedNow={applicationItem.toPosition.id || 0}
                         unitTree={unit}
                         handleSubmit={handleSubmitUnit}
                         onClose={onCloseUnitModal}

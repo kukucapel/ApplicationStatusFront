@@ -25,7 +25,7 @@ export default function ApplicationsList({
     const [filteredApplications, setFilteredApplications] = useState([]);
     const [filters, setFilters] = useState({
         status: 'all',
-        toSend: 'all',
+        toPosition: 'all',
         search: '',
     });
     const [sortByNewest, setSortByNewest] = useState<boolean>(true);
@@ -57,8 +57,11 @@ export default function ApplicationsList({
         }
 
         // Filter by recipient
-        if (filters.toSend !== 'all') {
-            filtered = filtered.filter((app) => app.toSend === filters.toSend);
+        if (filters.toPosition !== 'all') {
+            filtered = filtered.filter(
+                (app: Application) =>
+                    app.toPosition.title === filters.toPosition
+            );
         }
         // Filter by time
         filtered.sort((a, b) => {
@@ -109,8 +112,12 @@ export default function ApplicationsList({
         <div className="flex flex-col lg:flex-row gap-6">
             <FilterSideBar
                 setCreateModal={() => setCreateModal(true)}
-                uniqueToSend={[
-                    ...new Set(applications.map((app) => app.toSend)),
+                uniqueToPosition={[
+                    ...new Set(
+                        applications.map(
+                            (app: Application) => app.toPosition.title
+                        )
+                    ),
                 ]}
                 filters={filters}
                 countApp={filteredApplications.length}
@@ -293,7 +300,15 @@ export default function ApplicationsList({
                                                         <span className="font-medium">
                                                             К кому приём:
                                                         </span>{' '}
-                                                        {app.toSend || '-'}
+                                                        {
+                                                            app.toPosition
+                                                                .employee.fio
+                                                        }{' '}
+                                                        •
+                                                        {
+                                                            app.toPosition.unit
+                                                                ?.unit_name
+                                                        }
                                                     </p>
                                                     <p className="text-sm text-gray-500 line-clamp-2">
                                                         {app.question}
@@ -317,7 +332,6 @@ export default function ApplicationsList({
                 </div>
                 {createModal && (
                     <CreateApplicationModal
-                        handleSubmit={handleSubmitCreateModal}
                         onClose={() => setCreateModal(false)}
                     />
                 )}

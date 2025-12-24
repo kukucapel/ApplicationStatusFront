@@ -3,7 +3,7 @@
 import Button from '../ui/Button';
 
 interface ModalAlertProps {
-    onClose: () => void;
+    onClose: (() => void) | (() => Promise<void>);
     title?: string;
     subTitle: string;
 }

@@ -32,7 +32,7 @@ export function useAppWS(token: string | null) {
           break;
 
         case 'request:created':
-          setApplications((prev) => [...prev, msg.payload.newApplication[0]]);
+          setApplications((prev) => [...prev, msg.payload]);
           break;
 
         case 'requests:list':
@@ -52,7 +52,7 @@ export function useAppWS(token: string | null) {
           break;
         }
 
-        case 'request:removedFromUnit':
+        case 'request:removed':
           setApplications((prev) =>
             prev.filter((app) => app.id !== msg.payload.id)
           );

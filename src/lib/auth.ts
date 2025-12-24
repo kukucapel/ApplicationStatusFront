@@ -16,6 +16,17 @@ export const registerUser = async (data: RegisterFormData) => {
   });
 };
 
+export const changePassword = async (data: {
+  oldPassword: string;
+  newPassword: string;
+}) => {
+  return apiRequest('/auth/change-password', {
+    method: 'POST',
+    body: JSON.stringify(data),
+    credentials: 'include',
+  });
+};
+
 export const logoutUser = async () => {
   return apiRequest('/auth/logout', {
     method: 'POST',

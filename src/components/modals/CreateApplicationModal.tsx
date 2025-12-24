@@ -1,6 +1,10 @@
 'use client';
 
-import { NewApplicationFormData } from '@/lib/createApplication';
+import {
+    createApplication,
+    NewApplicant,
+    NewApplication,
+} from '@/lib/createApplication';
 import { X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Button from '../ui/Button';
@@ -8,34 +12,56 @@ import Label from '../ui/Label';
 import Input from '../ui/Input';
 import ModalHeader from '../ui/ModalUi/ModalHeader';
 import ModalMainBody from '../ui/ModalUi/ModalMainBody';
+import { Curator } from '@/dtos/AdminDto';
+import { getCuratorsTreeForApplication } from '@/lib/updateApplication';
+import ModalCuratorTree from './ModalCuratorTree';
 
 interface CreateApplicationModalProps {
     onClose: () => void;
-    handleSubmit: (data: NewApplicationFormData) => void;
 }
 
 export default function CreateApplicationModal({
     onClose,
-    handleSubmit,
 }: CreateApplicationModalProps) {
-    const [formData, setFormData] = useState<NewApplicationFormData>({
-        full_name: '',
+    const [application, setApplication] = useState<NewApplication>({
+        theme: '',
+        question: '',
+        to_position_id: 8,
+    });
+    const [formData, setFormData] = useState<NewApplicant>({
+        fio: '',
         email: '',
         phone: '',
-        registration_address: '',
-        registration_postal_code: '',
-        residence_address: '',
-        residence_postal_code: '',
-        recipient: '',
-        subject: '',
-        description: '',
+        address1: '',
+        address2: '',
+        postal_code1: '',
+        postal_code2: '',
     });
     const [loading, setLoading] = useState(false);
-
+    const [curators, setCurators] = useState<Curator[] | null>(null);
+    const [showCurators, setShowCurators] = useState(false);
+    const [newCuratorsName, setNewCuratorsName] = useState<string | null>(null);
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+    const handleSubmitChangeToPosition = (
+        newSelected: number,
+        newUnitName: string
+    ) => {
+        setApplication({ ...application, to_position_id: newSelected });
+        setShowCurators(false);
+        setNewCuratorsName(newUnitName);
+    };
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await createApplication({
+            applicant: formData,
+            ...application,
+            files: null,
+        });
+        onClose();
     };
 
     useEffect(() => {
@@ -44,19 +70,24 @@ export default function CreateApplicationModal({
             document.body.style.overflow = '';
         };
     }, []);
-
+    useEffect(() => {
+        async function load() {
+            setCurators((await getCuratorsTreeForApplication()).items);
+        }
+        load();
+    }, []);
+    useEffect(() => {
+        if (curators) {
+            setNewCuratorsName(curators[0].employee.fio);
+        }
+    }, [curators]);
+    console.log(newCuratorsName);
     return (
         <ModalMainBody>
             {/* Header */}
             <ModalHeader title="Создать новую заявку" onClose={onClose} />
             {/* Form */}
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    handleSubmit(formData);
-                }}
-                className="p-6 space-y-6"
-            >
+            <form onSubmit={handleSubmit} className="p-6 space-y-6">
                 {/* Personal Info */}
                 <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
@@ -65,12 +96,12 @@ export default function CreateApplicationModal({
 
                     <div className="grid sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label htmlFor="full_name">ФИО *</Label>
+                            <Label htmlFor="fio">ФИО *</Label>
                             <Input
                                 data-testid="create-fullname-input"
-                                name="full_name"
+                                name="fio"
                                 required
-                                value={formData.full_name}
+                                value={formData.fio}
                                 onChange={handleChange}
                                 placeholder="Иванов Иван Иванович"
                             />
@@ -103,7 +134,7 @@ export default function CreateApplicationModal({
                             />
                         </div>
 
-                        <div className="space-y-2">
+                        {/* <div className="space-y-2">
                             <Label htmlFor="recipient">К кому на прием *</Label>
                             <Input
                                 id="recipient"
@@ -114,7 +145,7 @@ export default function CreateApplicationModal({
                                 onChange={handleChange}
                                 placeholder="Городничий А.А."
                             />
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 
@@ -126,60 +157,58 @@ export default function CreateApplicationModal({
 
                     <div className="grid sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label htmlFor="registration_address">
+                            <Label htmlFor="address1">
                                 Адрес регистрации *
                             </Label>
                             <Input
-                                id="registration_address"
+                                id="address1"
                                 data-testid="create-reg-address-input"
-                                name="registration_address"
+                                name="address1"
                                 required
-                                value={formData.registration_address}
+                                value={formData.address1}
                                 onChange={handleChange}
                                 placeholder="г. Калуга, ул. Ленина, д. 1"
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="registration_postal_code">
+                            <Label htmlFor="postal_code1">
                                 Индекс регистрации *
                             </Label>
                             <Input
-                                id="registration_postal_code"
+                                id="postal_code1"
                                 data-testid="create-reg-postal-input"
-                                name="registration_postal_code"
+                                name="postal_code1"
                                 required
-                                value={formData.registration_postal_code}
+                                value={formData.postal_code1}
                                 onChange={handleChange}
                                 placeholder="248000"
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="residence_address">
-                                Адрес проживания *
-                            </Label>
+                            <Label htmlFor="address2">Адрес проживания *</Label>
                             <Input
-                                id="residence_address"
+                                id="address2"
                                 data-testid="create-res-address-input"
-                                name="residence_address"
+                                name="address2"
                                 required
-                                value={formData.residence_address}
+                                value={formData.address2}
                                 onChange={handleChange}
                                 placeholder="г. Калуга, ул. Пушкина, д. 2"
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="residence_postal_code">
+                            <Label htmlFor="postal_code2">
                                 Индекс проживания *
                             </Label>
                             <Input
-                                id="residence_postal_code"
+                                id="postal_code2"
                                 data-testid="create-res-postal-input"
-                                name="residence_postal_code"
+                                name="postal_code2"
                                 required
-                                value={formData.residence_postal_code}
+                                value={formData.postal_code2}
                                 onChange={handleChange}
                                 placeholder="248000"
                             />
@@ -194,34 +223,62 @@ export default function CreateApplicationModal({
                     </h3>
 
                     <div className="space-y-2">
-                        <Label htmlFor="subject">Тема обращения *</Label>
+                        <Label htmlFor="theme">Тема обращения *</Label>
                         <Input
-                            id="subject"
+                            id="theme"
                             data-testid="create-subject-input"
-                            name="subject"
+                            name="theme"
                             required
-                            value={formData.subject}
-                            onChange={handleChange}
+                            value={application.theme}
+                            onChange={(
+                                e: React.ChangeEvent<
+                                    HTMLInputElement | HTMLTextAreaElement
+                                >
+                            ) =>
+                                setApplication({
+                                    ...application,
+                                    [e.target.name]: e.target.value,
+                                })
+                            }
                             placeholder="Например: Благоустройство придомовой территории"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="description">Суть вопроса *</Label>
+                        <Label htmlFor="question">Суть вопроса *</Label>
                         <textarea
                             className="flex  mt-2 min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base  placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm border-gray-200 shadow-md focus:outline-none focus:border-blue-500 transition focus:ring-blue-500"
-                            id="description"
+                            id="question"
                             data-testid="create-description-input"
-                            name="description"
+                            name="question"
                             required
-                            value={formData.description}
-                            onChange={handleChange}
-                            placeholder="Подробно опишите ваш вопрос..."
+                            value={application.question}
+                            onChange={(
+                                e: React.ChangeEvent<
+                                    HTMLInputElement | HTMLTextAreaElement
+                                >
+                            ) =>
+                                setApplication({
+                                    ...application,
+                                    [e.target.name]: e.target.value,
+                                })
+                            }
+                            placeholder="Подробно опишите вопрос..."
                             rows={6}
                         />
                     </div>
                 </div>
-
+                <div className="space-y-2 flex flex-col">
+                    <Label htmlFor="question">К кому на приём *</Label>
+                    <Button
+                        type="button"
+                        styleColor="blue"
+                        className="w-80 py-2"
+                        onClick={() => setShowCurators(true)}
+                    >
+                        {newCuratorsName}
+                    </Button>
+                </div>
                 {/* Footer */}
                 <div className="flex gap-3 pt-4 border-t">
                     <Button
@@ -239,6 +296,14 @@ export default function CreateApplicationModal({
                     </Button>
                 </div>
             </form>
+            {showCurators && curators && (
+                <ModalCuratorTree
+                    selectedNow={application.to_position_id}
+                    unitTree={curators}
+                    handleChange={handleSubmitChangeToPosition}
+                    onClose={() => setShowCurators(false)}
+                />
+            )}
         </ModalMainBody>
     );
 }
