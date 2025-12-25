@@ -303,12 +303,12 @@ export default function ApplicationsList({
                                                         {
                                                             app.toPosition
                                                                 .employee.fio
-                                                        }{' '}
-                                                        •
-                                                        {
-                                                            app.toPosition.unit
-                                                                ?.unit_name
                                                         }
+                                                        {app.toPosition.unit
+                                                            ?.unit_name &&
+                                                            `
+                                                        •
+                                                        ${app.toPosition.unit?.unit_name}`}
                                                     </p>
                                                     <p className="text-sm text-gray-500 line-clamp-2">
                                                         {app.question}

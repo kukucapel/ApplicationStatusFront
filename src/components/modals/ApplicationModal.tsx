@@ -339,10 +339,13 @@ export function ApplicationModal({
                             <ModalBodyBlockField
                                 typeStyle={2}
                                 nameField="К кому приём"
-                                valueField={
-                                    `${applicationItem.toPosition.employee.fio} • ${applicationItem.toPosition.unit?.unit_name}` ||
-                                    '-'
-                                }
+                                valueField={`${
+                                    applicationItem.toPosition.employee.fio
+                                }  ${
+                                    applicationItem.toPosition.unit?.unit_name
+                                        ? `• ${applicationItem.toPosition.unit?.unit_name} `
+                                        : ''
+                                }`}
                                 icon={FileText}
                             />
                             {/* <ModalBodyBlockField
