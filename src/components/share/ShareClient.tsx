@@ -118,7 +118,7 @@ export default function ShareClient() {
                 </h1>
                 <div className="text-sm text-[--ink-700]">
                     №{request.id} • создано {formatDate(request.created_at)}
-                    {request.to_position.unit.unit_name ? (
+                    {request.to_position.unit ? (
                         <> • {request.to_position.unit.unit_name}</>
                     ) : null}
                 </div>
@@ -151,7 +151,8 @@ export default function ShareClient() {
                             <span className="font-medium">
                                 {request.to_position.employee.fio}
                             </span>{' '}
-                            • {request.to_position.unit.unit_name}
+                            {request.to_position.unit &&
+                                `• ${request.to_position.unit?.unit_name}`}
                         </div>
                     ) : (
                         <div className="text-sm text-[--ink-700]">

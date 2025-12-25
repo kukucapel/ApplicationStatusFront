@@ -38,7 +38,7 @@ export default function ApplicationsList({
 
     useEffect(() => {
         setLoading(!connected);
-        let filtered = [...applications];
+        let filtered: Application[] = [...applications];
 
         // Filter by tab
         if (activeTab === 'new') {
@@ -60,7 +60,7 @@ export default function ApplicationsList({
         if (filters.toPosition !== 'all') {
             filtered = filtered.filter(
                 (app: Application) =>
-                    app.toPosition.title === filters.toPosition
+                    app.toPosition.employee.fio === filters.toPosition
             );
         }
         // Filter by time
@@ -115,7 +115,7 @@ export default function ApplicationsList({
                 uniqueToPosition={[
                     ...new Set(
                         applications.map(
-                            (app: Application) => app.toPosition.title
+                            (app: Application) => app.toPosition.employee.fio
                         )
                     ),
                 ]}
@@ -304,11 +304,6 @@ export default function ApplicationsList({
                                                             app.toPosition
                                                                 .employee.fio
                                                         }
-                                                        {app.toPosition.unit
-                                                            ?.unit_name &&
-                                                            `
-                                                        •
-                                                        ${app.toPosition.unit?.unit_name}`}
                                                     </p>
                                                     <p className="text-sm text-gray-500 line-clamp-2">
                                                         {app.question}
