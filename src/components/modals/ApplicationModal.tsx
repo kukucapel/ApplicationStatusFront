@@ -166,7 +166,6 @@ export function ApplicationModal({
         const statusMap = {
             new: 'Необработанная',
             in_progress: 'В работе',
-            completed: 'Обработана',
             closed: 'Закрыта',
         } as const;
         type StatusKey = keyof typeof statusMap;
@@ -221,35 +220,31 @@ export function ApplicationModal({
                                 Текущий статус
                             </h3>
                             <div className="flex flex-wrap gap-2">
-                                {[
-                                    'new',
-                                    'in_progress',
-                                    'completed',
-                                    'closed',
-                                ].map((status) => (
-                                    <button
-                                        key={status}
-                                        data-testid={`status-btn-${status}`}
-                                        disabled={
-                                            updating ||
-                                            application.status === status
-                                        }
-                                        onClick={() => setAlert(status)}
-                                        className={` ${
-                                            application.status === status
-                                                ? status === 'new'
-                                                    ? 'bg-red-600 hover:bg-red-700 text-white cursor-none'
-                                                    : status === 'in_progress'
-                                                    ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
-                                                    : status === 'completed'
-                                                    ? 'bg-green-600 hover:bg-green-700 text-white'
-                                                    : 'bg-gray-600 hover:bg-gray-700 text-white'
-                                                : 'hover:bg-blue-50'
-                                        } p-2 rounded-md cursor-pointer`}
-                                    >
-                                        {getStatusText(status)}
-                                    </button>
-                                ))}
+                                {['new', 'in_progress', 'closed'].map(
+                                    (status) => (
+                                        <button
+                                            key={status}
+                                            data-testid={`status-btn-${status}`}
+                                            disabled={
+                                                updating ||
+                                                application.status === status
+                                            }
+                                            onClick={() => setAlert(status)}
+                                            className={` ${
+                                                application.status === status
+                                                    ? status === 'new'
+                                                        ? 'bg-red-600 hover:bg-red-700 text-white cursor-none'
+                                                        : status ===
+                                                          'in_progress'
+                                                        ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
+                                                        : 'bg-gray-600 hover:bg-gray-700 text-white'
+                                                    : 'hover:bg-blue-50'
+                                            } p-2 rounded-md cursor-pointer`}
+                                        >
+                                            {getStatusText(status)}
+                                        </button>
+                                    )
+                                )}
                             </div>
                         </div>
                         <div className="flex justify-between">
@@ -258,9 +253,9 @@ export function ApplicationModal({
                                 onClick={() => setShowResponseModal(true)}
                                 className="py-2 flex-grow"
                             >
-                                Создать ответ
+                                Создать уведомление
                             </Button>
-                            {user?.role !== 'worker' && (
+                            {user?.role === 'worker' && (
                                 <Button
                                     styleColor="blue"
                                     className="py-2 w-[50%]"
@@ -361,7 +356,7 @@ export function ApplicationModal({
                         {sortedResponseItems?.length !== 0 && (
                             <div className="space-y-4">
                                 <h3 className="text-lg font-semibold flex items-end justify-between text-gray-900 border-b pb-2">
-                                    Ответы
+                                    Уведомления
                                     {sortedResponseItems.length !== 1 && (
                                         <div
                                             className="flex cursor-pointer items-center"
@@ -397,7 +392,7 @@ export function ApplicationModal({
                                             <div className="flex items-start gap-2">
                                                 <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
                                                 <p className="text-sm font-medium text-gray-700">
-                                                    Ответ
+                                                    Уведомление
                                                 </p>
                                             </div>
                                             <p className="text-sm font-medium text-gray-700">
