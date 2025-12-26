@@ -79,7 +79,7 @@ export const getUnitTreeForApplication = async () => {
 };
 
 export const getCuratorsTreeForApplication = async () => {
-  return apiRequest(`/org/curators-tree`, {
+  return apiRequest(`/org/units/curators-tree`, {
     method: 'GET',
     credentials: 'include',
   });
