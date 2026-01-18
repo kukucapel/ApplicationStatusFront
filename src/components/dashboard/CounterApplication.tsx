@@ -2,7 +2,7 @@ interface ApplicationStats {
     total: number;
     new: number;
     in_progress: number;
-    completed: number;
+
     closed: number;
 }
 
@@ -13,7 +13,7 @@ interface CounterApplicationProps {
 export default function CounterApplication({ stats }: CounterApplicationProps) {
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
                     <div className="text-sm text-gray-600 mb-1">Всего</div>
                     <div className="text-2xl font-bold text-gray-900">
@@ -32,12 +32,12 @@ export default function CounterApplication({ stats }: CounterApplicationProps) {
                         {stats.in_progress}
                     </div>
                 </div>
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
                     <div className="text-sm text-gray-600 mb-1">Обработаны</div>
                     <div className="text-2xl font-bold text-green-600">
                         {stats.completed}
                     </div>
-                </div>
+                </div> */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
                     <div className="text-sm text-gray-600 mb-1">Закрыты</div>
                     <div className="text-2xl font-bold text-gray-600">

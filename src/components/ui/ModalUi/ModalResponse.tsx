@@ -19,7 +19,7 @@ export default function ModalResponse({
 }: ModalResponseProps) {
     const [form, setForm] = useState<ResponseCreateDto>({
         comment: '',
-        type: 'invite',
+        type: 'none_invite',
     });
     const isActive = form.comment === '';
 
@@ -28,7 +28,7 @@ export default function ModalResponse({
             <div className="bg-white rounded-l-2xl shadow-2xl max-w-4xl w-full h-[90vh] overflow-y-auto custom-scroll p-10">
                 <div className="mb-7">
                     <div className="flex flex-row justify-between items-center mb-2">
-                        <span className="text-xl ">Создание ответа</span>
+                        <span className="text-xl ">Создание уведомления</span>
                         <Button
                             styleColor="white"
                             className="p-1"
@@ -38,7 +38,7 @@ export default function ModalResponse({
                         </Button>
                     </div>
                     <hr className="text-gray-400" />
-                    <div className="flex mt-2 gap-3">
+                    {/* <div className="flex mt-2 gap-3">
                         <Button
                             styleColor={`${
                                 form.type === 'invite' ? 'blue' : 'white'
@@ -67,7 +67,7 @@ export default function ModalResponse({
                         >
                             Ответ без приглашения
                         </Button>
-                    </div>
+                    </div> */}
                 </div>
                 <form
                     className="transition-all duration-150 space-y-4 w-full "
@@ -91,7 +91,7 @@ export default function ModalResponse({
                             className="rounded-md border border-gray-300 h-110 px-3 py-2 focus:outline-none 
                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
                    transition-all resize-none"
-                            placeholder="Введите текст ответа..."
+                            placeholder="Введите текст уведомления..."
                         />
                     </div>
                     <div className="transition-all duration-150 flex gap-3 pt-4 border-t">
@@ -104,7 +104,7 @@ export default function ModalResponse({
                                     : 'bg-blue-600 hover:bg-blue-700'
                             }`}
                         >
-                            Создать ответ
+                            Создать уведомление
                         </Button>
                         <Button
                             onClick={() => onClose()}

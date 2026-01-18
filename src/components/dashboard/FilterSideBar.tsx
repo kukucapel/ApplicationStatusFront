@@ -132,13 +132,13 @@ export default function FilterSideBar({
                     )}
                 </div>
             </div>
-            <Button
+            {/* <Button
                 styleColor="blue"
                 onClick={setCreateModal}
                 className="w-[100%] py-2"
             >
                 Создать заявку
-            </Button>
+            </Button> */}
         </aside>
     );
 }

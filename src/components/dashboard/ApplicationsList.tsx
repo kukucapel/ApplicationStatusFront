@@ -38,13 +38,11 @@ export default function ApplicationsList({
 
     useEffect(() => {
         setLoading(!connected);
-        let filtered = [...applications];
+        let filtered: Application[] = [...applications];
 
         // Filter by tab
         if (activeTab === 'new') {
             filtered = filtered.filter((app) => app.status === 'new');
-        } else if (activeTab === 'completed') {
-            filtered = filtered.filter((app) => app.status === 'completed');
         } else if (activeTab === 'closed') {
             filtered = filtered.filter((app) => app.status === 'closed');
         } else if (activeTab === 'in_progress') {
@@ -60,7 +58,7 @@ export default function ApplicationsList({
         if (filters.toPosition !== 'all') {
             filtered = filtered.filter(
                 (app: Application) =>
-                    app.toPosition.title === filters.toPosition
+                    app.toPosition.employee.fio === filters.toPosition
             );
         }
         // Filter by time
@@ -73,13 +71,12 @@ export default function ApplicationsList({
         setFilteredApplications(filtered as any);
     }, [applications, activeTab, connected, sortByNewest, filters]);
 
-    type StatusKey = 'new' | 'in_progress' | 'completed' | 'closed';
+    type StatusKey = 'new' | 'in_progress' | 'closed';
 
     const getStatusText = (status: string) => {
         const statusMap: Record<StatusKey, string> = {
             new: 'Необработанная',
             in_progress: 'В работе',
-            completed: 'Обработана',
             closed: 'Закрыта',
         };
         return (statusMap as Record<string, string>)[status] || status;
@@ -89,7 +86,6 @@ export default function ApplicationsList({
         const colorMap: Record<StatusKey, string> = {
             new: 'bg-red-100 text-red-700 border-red-200',
             in_progress: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-            completed: 'bg-green-100 text-green-700 border-green-200',
             closed: 'bg-gray-100 text-gray-700 border-gray-200',
         };
         return (
@@ -115,7 +111,7 @@ export default function ApplicationsList({
                 uniqueToPosition={[
                     ...new Set(
                         applications.map(
-                            (app: Application) => app.toPosition.title
+                            (app: Application) => app.toPosition.employee.fio
                         )
                     ),
                 ]}
@@ -183,7 +179,7 @@ export default function ApplicationsList({
                             >
                                 В работе ({stats.in_progress})
                             </button>
-                            <button
+                            {/* <button
                                 data-testid="tab-completed"
                                 onClick={() => {
                                     // setFilters({
@@ -200,7 +196,7 @@ export default function ApplicationsList({
                                 }`}
                             >
                                 Обработанные ({stats.completed})
-                            </button>
+                            </button> */}
                             <button
                                 data-testid="tab-closed"
                                 onClick={() => {
@@ -304,11 +300,6 @@ export default function ApplicationsList({
                                                             app.toPosition
                                                                 .employee.fio
                                                         }
-                                                        {app.toPosition.unit
-                                                            ?.unit_name &&
-                                                            `
-                                                        •
-                                                        ${app.toPosition.unit?.unit_name}`}
                                                     </p>
                                                     <p className="text-sm text-gray-500 line-clamp-2">
                                                         {app.question}

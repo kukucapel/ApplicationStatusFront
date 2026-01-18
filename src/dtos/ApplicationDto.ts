@@ -82,7 +82,7 @@ export interface Application {
   createdAt: string;
   id: number;
   question: string;
-  status: 'new' | 'in_progress' | 'completed' | 'closed';
+  status: 'new' | 'in_progress' | 'closed';
   theme: string;
   toPosition: {
     employee: {

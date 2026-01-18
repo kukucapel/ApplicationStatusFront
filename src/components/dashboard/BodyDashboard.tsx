@@ -35,8 +35,7 @@ export default function BodyDashboard() {
         new: applications.filter((app) => app.status === 'new').length,
         in_progress: applications.filter((app) => app.status === 'in_progress')
             .length,
-        completed: applications.filter((app) => app.status === 'completed')
-            .length,
+
         closed: applications.filter((app) => app.status === 'closed').length,
     };
 
