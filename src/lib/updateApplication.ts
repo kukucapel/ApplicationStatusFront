@@ -17,7 +17,7 @@ export interface UpdateApplicationStatusProps {
 
 export const updateApplicationStatus = async (
   data: UpdateApplicationStatusProps,
-  id: number
+  id: number,
 ) => {
   return apiRequest(`/requests/${id}`, {
     method: 'PATCH',
@@ -31,7 +31,7 @@ export const updateApplicationStatus = async (
 
 export const updateApplication = async (
   data: UpdateApplicationDataProps,
-  id: number
+  id: number,
 ) => {
   return apiRequest(`/requests/${id}`, {
     method: 'PATCH',
@@ -59,7 +59,7 @@ export const getApplicationResponses = async (id: number) => {
 
 export const addApplicationResponse = async (
   id: number,
-  data: ResponseCreateDto
+  data: ResponseCreateDto,
 ) => {
   return apiRequest(`/requests/${id}/responses`, {
     method: 'POST',
@@ -70,11 +70,23 @@ export const addApplicationResponse = async (
     },
   });
 };
+export const addAttachmentResponse = async (id: number, file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return apiRequest(`/requests/responses/attacment/response/${id}`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+  });
+};
 
 export const getUnitTreeForApplication = async () => {
   return apiRequest(`/org/units-tree`, {
     method: 'GET',
     credentials: 'include',
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   });
 };
 

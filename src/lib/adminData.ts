@@ -33,6 +33,9 @@ export async function deleteEmployee(id: number) {
     method: 'DELETE',
     credentials: 'include',
     body: '1',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 }
 
@@ -61,5 +64,8 @@ export async function deleteRole(id: number) {
     method: 'DELETE',
     credentials: 'include',
     body: '1',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 }

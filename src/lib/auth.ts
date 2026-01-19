@@ -6,6 +6,9 @@ export const loginUser = async (data: LoginFormData) => {
     method: 'POST',
     body: JSON.stringify(data),
     credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 };
 
@@ -13,6 +16,9 @@ export const registerUser = async (data: RegisterFormData) => {
   return apiRequest('/auth/signup', {
     method: 'POST',
     body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 };
 
@@ -24,6 +30,9 @@ export const changePassword = async (data: {
     method: 'POST',
     body: JSON.stringify(data),
     credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 };
 
@@ -32,5 +41,8 @@ export const logoutUser = async () => {
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify({}),
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 };
