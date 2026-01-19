@@ -47,6 +47,9 @@ export const getApplicationDetail = async (id: number) => {
   return apiRequest(`/requests/${id}`, {
     method: 'GET',
     credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 };
 
@@ -54,6 +57,9 @@ export const getApplicationResponses = async (id: number) => {
   return apiRequest(`/requests/${id}/responses`, {
     method: 'GET',
     credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 };
 
@@ -70,11 +76,23 @@ export const addApplicationResponse = async (
     },
   });
 };
+export const addAttachmentResponse = async (id: number, file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return apiRequest(`/requests/responses/attacment/response/${id}`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+  });
+};
 
 export const getUnitTreeForApplication = async () => {
   return apiRequest(`/org/units-tree`, {
     method: 'GET',
     credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 };
 
@@ -82,5 +100,18 @@ export const getCuratorsTreeForApplication = async () => {
   return apiRequest(`/org/units/curators-tree`, {
     method: 'GET',
     credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const getUrlDownloadAttachmentLink = async (id: number) => {
+  return apiRequest(`/requests/responses/attacment/${id}/url`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 };

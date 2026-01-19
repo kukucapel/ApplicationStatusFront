@@ -46,15 +46,21 @@ export interface ApplicantDto {
 
 export interface ResponseDto {
   id: number;
-  requestId: number;
-  author_id: number;
+  request_id: number;
+  author_user_id: number;
   comment: string;
   type: string;
   created_at: string;
   author: Author;
   rating: number | null;
+  attachments: AttachmentDto[];
 }
-
+export interface AttachmentDto {
+  id: number;
+  url: string;
+  uploaded_by_user_id: number;
+  created_at: string;
+}
 export interface Author {
   id: number;
   fio: string;
@@ -63,7 +69,7 @@ export interface Author {
 }
 
 export interface ResponseCreateDto {
-  comment: string;
+  comment: string | null;
   type?: string;
 }
 

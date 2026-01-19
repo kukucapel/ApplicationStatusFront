@@ -1,7 +1,7 @@
 'use client';
 
 import { ResponseCreateDto } from '@/dtos/ApplicationDto';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useRef, useState } from 'react';
 import Button from '../Button';
 import { X } from 'lucide-react';
 
@@ -9,7 +9,8 @@ interface ModalResponseProps {
     onClose: () => void;
     handleSubmit: (
         e: React.FormEvent,
-        data: ResponseCreateDto
+        data: ResponseCreateDto,
+        file: File
     ) => Promise<void>;
 }
 
@@ -18,17 +19,21 @@ export default function ModalResponse({
     handleSubmit,
 }: ModalResponseProps) {
     const [form, setForm] = useState<ResponseCreateDto>({
-        comment: '',
+        comment: null,
         type: 'none_invite',
     });
-    const isActive = form.comment === '';
+    const [file, setFile] = useState<File | null>(null);
+    const isActive = file === null;
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    console.log(file);
 
     return (
         <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50 p-4 transition-all">
             <div className="bg-white rounded-l-2xl shadow-2xl max-w-4xl w-full h-[90vh] overflow-y-auto custom-scroll p-10">
                 <div className="mb-7">
                     <div className="flex flex-row justify-between items-center mb-2">
-                        <span className="text-xl ">Создание уведомления</span>
+                        <span className="text-xl ">Создание ответа</span>
                         <Button
                             styleColor="white"
                             className="p-1"
@@ -71,9 +76,46 @@ export default function ModalResponse({
                 </div>
                 <form
                     className="transition-all duration-150 space-y-4 w-full "
-                    onSubmit={(e) => handleSubmit(e, form)}
+                    onSubmit={(e) => handleSubmit(e, form, file as File)}
                 >
                     <div className="flex flex-col">
+                        <label className="text-sm text-gray-500 mb-2">
+                            Выберите файл
+                        </label>
+
+                        {/* Кастомная кнопка */}
+                        <div className="flex items-center gap-3">
+                            <Button
+                                styleColor="blue"
+                                type="button"
+                                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                                onClick={() => fileInputRef.current?.click()}
+                            >
+                                Выбрать файл
+                            </Button>
+
+                            {/* Отображение имени выбранного файла */}
+                            <span className="text-gray-700 select-none">
+                                {file ? file.name : 'Файл не выбран'}
+                            </span>
+                        </div>
+
+                        {/* Скрытый input */}
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            className="hidden"
+                            onChange={(e) =>
+                                setFile(
+                                    e.target.files !== null
+                                        ? e.target.files[0]
+                                        : null
+                                )
+                            }
+                        />
+                    </div>
+
+                    {/* <div className="flex flex-col">
                         <label className="text-sm text-gray-500 mb-2">
                             Ответ
                         </label>
@@ -93,7 +135,7 @@ export default function ModalResponse({
                    transition-all resize-none"
                             placeholder="Введите текст уведомления..."
                         />
-                    </div>
+                    </div> */}
                     <div className="transition-all duration-150 flex gap-3 pt-4 border-t">
                         <Button
                             isActive={isActive}
@@ -104,7 +146,7 @@ export default function ModalResponse({
                                     : 'bg-blue-600 hover:bg-blue-700'
                             }`}
                         >
-                            Создать уведомление
+                            Создать ответ
                         </Button>
                         <Button
                             onClick={() => onClose()}

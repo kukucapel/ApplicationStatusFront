@@ -5,6 +5,7 @@ import Button from '../ui/Button';
 import { useEffect, useState } from 'react';
 import ModalAlert from '../ui/ModalUi/ModalAlert';
 import Raiting from '../ui/Share/Raiting';
+import { getUrlDownloadAttachmentLink } from '@/lib/updateApplication';
 
 interface ModalBodyResponseProps {
     indexResponse: [number, ShareResponseDto];
@@ -28,6 +29,18 @@ export default function ModalBodyResponse({
 }: ModalBodyResponseProps) {
     const [modalState, setModalState] = useState<string>('');
 
+    const downloadFile = async (idAttachment: number) => {
+        const res = await getUrlDownloadAttachmentLink(idAttachment);
+        const url = res.url;
+        // const newUrl = url.replace(
+        //     /^http:\/\/192\.168\.8\.59:9000/,
+        //     'https://app.kaluga-gov.ru/minio'
+        // );
+
+        console.log(url);
+        window.open(url, '_blank', 'noopener,noreferrer');
+    };
+
     useEffect(() => {
         if (modalState === 'no') {
             setModalState('');
@@ -39,17 +52,22 @@ export default function ModalBodyResponse({
 
     return (
         <div className="space-y-5">
-            <div className="text-sm font-medium ">
+            {/* <div className="text-sm font-medium ">
                 <span className="text-gray-500">Тип ответа:</span>
                 <p className={`text-green-500`}>
                     {response.type === 'none_invite'
                         ? 'Промежуточный ответ'
                         : 'Приглашение'}
                 </p>
-            </div>
+            </div> */}
             <div className="text-sm font-medium ">
-                <span className="text-gray-500">Комментарий:</span>
-                <p className={`text-lg text-orange-500`}>{response.comment}</p>
+                <span className="text-gray-500">Ответ:</span>
+                <p
+                    className="text-gray-900 underline cursor-pointer"
+                    onClick={() => downloadFile(response.attachments[0].id)}
+                >
+                    Скачать файл
+                </p>
             </div>
             {response.rating !== null ? (
                 <div className="flex flex-col gap-0.5">

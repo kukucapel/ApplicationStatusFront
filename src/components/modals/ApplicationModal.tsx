@@ -32,6 +32,8 @@ import {
     UpdateApplicationDataProps,
     updateApplication,
     getCuratorsTreeForApplication,
+    addAttachmentResponse,
+    getUrlDownloadAttachmentLink,
 } from '@/lib/updateApplication';
 import ModalHeader from '../ui/ModalUi/ModalHeader';
 import Button from '../ui/Button';
@@ -88,10 +90,12 @@ export function ApplicationModal({
 
     const handleSubmitResponseModal = async (
         e: React.FormEvent,
-        data: ResponseCreateDto
+        data: ResponseCreateDto,
+        file: File
     ) => {
         e.preventDefault();
-        await addApplicationResponse(application.id, data);
+        const res = await addApplicationResponse(application.id, data);
+        await addAttachmentResponse(res.id, file);
         await Promise.all([loadResponse(), loadApplication()]);
         setShowResponseModal(false);
     };
@@ -110,6 +114,18 @@ export function ApplicationModal({
     };
     const loadApplication = async () => {
         setApplicationItem(await getApplicationDetail(application.id));
+    };
+
+    const downloadFile = async (idAttachment: number) => {
+        const res = await getUrlDownloadAttachmentLink(idAttachment);
+        const url = res.url;
+        // const newUrl = url.replace(
+        //     /^http:\/\/192\.168\.8\.59:9000/,
+        //     'https://app.kaluga-gov.ru/minio'
+        // );
+
+        console.log(url);
+        window.open(url, '_blank', 'noopener,noreferrer');
     };
 
     //загрузка модалки данных
@@ -253,9 +269,9 @@ export function ApplicationModal({
                                 onClick={() => setShowResponseModal(true)}
                                 className="py-2 flex-grow"
                             >
-                                Создать уведомление
+                                Создать ответ
                             </Button>
-                            {user?.role === 'worker' && (
+                            {user?.role !== 'worker' && (
                                 <Button
                                     styleColor="blue"
                                     className="py-2 w-[50%]"
@@ -356,7 +372,7 @@ export function ApplicationModal({
                         {sortedResponseItems?.length !== 0 && (
                             <div className="space-y-4">
                                 <h3 className="text-lg font-semibold flex items-end justify-between text-gray-900 border-b pb-2">
-                                    Уведомления
+                                    Ответы
                                     {sortedResponseItems.length !== 1 && (
                                         <div
                                             className="flex cursor-pointer items-center"
@@ -392,7 +408,7 @@ export function ApplicationModal({
                                             <div className="flex items-start gap-2">
                                                 <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
                                                 <p className="text-sm font-medium text-gray-700">
-                                                    Уведомление
+                                                    Ответ
                                                 </p>
                                             </div>
                                             <p className="text-sm font-medium text-gray-700">
@@ -405,8 +421,15 @@ export function ApplicationModal({
                                             {(res.author && res.author.fio) ||
                                                 'Заявитель'}
                                         </p>
-                                        <p className="text-gray-900 ml-7 mt-4 whitespace-pre-wrap">
-                                            {res.comment}
+                                        <p
+                                            className="text-gray-900 ml-7 mt-4 whitespace-pre-wrap underline cursor-pointer"
+                                            onClick={() =>
+                                                downloadFile(
+                                                    res.attachments[0].id
+                                                )
+                                            }
+                                        >
+                                            Скачать файл
                                         </p>
                                     </div>
                                 ))}
