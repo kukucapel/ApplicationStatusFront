@@ -32,6 +32,13 @@ export interface ShareResponseDto {
   type: string;
   rating: number | null;
   created_at: string;
+  attachments: ShareResponseAttachmentsDto[];
+}
+
+export interface ShareResponseAttachmentsDto {
+  id: number;
+  url: string;
+  created_at: string;
 }
 
 export interface ShareAttachmentsDto {

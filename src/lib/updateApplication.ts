@@ -17,7 +17,7 @@ export interface UpdateApplicationStatusProps {
 
 export const updateApplicationStatus = async (
   data: UpdateApplicationStatusProps,
-  id: number,
+  id: number
 ) => {
   return apiRequest(`/requests/${id}`, {
     method: 'PATCH',
@@ -31,7 +31,7 @@ export const updateApplicationStatus = async (
 
 export const updateApplication = async (
   data: UpdateApplicationDataProps,
-  id: number,
+  id: number
 ) => {
   return apiRequest(`/requests/${id}`, {
     method: 'PATCH',
@@ -47,6 +47,9 @@ export const getApplicationDetail = async (id: number) => {
   return apiRequest(`/requests/${id}`, {
     method: 'GET',
     credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 };
 
@@ -54,12 +57,15 @@ export const getApplicationResponses = async (id: number) => {
   return apiRequest(`/requests/${id}/responses`, {
     method: 'GET',
     credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 };
 
 export const addApplicationResponse = async (
   id: number,
-  data: ResponseCreateDto,
+  data: ResponseCreateDto
 ) => {
   return apiRequest(`/requests/${id}/responses`, {
     method: 'POST',
@@ -85,7 +91,7 @@ export const getUnitTreeForApplication = async () => {
     method: 'GET',
     credentials: 'include',
     headers: {
-      'Content-Type': 'multipart/form-data',
+      'Content-Type': 'application/json',
     },
   });
 };
@@ -94,5 +100,18 @@ export const getCuratorsTreeForApplication = async () => {
   return apiRequest(`/org/units/curators-tree`, {
     method: 'GET',
     credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const getUrlDownloadAttachmentLink = async (id: number) => {
+  return apiRequest(`/requests/responses/attacment/${id}/url`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 };

@@ -17,6 +17,7 @@ import ModalBodyResponse from './ShareModalResponse';
 import { Timeline, TimelineItem } from './Timeline';
 import { statusLabel } from '@/lib/shareStatus';
 import { useRouter } from 'next/navigation';
+import { getUrlDownloadAttachmentLink } from '@/lib/updateApplication';
 
 export default function ShareClient() {
     const search = useSearchParams();
@@ -32,6 +33,18 @@ export default function ShareClient() {
     const [modalInvite, setModalInvite] = useState<
         [number, ShareResponseDto] | null
     >(null);
+
+    const downloadFile = async (idAttachment: number) => {
+        const res = await getUrlDownloadAttachmentLink(idAttachment);
+        const url = res.url;
+        // const newUrl = url.replace(
+        //     /^http:\/\/192\.168\.8\.59:9000/,
+        //     'https://app.kaluga-gov.ru/minio'
+        // );
+
+        console.log(url);
+        window.open(url, '_blank', 'noopener,noreferrer');
+    };
 
     const handleSetRating = (id: number, value: number) => {
         setRating((prev) => ({ ...prev, [id]: value }));
@@ -224,12 +237,17 @@ export default function ShareClient() {
                                             </span>
                                         </div>
                                         <div className="text-[--ink-900] hidden md:block whitespace-pre-wrap">
-                                            {r.comment}
+                                            <p className="text-gray-900 underline cursor-pointer">
+                                                Посмотреть ответ
+                                            </p>
                                         </div>
                                         <div className="text-[--ink-900] md:hidden block whitespace-pre-wrap">
-                                            {r.type === 'none_invite'
+                                            {/* {r.type === 'none_invite'
                                                 ? 'Промежуточный ответ'
-                                                : 'Приглашение на личный приём'}
+                                                : 'Приглашение на личный приём'} */}
+                                            <p className="text-gray-900 underline cursor-pointer">
+                                                Посмотреть ответ
+                                            </p>
                                         </div>
                                     </div>
 
