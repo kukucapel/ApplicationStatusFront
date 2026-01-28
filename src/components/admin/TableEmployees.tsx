@@ -31,6 +31,10 @@ const HEADER = [
     ['Email', 'email'],
     ['Роль', 'role'],
 ];
+const HEADER_MOBILE = [
+    ['ID', 'id'],
+    ['ФИО', 'fio'],
+];
 
 export default function TableEmployees({
     page,
@@ -121,78 +125,157 @@ export default function TableEmployees({
     }
 
     return (
-        <div className="p-6 bg-gray-50 rounded-lg">
-            <TableHeader
-                handleFilterChange={handleFilterChange}
-                setSort={setSort}
-                sort={sort}
-                HEADER={HEADER as [string, string][]}
-                searchMode={searchMode}
-            />
-            <div className="space-y-2">
-                {filtredAndSortedItems?.map(
-                    (emp: Employee) =>
-                        emp.user && (
-                            <TableRow
-                                deleteMode={deleteMode}
-                                onClickTableModal={() => {
-                                    setModalIsActive(emp.id);
-                                    setModalEmployee(emp);
-                                }}
-                                editMode={editMode}
-                                key={emp.id}
-                                id={emp.id}
-                            >
-                                <div className="grid grid-cols-[60px_1fr_1fr_1fr] gap-4">
-                                    <div>{emp.id}</div>
-                                    <div>{emp.fio || '-'}</div>
-                                    <div>{emp.email}</div>
-                                    <div>{emp.user?.role || '-'}</div>
-                                </div>
-                                {deleteMode && (
-                                    <button
-                                        onClick={() => {
-                                            setModalSubmit(emp.id);
-                                        }}
-                                        className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
+        <>
+            {/* Mobile */}
+            <div className="p-6 bg-gray-50 rounded-lg md:hidden">
+                <TableHeader
+                    handleFilterChange={handleFilterChange}
+                    setSort={setSort}
+                    sort={sort}
+                    sizeId="50px"
+                    HEADER={HEADER_MOBILE as [string, string][]}
+                    searchMode={searchMode}
+                />
+                <div className="space-y-2">
+                    {filtredAndSortedItems?.map(
+                        (emp: Employee) =>
+                            emp.user && (
+                                <TableRow
+                                    deleteMode={deleteMode}
+                                    onClickTableModal={() => {
+                                        setModalIsActive(emp.id);
+                                        setModalEmployee(emp);
+                                    }}
+                                    editMode={editMode}
+                                    key={emp.id}
+                                    id={emp.id}
+                                >
+                                    <div className="grid grid-cols-[30px_1fr] gap-4">
+                                        <div>{emp.id}</div>
+                                        <div>{emp.fio || '-'}</div>
+                                        {/* <div>{emp.email}</div>
+                                        <div>{emp.user?.role || '-'}</div> */}
+                                    </div>
+                                    {deleteMode && (
+                                        <button
+                                            onClick={() => {
+                                                setModalSubmit(emp.id);
+                                            }}
+                                            className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
         "
-                                    >
-                                        <Trash2 size={18} />
-                                    </button>
-                                )}
-                            </TableRow>
-                        )
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    )}
+                                </TableRow>
+                            ),
+                    )}
+                </div>
+                {modalIsActive && modalEmployee && roleItems && (
+                    <ModalAdminEmployee
+                        roleItems={roleItems}
+                        loadEmployees={loadEmployees}
+                        employee={modalEmployee}
+                        setModalIsActive={() => {
+                            setModalEmployee(null);
+                            setModalIsActive(null);
+                        }}
+                    />
+                )}
+                {}
+                {showAddModal && (
+                    <ModalAdminEmployee
+                        roleItems={roleItems}
+                        loadEmployees={loadEmployees}
+                        employee={modalEmployee}
+                        setModalIsActive={() => {
+                            setModalEmployee(null);
+                            setShowAddModal(false);
+                        }}
+                    />
+                )}
+                {modalSubmit && (
+                    <ModalSubmit
+                        handleSubmit={() => handleDelete(modalSubmit)}
+                        onClose={() => setModalSubmit(null)}
+                    />
                 )}
             </div>
-            {modalIsActive && modalEmployee && roleItems && (
-                <ModalAdminEmployee
-                    roleItems={roleItems}
-                    loadEmployees={loadEmployees}
-                    employee={modalEmployee}
-                    setModalIsActive={() => {
-                        setModalEmployee(null);
-                        setModalIsActive(null);
-                    }}
+
+            {/* Desktop */}
+            <div className="p-6 bg-gray-50 rounded-lg hidden md:block">
+                <TableHeader
+                    handleFilterChange={handleFilterChange}
+                    setSort={setSort}
+                    sort={sort}
+                    HEADER={HEADER as [string, string][]}
+                    searchMode={searchMode}
                 />
-            )}
-            {}
-            {showAddModal && (
-                <ModalAdminEmployee
-                    roleItems={roleItems}
-                    loadEmployees={loadEmployees}
-                    employee={modalEmployee}
-                    setModalIsActive={() => {
-                        setModalEmployee(null);
-                        setShowAddModal(false);
-                    }}
-                />
-            )}
-            {modalSubmit && (
-                <ModalSubmit
-                    handleSubmit={() => handleDelete(modalSubmit)}
-                    onClose={() => setModalSubmit(null)}
-                />
-            )}
-        </div>
+                <div className="space-y-2">
+                    {filtredAndSortedItems?.map(
+                        (emp: Employee) =>
+                            emp.user && (
+                                <TableRow
+                                    deleteMode={deleteMode}
+                                    onClickTableModal={() => {
+                                        setModalIsActive(emp.id);
+                                        setModalEmployee(emp);
+                                    }}
+                                    editMode={editMode}
+                                    key={emp.id}
+                                    id={emp.id}
+                                >
+                                    <div className="grid grid-cols-[60px_1fr_1fr_1fr] gap-4">
+                                        <div>{emp.id}</div>
+                                        <div>{emp.fio || '-'}</div>
+                                        <div>{emp.email}</div>
+                                        <div>{emp.user?.role || '-'}</div>
+                                    </div>
+                                    {deleteMode && (
+                                        <button
+                                            onClick={() => {
+                                                setModalSubmit(emp.id);
+                                            }}
+                                            className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
+        "
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    )}
+                                </TableRow>
+                            ),
+                    )}
+                </div>
+                {modalIsActive && modalEmployee && roleItems && (
+                    <ModalAdminEmployee
+                        roleItems={roleItems}
+                        loadEmployees={loadEmployees}
+                        employee={modalEmployee}
+                        setModalIsActive={() => {
+                            setModalEmployee(null);
+                            setModalIsActive(null);
+                        }}
+                    />
+                )}
+                {}
+                {showAddModal && (
+                    <ModalAdminEmployee
+                        roleItems={roleItems}
+                        loadEmployees={loadEmployees}
+                        employee={modalEmployee}
+                        setModalIsActive={() => {
+                            setModalEmployee(null);
+                            setShowAddModal(false);
+                        }}
+                    />
+                )}
+                {modalSubmit && (
+                    <ModalSubmit
+                        handleSubmit={() => handleDelete(modalSubmit)}
+                        onClose={() => setModalSubmit(null)}
+                    />
+                )}
+            </div>
+        </>
     );
 }

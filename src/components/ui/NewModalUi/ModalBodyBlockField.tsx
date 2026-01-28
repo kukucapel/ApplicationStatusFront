@@ -4,6 +4,7 @@ interface ModalBodyBlockFieldProps {
     valueField: string;
     typeStyle?: number;
     bgColor?: 'b' | 'g';
+    isLoading?: boolean;
 }
 
 export default function ModalBodyBlockField({
@@ -12,6 +13,7 @@ export default function ModalBodyBlockField({
     valueField,
     typeStyle = 1,
     bgColor = 'b',
+    isLoading,
 }: ModalBodyBlockFieldProps) {
     const IconComponent = icon;
     if (typeStyle === 1) {
@@ -22,7 +24,13 @@ export default function ModalBodyBlockField({
                 )}
                 <div>
                     <p className="text-sm text-gray-600">{nameField}</p>
-                    <p className="font-medium text-gray-900">{valueField}</p>
+                    {isLoading ? (
+                        <div className="h-6 w-full max-w-[240px] animate-pulse rounded bg-gray-200" />
+                    ) : (
+                        <p className="font-medium text-gray-900">
+                            {valueField}
+                        </p>
+                    )}
                 </div>
             </div>
         );
@@ -41,9 +49,11 @@ export default function ModalBodyBlockField({
                         {nameField}
                     </p>
                 </div>
-                <p className="text-gray-900 ml-7 whitespace-pre-wrap">
-                    {valueField}
-                </p>
+                {isLoading ? (
+                    <div className="h-6 w-full max-w-[240px] animate-pulse rounded bg-gray-200" />
+                ) : (
+                    <p className="font-medium text-gray-900">{valueField}</p>
+                )}
             </div>
         );
     }

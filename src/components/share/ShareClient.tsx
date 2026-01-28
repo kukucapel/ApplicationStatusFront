@@ -17,7 +17,6 @@ import ModalBodyResponse from './ShareModalResponse';
 import { Timeline, TimelineItem } from './Timeline';
 import { statusLabel } from '@/lib/shareStatus';
 import { useRouter } from 'next/navigation';
-import { getUrlDownloadAttachmentLink } from '@/lib/updateApplication';
 
 export default function ShareClient() {
     const search = useSearchParams();
@@ -34,18 +33,6 @@ export default function ShareClient() {
         [number, ShareResponseDto] | null
     >(null);
 
-    const downloadFile = async (idAttachment: number) => {
-        const res = await getUrlDownloadAttachmentLink(idAttachment);
-        const url = res.url;
-        // const newUrl = url.replace(
-        //     /^http:\/\/192\.168\.8\.59:9000/,
-        //     'https://app.kaluga-gov.ru/minio'
-        // );
-
-        console.log(url);
-        window.open(url, '_blank', 'noopener,noreferrer');
-    };
-
     const handleSetRating = (id: number, value: number) => {
         setRating((prev) => ({ ...prev, [id]: value }));
     };
@@ -53,7 +40,7 @@ export default function ShareClient() {
     const handleSubmitRating = async (
         id: number,
         score: number,
-        index: number
+        index: number,
     ) => {
         try {
             const res = await setShareRating(id, score, token);
@@ -62,7 +49,7 @@ export default function ShareClient() {
                 if (!prev || !prev.responses) return prev;
 
                 const updatedResponses = prev.responses.map((res, i) =>
-                    i === index ? { ...res, rating: score } : res
+                    i === index ? { ...res, rating: score } : res,
                 );
 
                 return { ...prev, responses: updatedResponses };
@@ -110,8 +97,8 @@ export default function ShareClient() {
             error === 404
                 ? 'Срок действия ссылки истёк.'
                 : error == 500
-                ? 'Ссылка не найдена или истекла.'
-                : '';
+                  ? 'Ссылка не найдена или истекла.'
+                  : '';
 
         return <span className="text-2xl text-red-800">{msg}</span>;
     }
@@ -205,10 +192,10 @@ export default function ShareClient() {
                                         r.type === 'invite'
                                             ? 'border-orange-400'
                                             : r.type === 'invite_yes'
-                                            ? 'border-green-300'
-                                            : r.type === 'invite_no'
-                                            ? 'border-red-300'
-                                            : 'border-gray-300'
+                                              ? 'border-green-300'
+                                              : r.type === 'invite_no'
+                                                ? 'border-red-300'
+                                                : 'border-gray-300'
                                     } items-center justify-between  rounded-lg p-4 hover:shadow-md transition-shadow flex bg-white`}
                                 >
                                     <div
@@ -262,7 +249,7 @@ export default function ShareClient() {
                                                     handleSubmitRating(
                                                         r.id,
                                                         rating[r.id],
-                                                        index
+                                                        index,
                                                     );
                                                 }}
                                                 rating={rating}
@@ -332,7 +319,7 @@ export default function ShareClient() {
                                 .filter(
                                     (h) =>
                                         h.old_status !== h.new_status &&
-                                        h.old_status
+                                        h.old_status,
                                 )
                                 .map((h) => (
                                     <TimelineItem key={h.id}>

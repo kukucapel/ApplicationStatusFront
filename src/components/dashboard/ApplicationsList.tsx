@@ -58,7 +58,7 @@ export default function ApplicationsList({
         if (filters.toPosition !== 'all') {
             filtered = filtered.filter(
                 (app: Application) =>
-                    app.toPosition.employee.fio === filters.toPosition
+                    app.toPosition.employee.fio === filters.toPosition,
             );
         }
         // Filter by time
@@ -111,8 +111,8 @@ export default function ApplicationsList({
                 uniqueToPosition={[
                     ...new Set(
                         applications.map(
-                            (app: Application) => app.toPosition.employee.fio
-                        )
+                            (app: Application) => app.toPosition.employee.fio,
+                        ),
                     ),
                 ]}
                 filters={filters}
@@ -123,7 +123,7 @@ export default function ApplicationsList({
             <main className="flex-1">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                     {/* Tabs */}
-                    <div className="border-b flex items-center justify-between border-gray-200 px-6 pt-4">
+                    <div className=" hidden border-b sm:flex items-center justify-between border-gray-200 px-6 pt-4">
                         <div className="flex gap-2 overflow-x-auto">
                             <button
                                 data-testid="tab-all"
@@ -261,7 +261,7 @@ export default function ApplicationsList({
                         ) : (
                             <div className="space-y-3">
                                 {filteredApplications.map(
-                                    (app: Application) => (
+                                    (app: Application, index: number) => (
                                         <div
                                             key={app.id}
                                             data-testid={`application-card-${app.id}`}
@@ -272,17 +272,17 @@ export default function ApplicationsList({
                                         >
                                             <div className="flex items-start justify-between gap-4">
                                                 <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 mb-2">
+                                                    <div className="sm:flex items-center gap-2 mb-2">
                                                         <span
                                                             className={`status-indicator status-${app.status}`}
                                                         ></span>
                                                         <span
                                                             className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
-                                                                app.status
+                                                                app.status,
                                                             )}`}
                                                         >
                                                             {getStatusText(
-                                                                app.status
+                                                                app.status,
                                                             )}
                                                         </span>
                                                     </div>
@@ -306,16 +306,16 @@ export default function ApplicationsList({
                                                     </p>
                                                 </div>
 
-                                                <div className="text-right flex-shrink-0">
-                                                    <div className="text-s text-gray-500">
+                                                <div className="hidden sm:flex text-right flex-shrink-0">
+                                                    <div className="text-xs md:text-sm text-gray-500">
                                                         {formatDate(
-                                                            app.createdAt
+                                                            app.createdAt,
                                                         )}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    )
+                                    ),
                                 )}
                             </div>
                         )}

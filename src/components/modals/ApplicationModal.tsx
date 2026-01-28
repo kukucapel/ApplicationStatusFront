@@ -47,6 +47,7 @@ import ModalBodyBlock from '../ui/NewModalUi/ModalBodyBlock';
 import ModalBodyBlockField from '../ui/NewModalUi/ModalBodyBlockField';
 import ModalSubmit from './ModalSubmit';
 import ModalCuratorTree from './ModalCuratorTree';
+import downloadFile from '@/lib/download';
 
 interface ApplicationModalProps {
     onClose: () => void;
@@ -61,7 +62,7 @@ export function ApplicationModal({
     const [applicationItem, setApplicationItem] =
         useState<ApplicationDetailDto | null>(null);
     const [responseItems, setResponseItems] = useState<ResponseDto[] | null>(
-        null
+        null,
     );
     const [sortedResponseItems, setSortedResponseItems] = useState<
         ResponseDto[]
@@ -72,7 +73,7 @@ export function ApplicationModal({
     const [unit, setUnit] = useState<Curator[] | null>(null);
     const [showUnitModal, setShowUnitModal] = useState<boolean>(false);
 
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
 
     const { user } = useUser();
 
@@ -84,14 +85,14 @@ export function ApplicationModal({
     const onCloseUnitModal = () => {
         setShowUnitModal(false);
     };
-    useEffect(() => {
-        document.body.style.overflow = 'hidden';
-    });
+    //   useEffect(() => {
+    //     document.body.style.overflow = 'hidden';
+    //   });
 
     const handleSubmitResponseModal = async (
         e: React.FormEvent,
         data: ResponseCreateDto,
-        file: File
+        file: File,
     ) => {
         e.preventDefault();
         const res = await addApplicationResponse(application.id, data);
@@ -116,38 +117,23 @@ export function ApplicationModal({
         setApplicationItem(await getApplicationDetail(application.id));
     };
 
-    const downloadFile = async (idAttachment: number) => {
-        const res = await getUrlDownloadAttachmentLink(idAttachment);
-        const url = res.url;
-        // const newUrl = url.replace(
-        //     /^http:\/\/192\.168\.8\.59:9000/,
-        //     'https://app.kaluga-gov.ru/minio'
-        // );
-
-        console.log(url);
-        window.open(url, '_blank', 'noopener,noreferrer');
-    };
-
     //загрузка модалки данных
     useEffect(() => {
         async function load() {
             setApplicationItem(await getApplicationDetail(application.id));
             setResponseItems(
-                (await getApplicationResponses(application.id)).items
+                (await getApplicationResponses(application.id)).items,
             );
             user?.role !== 'worker' &&
                 setUnit((await getCuratorsTreeForApplication()).items);
             setLoading(false);
         }
         load();
-    }, [application]);
-
-    useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => {
             document.body.style.overflow = '';
         };
-    }, []);
+    }, [application]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -190,13 +176,13 @@ export function ApplicationModal({
     };
 
     const handleStatusChange = async (
-        newStatus: UpdateApplicationStatusProps['new_status']
+        newStatus: UpdateApplicationStatusProps['new_status'],
     ) => {
         setUpdating(true);
         try {
             await updateApplicationStatus(
                 { new_status: newStatus, comments: '1' },
-                application.id
+                application.id,
             );
             application.status = newStatus;
         } catch (error) {
@@ -206,12 +192,167 @@ export function ApplicationModal({
         }
     };
 
+    if (!applicationItem) {
+        return (
+            <Modal className="h-full">
+                <ModalHeader
+                    title="Детали заявки"
+                    onClose={onClose}
+                ></ModalHeader>
+                <div>
+                    <ModalBody className="h-full">
+                        <div className="bg-blue-50 rounded-xl opacity-50 p-4 border border-blue-200">
+                            <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                                Текущий статус
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                                {['new', 'in_progress', 'closed'].map(
+                                    (status) => (
+                                        <button
+                                            key={status}
+                                            data-testid={`status-btn-${status}`}
+                                            disabled={
+                                                updating ||
+                                                application.status === status
+                                            }
+                                            // onClick={() => setAlert(status)}
+                                            className={`p-2 rounded-md`}
+                                        >
+                                            {getStatusText(status)}
+                                        </button>
+                                    ),
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex justify-between">
+                            <Button
+                                styleColor="blue"
+                                // onClick={() => setShowResponseModal(true)}
+                                className="py-2 flex-grow"
+                                isActive
+                            >
+                                Создать ответ
+                            </Button>
+                            {user?.role !== 'worker' && (
+                                <Button
+                                    styleColor="blue"
+                                    className="py-2 w-[50%]"
+                                    isActive
+                                    // onClick={() => setShowUnitModal(true)}
+                                >
+                                    Передать приём
+                                </Button>
+                            )}
+                        </div>
+
+                        <ModalBodyBlock title="Информация о заявителе">
+                            <ModalBodyBlockField
+                                nameField="ФИО"
+                                valueField={'Загрузка'}
+                                isLoading
+                                icon={User}
+                            />
+
+                            <ModalBodyBlockField
+                                nameField="Email"
+                                valueField={'Загрузка'}
+                                icon={Mail}
+                                isLoading
+                            />
+                            <ModalBodyBlockField
+                                nameField="Телефон"
+                                valueField={'Загрузка'}
+                                icon={Phone}
+                                isLoading
+                            />
+                            <ModalBodyBlockField
+                                nameField="Адрес регистрации"
+                                valueField={'Загрузка'}
+                                icon={MapPin}
+                                isLoading
+                            />
+                            <ModalBodyBlockField
+                                nameField="Адрес проживания"
+                                valueField={'Загрузка'}
+                                icon={MapPin}
+                                isLoading
+                            />
+                            <ModalBodyBlockField
+                                nameField="Индекс регистрации"
+                                valueField={'Загрузка'}
+                                icon={FileText}
+                                isLoading
+                            />
+                            <ModalBodyBlockField
+                                nameField="Индекс проживания"
+                                valueField={'Загрузка'}
+                                icon={FileText}
+                                isLoading
+                            />
+                        </ModalBodyBlock>
+
+                        <ModalBodyBlock typeStyle={2} title="Детали обращения">
+                            <ModalBodyBlockField
+                                typeStyle={2}
+                                nameField="Тема"
+                                valueField={'Загрузка'}
+                                isLoading
+                                icon={FileText}
+                            />
+                            <ModalBodyBlockField
+                                typeStyle={2}
+                                nameField="Суть обращения"
+                                valueField={'Загрузка'}
+                                isLoading
+                                icon={FileText}
+                                bgColor="g"
+                            />
+                            {/* <ModalBodyBlockField
+                                typeStyle={2}
+                                nameField="Исполнительный орган"
+                                valueField={
+                                    applicationItem.assignedUnit?.name || '-'
+                                }
+                                icon={FileText}
+                                bgColor="g"
+                            /> */}
+                            <ModalBodyBlockField
+                                typeStyle={2}
+                                nameField="К кому приём"
+                                valueField={'Загрузка'}
+                                isLoading
+                                icon={FileText}
+                            />
+                            {/* <ModalBodyBlockField
+                                typeStyle={2}
+                                nameField="Исполнитель"
+                                valueField={
+                                    applicationItem.assignedUser?.fio || '-'
+                                }
+                                icon={UserPen}
+                            /> */}
+                        </ModalBodyBlock>
+
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-semibold flex items-end justify-between text-gray-900 border-b pb-2">
+                                Ответы
+                            </h3>
+                            <div className=" inset-0 z-50 flex items-center justify-center bg-white">
+                                <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-blue-500"></div>
+                            </div>
+                        </div>
+                    </ModalBody>
+                </div>
+            </Modal>
+        );
+    }
+
     return (
         !loading &&
         applicationItem && (
             <Modal>
                 <ModalHeader title="Детали заявки" onClose={onClose}>
-                    <div className="text-gray-400-100 text-sm">
+                    <div className="text-gray-400-100 hidden sm:block text-sm">
                         <p>
                             Создано:{' '}
                             {applicationItem &&
@@ -251,15 +392,15 @@ export function ApplicationModal({
                                                     ? status === 'new'
                                                         ? 'bg-red-600 hover:bg-red-700 text-white cursor-none'
                                                         : status ===
-                                                          'in_progress'
-                                                        ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
-                                                        : 'bg-gray-600 hover:bg-gray-700 text-white'
+                                                            'in_progress'
+                                                          ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
+                                                          : 'bg-gray-600 hover:bg-gray-700 text-white'
                                                     : 'hover:bg-blue-50'
-                                            } p-2 rounded-md cursor-pointer`}
+                                            } p-2 text-sm sm:text-base rounded-md cursor-pointer`}
                                         >
                                             {getStatusText(status)}
                                         </button>
-                                    )
+                                    ),
                                 )}
                             </div>
                         </div>
@@ -350,9 +491,7 @@ export function ApplicationModal({
                             <ModalBodyBlockField
                                 typeStyle={2}
                                 nameField="К кому приём"
-                                valueField={`${
-                                    applicationItem.toPosition.employee.fio
-                                }  ${
+                                valueField={`${applicationItem.toPosition.employee.fio}  ${
                                     applicationItem.toPosition.unit?.unit_name
                                         ? `• ${applicationItem.toPosition.unit?.unit_name} `
                                         : ''
@@ -378,7 +517,7 @@ export function ApplicationModal({
                                             className="flex cursor-pointer items-center"
                                             onClick={() =>
                                                 setSortResponsesFlag(
-                                                    (prev) => !prev
+                                                    (prev) => !prev,
                                                 )
                                             }
                                         >
@@ -397,10 +536,10 @@ export function ApplicationModal({
                                             res.type === 'invite_yes'
                                                 ? 'bg-green-50'
                                                 : res.type === 'invite_no'
-                                                ? 'bg-red-50'
-                                                : res.type === 'invite'
-                                                ? 'bg-orange-50'
-                                                : 'bg-blue-50'
+                                                  ? 'bg-red-50'
+                                                  : res.type === 'invite'
+                                                    ? 'bg-orange-50'
+                                                    : 'bg-blue-50'
                                         } rounded-lg p-4`}
                                         key={res.id}
                                     >
@@ -425,7 +564,7 @@ export function ApplicationModal({
                                             className="text-gray-900 ml-7 mt-4 whitespace-pre-wrap underline cursor-pointer"
                                             onClick={() =>
                                                 downloadFile(
-                                                    res.attachments[0].id
+                                                    res.attachments[0].id,
                                                 )
                                             }
                                         >
@@ -457,7 +596,7 @@ export function ApplicationModal({
                         onClose={() => setAlert(null)}
                         handleSubmit={() =>
                             handleStatusChange(
-                                alert as UpdateApplicationStatusProps['new_status']
+                                alert as UpdateApplicationStatusProps['new_status'],
                             )
                         }
                     />

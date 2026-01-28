@@ -15,6 +15,7 @@ interface TableHeaderProps {
     setSort: (sort: [number, number]) => void;
     handleFilterChange: (key: string, value: string) => void;
     searchMode: boolean;
+    sizeId?: string;
 }
 
 export default function TableHeader({
@@ -23,9 +24,10 @@ export default function TableHeader({
     setSort,
     handleFilterChange,
     searchMode,
+    sizeId = '70px',
 }: TableHeaderProps) {
     const [filterValues, setFilterValues] = useState<Record<string, string>>(
-        {}
+        {},
     );
 
     const handleInputChange = (key: string, value: string) => {
@@ -45,7 +47,7 @@ export default function TableHeader({
         }
     };
 
-    const gridTemplateColumns = `50px ${'1fr '.repeat(HEADER.length - 1)}`;
+    const gridTemplateColumns = `${sizeId} ${'1fr '.repeat(HEADER.length - 1)}`;
 
     return (
         <div
