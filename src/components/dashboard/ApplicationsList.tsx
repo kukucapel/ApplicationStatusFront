@@ -58,7 +58,7 @@ export default function ApplicationsList({
         if (filters.toPosition !== 'all') {
             filtered = filtered.filter(
                 (app: Application) =>
-                    app.toPosition.employee.fio === filters.toPosition
+                    app.toPosition.employee.fio === filters.toPosition,
             );
         }
         // Filter by time
@@ -111,8 +111,8 @@ export default function ApplicationsList({
                 uniqueToPosition={[
                     ...new Set(
                         applications.map(
-                            (app: Application) => app.toPosition.employee.fio
-                        )
+                            (app: Application) => app.toPosition.employee.fio,
+                        ),
                     ),
                 ]}
                 filters={filters}
@@ -261,7 +261,7 @@ export default function ApplicationsList({
                         ) : (
                             <div className="space-y-3">
                                 {filteredApplications.map(
-                                    (app: Application) => (
+                                    (app: Application, index: number) => (
                                         <div
                                             key={app.id}
                                             data-testid={`application-card-${app.id}`}
@@ -278,11 +278,11 @@ export default function ApplicationsList({
                                                         ></span>
                                                         <span
                                                             className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
-                                                                app.status
+                                                                app.status,
                                                             )}`}
                                                         >
                                                             {getStatusText(
-                                                                app.status
+                                                                app.status,
                                                             )}
                                                         </span>
                                                     </div>
@@ -309,13 +309,13 @@ export default function ApplicationsList({
                                                 <div className="text-right flex-shrink-0">
                                                     <div className="text-s text-gray-500">
                                                         {formatDate(
-                                                            app.createdAt
+                                                            app.createdAt,
                                                         )}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    )
+                                    ),
                                 )}
                             </div>
                         )}

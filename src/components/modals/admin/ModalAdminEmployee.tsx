@@ -7,6 +7,8 @@ import { Employee, EmployeeUpdate, Role } from '@/dtos/AdminDto';
 import { addEmployee, updateEmployee } from '@/lib/adminData';
 import { useEffect, useState } from 'react';
 import { Unit } from '@/dtos/AdminDto';
+import Select from 'react-select';
+
 import { getUnitTreeForApplication } from '@/lib/updateApplication';
 // import ModalUnitTree from '../ModalUnitTree';
 
@@ -50,7 +52,7 @@ export default function ModalAdminEmployee({
           );
 
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     ) => {
         setError('');
         setSuccessfully('');
@@ -102,7 +104,6 @@ export default function ModalAdminEmployee({
             document.body.style.overflow = '';
         };
     }, []);
-
     return (
         <ModalAdminMainBody setModalIsActive={setModalIsActive}>
             <form
@@ -164,22 +165,40 @@ export default function ModalAdminEmployee({
                 </div>
 
                 {/* Роль */}
-                {user?.role === 'admin' && (
+                {user?.role === 'admin' && roleItems && (
                     <div className="flex flex-col">
-                        <label className="text-sm text-gray-500">Роль</label>
-                        <select
+                        <label className="text-sm text-gray-500 mb-1">
+                            Роль
+                        </label>
+
+                        <Select
                             name="role_id"
-                            value={form.role_id || ''}
-                            onChange={handleChange}
-                            className="mt-1 rounded-md border border-gray-300 px-3 py-2"
-                        >
-                            {roleItems &&
-                                roleItems.map((r) => (
-                                    <option key={r.id} value={r.id}>
-                                        {r.name}
-                                    </option>
-                                ))}
-                        </select>
+                            options={roleItems.map((r) => ({
+                                value: r.id,
+                                label: r.name,
+                            }))}
+                            value={roleItems
+                                .map((r) => ({
+                                    value: r.id,
+                                    label: r.name,
+                                }))
+                                .find(
+                                    (option) => option.value === form.role_id,
+                                )}
+                            onChange={(option) => {
+                                if (!option) return;
+
+                                handleChange({
+                                    target: {
+                                        name: 'role_id',
+                                        value: option.value,
+                                    },
+                                } as any);
+                            }}
+                            placeholder="Выберите роль"
+                            isSearchable
+                            menuPlacement="top"
+                        />
                     </div>
                 )}
 
