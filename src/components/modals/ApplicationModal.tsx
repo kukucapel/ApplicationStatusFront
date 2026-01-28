@@ -85,9 +85,9 @@ export function ApplicationModal({
     const onCloseUnitModal = () => {
         setShowUnitModal(false);
     };
-    //   useEffect(() => {
-    //     document.body.style.overflow = 'hidden';
-    //   });
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+    });
 
     const handleSubmitResponseModal = async (
         e: React.FormEvent,
@@ -129,12 +129,13 @@ export function ApplicationModal({
             setLoading(false);
         }
         load();
+    }, [application]);
+    useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => {
             document.body.style.overflow = '';
         };
-    }, [application]);
-
+    }, []);
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape' && !showResponseModal) {
@@ -361,7 +362,7 @@ export function ApplicationModal({
                         {applicationItem.createdAt !==
                             applicationItem.updatedAt && (
                             <p>
-                                Изменено:
+                                Изменено:{' '}
                                 {applicationItem &&
                                     formatDate(application.updatedAt)}
                             </p>
