@@ -123,7 +123,7 @@ export default function ApplicationsList({
             <main className="flex-1">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                     {/* Tabs */}
-                    <div className="border-b flex items-center justify-between border-gray-200 px-6 pt-4">
+                    <div className=" hidden border-b sm:flex items-center justify-between border-gray-200 px-6 pt-4">
                         <div className="flex gap-2 overflow-x-auto">
                             <button
                                 data-testid="tab-all"
@@ -272,7 +272,7 @@ export default function ApplicationsList({
                                         >
                                             <div className="flex items-start justify-between gap-4">
                                                 <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 mb-2">
+                                                    <div className="sm:flex items-center gap-2 mb-2">
                                                         <span
                                                             className={`status-indicator status-${app.status}`}
                                                         ></span>
@@ -306,8 +306,8 @@ export default function ApplicationsList({
                                                     </p>
                                                 </div>
 
-                                                <div className="text-right flex-shrink-0">
-                                                    <div className="text-s text-gray-500">
+                                                <div className="hidden sm:flex text-right flex-shrink-0">
+                                                    <div className="text-xs md:text-sm text-gray-500">
                                                         {formatDate(
                                                             app.createdAt,
                                                         )}

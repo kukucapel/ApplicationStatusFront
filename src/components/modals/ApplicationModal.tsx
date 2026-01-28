@@ -352,7 +352,7 @@ export function ApplicationModal({
         applicationItem && (
             <Modal>
                 <ModalHeader title="Детали заявки" onClose={onClose}>
-                    <div className="text-gray-400-100 text-sm">
+                    <div className="text-gray-400-100 hidden sm:block text-sm">
                         <p>
                             Создано:{' '}
                             {applicationItem &&
@@ -396,7 +396,7 @@ export function ApplicationModal({
                                                           ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
                                                           : 'bg-gray-600 hover:bg-gray-700 text-white'
                                                     : 'hover:bg-blue-50'
-                                            } p-2 rounded-md cursor-pointer`}
+                                            } p-2 text-sm sm:text-base rounded-md cursor-pointer`}
                                         >
                                             {getStatusText(status)}
                                         </button>

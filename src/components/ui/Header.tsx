@@ -51,11 +51,8 @@ export default function Header({}: HeaderProps) {
     return (
         <header className="bg-white border-b border-gray-200 shadow-sm">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <div className="flex items-center justify-between">
-                    <Logo
-                        typeLogo={1}
-                        className="inline-flex items-center gap-2"
-                    />
+                <div className="flex items-center justify-center lg:justify-between">
+                    <Logo typeLogo={1} className="items-center gap-2" />
                     <div className="flex items-center gap-3">
                         <Button
                             className={`flex items-center shadow-none px-3 gap-2 py-2 `}
@@ -69,7 +66,10 @@ export default function Header({}: HeaderProps) {
                         >
                             <FileText />
 
-                            <span className="hidden sm:inline">Обращения</span>
+                            <span className="inline lg:hidden">
+                                {pathname === '/dashboard' ? '' : 'Обращения'}
+                            </span>
+                            <span className="hidden lg:inline">Обращения</span>
                         </Button>
                         {user?.role === 'admin' && (
                             <Button
@@ -79,7 +79,12 @@ export default function Header({}: HeaderProps) {
                                 styleColor="white"
                             >
                                 <Shield className="w-5 h-5" />
-                                Управление
+                                <span className="inline lg:hidden">
+                                    {pathname === '/admin' ? '' : 'Управление'}
+                                </span>
+                                <span className="hidden lg:inline">
+                                    Управление
+                                </span>
                             </Button>
                         )}
 

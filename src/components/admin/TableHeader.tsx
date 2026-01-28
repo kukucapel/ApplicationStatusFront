@@ -25,8 +25,10 @@ export default function TableHeader({
     onClickDelete,
 }: TableHeaderProps) {
     return (
-        <div className="flex items-end justify-between mb-4 px-6">
-            <h2 className="text-2xl font-bold  text-gray-800">{title}</h2>
+        <div className="flex items-center md:items-end justify-between mb-4 px-6">
+            <h2 className="text-base md:text-2xl font-bold  text-gray-800">
+                {title}
+            </h2>
             <div className="flex gap-4 mr-2">
                 <div
                     className={` p-1 rounded-md duration-150 cursor-pointer bg-white border border-gray-300 hover:bg-gray-100`}

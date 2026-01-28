@@ -12,7 +12,7 @@ export default function Logo({
     subTitle,
 }: LogoProps) {
     return (
-        <div className={`${className} animate-fade-in`}>
+        <div className={`${className} hidden md:inline-flex animate-fade-in`}>
             <div
                 className={`inline-block p-3 ${
                     typeLogo === 1 && 'bg-blue-100 rounded-full'
@@ -48,7 +48,7 @@ export default function Logo({
             </div>
 
             <div>
-                <h1 className="text-3xl select-none sm:text-4xl font-bold text-gray-900 mb-2">
+                <h1 className="text-2xl select-none lg:text-4xl  font-bold text-gray-900 mb-2">
                     {title || 'Система обработки личного приёма'}
                 </h1>
                 <p className="text-base select-none text-gray-600">

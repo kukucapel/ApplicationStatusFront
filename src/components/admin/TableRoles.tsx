@@ -29,6 +29,10 @@ const HEADER = [
     ['Название', 'name'],
     ['Описание', 'description'],
 ];
+const HEADER_MOBILE = [
+    ['ID', 'id'],
+    ['Название', 'name'],
+];
 
 export default function TableRoles({
     searchMode,
@@ -72,7 +76,7 @@ export default function TableRoles({
                 if (!value || !searchMode) return true;
 
                 const itemValue = String(
-                    (item as any)[key] ?? ''
+                    (item as any)[key] ?? '',
                 ).toLowerCase();
                 return itemValue.includes(value.toLowerCase());
             });
@@ -100,72 +104,145 @@ export default function TableRoles({
     }
 
     return (
-        <div className="p-6 bg-gray-50 rounded-lg">
-            <TableHeader
-                handleFilterChange={handleFilterChange}
-                setSort={setSort}
-                sort={sort}
-                HEADER={HEADER as [string, string][]}
-                searchMode={searchMode}
-            />
-            <div className="space-y-2">
-                {filtredAndSortedItems?.map((role: Role) => (
-                    <TableRow
-                        deleteMode={deleteMode}
-                        onClickTableModal={() => {
-                            setModalIsActive(role.id);
-                            setModalRole(role);
-                        }}
-                        editMode={editMode}
-                        key={role.id}
-                        id={role.id}
-                    >
-                        <div className="grid grid-cols-[60px_1fr_1fr] gap-4">
-                            <div>{role.id}</div>
-                            <div>{role.name || '-'}</div>
-                            <div>{role.description || '-'}</div>
-                        </div>
+        <>
+            {/* Mobile */}
+            <div className="p-6 bg-gray-50 rounded-lg md:hidden">
+                <TableHeader
+                    handleFilterChange={handleFilterChange}
+                    setSort={setSort}
+                    sort={sort}
+                    sizeId="1fr"
+                    HEADER={HEADER_MOBILE as [string, string][]}
+                    searchMode={searchMode}
+                />
+                <div className="space-y-2">
+                    {filtredAndSortedItems?.map((role: Role) => (
+                        <TableRow
+                            deleteMode={deleteMode}
+                            onClickTableModal={() => {
+                                setModalIsActive(role.id);
+                                setModalRole(role);
+                            }}
+                            editMode={editMode}
+                            key={role.id}
+                            id={role.id}
+                        >
+                            <div className="grid grid-cols-[1fr_1fr] gap-4">
+                                <div>{role.id}</div>
+                                <div>{role.name || '-'}</div>
+                                {/* <div>{role.description || '-'}</div> */}
+                            </div>
 
-                        {deleteMode && (
-                            <button
-                                onClick={() => {
-                                    setModalSubmit(role.id);
-                                }}
-                                className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
+                            {deleteMode && (
+                                <button
+                                    onClick={() => {
+                                        setModalSubmit(role.id);
+                                    }}
+                                    className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
         "
-                            >
-                                <Trash2 size={18} />
-                            </button>
-                        )}
-                    </TableRow>
-                ))}
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                            )}
+                        </TableRow>
+                    ))}
+                </div>
+                {modalIsActive && modalRole && roleItems && (
+                    <ModalAdminRoles
+                        role={modalRole}
+                        setModalIsActive={() => {
+                            setModalRole(null);
+                            setModalIsActive(null);
+                        }}
+                        loadRoles={loadRoles}
+                    />
+                )}
+                {showAddModal && (
+                    <ModalAdminRoles
+                        loadRoles={loadRoles}
+                        role={modalRole}
+                        setModalIsActive={() => {
+                            setModalRole(null);
+                            setShowAddModal(false);
+                        }}
+                    />
+                )}
+                {modalSubmit && (
+                    <ModalSubmit
+                        handleSubmit={() => handleDelete(modalSubmit)}
+                        onClose={() => setModalSubmit(null)}
+                    />
+                )}
             </div>
-            {modalIsActive && modalRole && roleItems && (
-                <ModalAdminRoles
-                    role={modalRole}
-                    setModalIsActive={() => {
-                        setModalRole(null);
-                        setModalIsActive(null);
-                    }}
-                    loadRoles={loadRoles}
+
+            {/* Desktop */}
+            <div className="p-6 bg-gray-50 rounded-lg hidden md:block">
+                <TableHeader
+                    handleFilterChange={handleFilterChange}
+                    setSort={setSort}
+                    sort={sort}
+                    HEADER={HEADER as [string, string][]}
+                    searchMode={searchMode}
                 />
-            )}
-            {showAddModal && (
-                <ModalAdminRoles
-                    loadRoles={loadRoles}
-                    role={modalRole}
-                    setModalIsActive={() => {
-                        setModalRole(null);
-                        setShowAddModal(false);
-                    }}
-                />
-            )}
-            {modalSubmit && (
-                <ModalSubmit
-                    handleSubmit={() => handleDelete(modalSubmit)}
-                    onClose={() => setModalSubmit(null)}
-                />
-            )}
-        </div>
+                <div className="space-y-2">
+                    {filtredAndSortedItems?.map((role: Role) => (
+                        <TableRow
+                            deleteMode={deleteMode}
+                            onClickTableModal={() => {
+                                setModalIsActive(role.id);
+                                setModalRole(role);
+                            }}
+                            editMode={editMode}
+                            key={role.id}
+                            id={role.id}
+                        >
+                            <div className="grid grid-cols-[60px_1fr_1fr] gap-4">
+                                <div>{role.id}</div>
+                                <div>{role.name || '-'}</div>
+                                <div>{role.description || '-'}</div>
+                            </div>
+
+                            {deleteMode && (
+                                <button
+                                    onClick={() => {
+                                        setModalSubmit(role.id);
+                                    }}
+                                    className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
+        "
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                            )}
+                        </TableRow>
+                    ))}
+                </div>
+                {modalIsActive && modalRole && roleItems && (
+                    <ModalAdminRoles
+                        role={modalRole}
+                        setModalIsActive={() => {
+                            setModalRole(null);
+                            setModalIsActive(null);
+                        }}
+                        loadRoles={loadRoles}
+                    />
+                )}
+                {showAddModal && (
+                    <ModalAdminRoles
+                        loadRoles={loadRoles}
+                        role={modalRole}
+                        setModalIsActive={() => {
+                            setModalRole(null);
+                            setShowAddModal(false);
+                        }}
+                    />
+                )}
+                {modalSubmit && (
+                    <ModalSubmit
+                        handleSubmit={() => handleDelete(modalSubmit)}
+                        onClose={() => setModalSubmit(null)}
+                    />
+                )}
+            </div>
+        </>
     );
 }
