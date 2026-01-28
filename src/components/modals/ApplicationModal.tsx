@@ -47,6 +47,7 @@ import ModalBodyBlock from '../ui/NewModalUi/ModalBodyBlock';
 import ModalBodyBlockField from '../ui/NewModalUi/ModalBodyBlockField';
 import ModalSubmit from './ModalSubmit';
 import ModalCuratorTree from './ModalCuratorTree';
+import downloadFile from '@/lib/download';
 
 interface ApplicationModalProps {
     onClose: () => void;
@@ -114,18 +115,6 @@ export function ApplicationModal({
     };
     const loadApplication = async () => {
         setApplicationItem(await getApplicationDetail(application.id));
-    };
-
-    const downloadFile = async (idAttachment: number) => {
-        const res = await getUrlDownloadAttachmentLink(idAttachment);
-        const url = res.url;
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = ''; // можно указать имя файла, если оно известно
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
     };
 
     //загрузка модалки данных

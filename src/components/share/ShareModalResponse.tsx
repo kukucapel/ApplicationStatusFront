@@ -5,7 +5,7 @@ import Button from '../ui/Button';
 import { useEffect, useState } from 'react';
 import ModalAlert from '../ui/ModalUi/ModalAlert';
 import Raiting from '../ui/Share/Raiting';
-import { getUrlDownloadAttachmentLink } from '@/lib/updateApplication';
+import downloadFile from '@/lib/download';
 
 interface ModalBodyResponseProps {
     indexResponse: [number, ShareResponseDto];
@@ -28,18 +28,6 @@ export default function ModalBodyResponse({
     rating,
 }: ModalBodyResponseProps) {
     const [modalState, setModalState] = useState<string>('');
-
-    const downloadFile = async (idAttachment: number) => {
-        const res = await getUrlDownloadAttachmentLink(idAttachment);
-        const url = res.url;
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = '';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    };
     useEffect(() => {
         if (modalState === 'no') {
             setModalState('');
