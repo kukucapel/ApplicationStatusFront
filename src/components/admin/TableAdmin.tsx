@@ -19,7 +19,7 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
 
     const [searchMode, setSearchMode] = useState<boolean>(false);
     const [editMode, setEditMode] = useState<boolean>(
-        user?.role === 'admin' && true
+        user?.role === 'admin' && true,
     );
     const [deleteMode, setDeleteMode] = useState<boolean>(false);
     const [showAddModal, setShowAddModal] = useState<boolean>(false);
@@ -46,7 +46,14 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
                 setRoleItems(roleData.items);
             }
 
-            setEmployeeItems(employeeData.items);
+            const employeesWithTitle = employeeData.items.map(
+                (employee: Employee) => ({
+                    ...employee,
+                    titlePosition: employee.positions?.[0]?.title ?? '',
+                }),
+            );
+
+            setEmployeeItems(employeesWithTitle);
         }
         load();
     }, []);
@@ -96,6 +103,8 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
                         page={MENU[page]}
                         loadRoles={loadRoles}
                     />
+                ) : page === 2 && user?.role === 'admin' ? (
+                    <span>Должности</span>
                 ) : (
                     ''
                 )}

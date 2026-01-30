@@ -149,7 +149,7 @@ export default function ModalAdminEmployee({
                 </div>
 
                 {/* Пароль */}
-                <div className="flex flex-col">
+                {/* <div className="flex flex-col">
                     <label className="text-sm text-gray-500">
                         {employee ? 'Новый пароль' : 'Пароль'}
                     </label>
@@ -162,10 +162,10 @@ export default function ModalAdminEmployee({
                         placeholder="********"
                         className="mt-1 rounded-md border border-gray-300 px-3 py-2"
                     />
-                </div>
+                </div> */}
 
                 {/* Роль */}
-                {user?.role === 'admin' && roleItems && (
+                {/* {user?.role === 'admin' && roleItems && (
                     <div className="flex flex-col">
                         <label className="text-sm text-gray-500 mb-1">
                             Роль
@@ -200,7 +200,7 @@ export default function ModalAdminEmployee({
                             menuPlacement="top"
                         />
                     </div>
-                )}
+                )} */}
 
                 {/* Подразделение */}
                 {/* {showUnit && unit && (

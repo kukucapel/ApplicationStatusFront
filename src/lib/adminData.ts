@@ -69,3 +69,9 @@ export async function deleteRole(id: number) {
     },
   });
 }
+export async function getPositionTitles() {
+  return await apiRequest(`/org/positions/position-titles`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+}
