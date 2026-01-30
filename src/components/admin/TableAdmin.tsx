@@ -3,11 +3,12 @@
 import { Edit, Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import TableEmployees from './TableEmployees';
-import { Employee, Role } from '@/dtos/AdminDto';
+import { Employee, PositionTitle, Role } from '@/dtos/AdminDto';
 import { adminData } from '@/lib/adminData';
 import { useUser } from '@/contexts/UserContext';
 import TableHeader from './TableHeader';
 import TableRoles from './TableRoles';
+import TablePositionTitles from './TablePositionTitles';
 
 interface TableAdminProps {
     page: number;
@@ -26,6 +27,9 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
 
     const [employeeItems, setEmployeeItems] = useState<Employee[] | null>(null);
     const [roleItems, setRoleItems] = useState<Role[] | null>(null);
+    const [positionTitleItems, stePositionTitleItems] = useState<
+        PositionTitle[] | null
+    >(null);
 
     const loadEmployees = async function () {
         const employeeData = await adminData('/employees');
@@ -35,15 +39,25 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
         const roleData = await adminData('/roles');
         setRoleItems(roleData.items);
     };
+    const loadPostionTitles = async function () {
+        const positionTitleData = await adminData(
+            '/org/positions/position-titles',
+        );
+        stePositionTitleItems(positionTitleData.items);
+    };
 
     useEffect(() => {
         async function load() {
-            const [employeeData, roleData] = await Promise.all([
-                adminData('/employees'),
-                user?.role === 'admin' && adminData('/roles'),
-            ]);
+            const [employeeData, roleData, positionTitleData] =
+                await Promise.all([
+                    adminData('/employees'),
+                    user?.role === 'admin' && adminData('/roles'),
+                    user?.role === 'admin' &&
+                        adminData('/org/positions/position-titles'),
+                ]);
             if (user?.role === 'admin') {
                 setRoleItems(roleData.items);
+                stePositionTitleItems(positionTitleData.items);
             }
 
             const employeesWithTitle = employeeData.items.map(
@@ -104,7 +118,16 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
                         loadRoles={loadRoles}
                     />
                 ) : page === 2 && user?.role === 'admin' ? (
-                    <span>Должности</span>
+                    <TablePositionTitles
+                        deleteMode={deleteMode}
+                        showAddModal={showAddModal}
+                        setShowAddModal={setShowAddModal}
+                        searchMode={searchMode}
+                        editMode={editMode}
+                        loadPostionTitles={loadPostionTitles}
+                        positionTitleItems={positionTitleItems}
+                        page={MENU[page]}
+                    />
                 ) : (
                     ''
                 )}

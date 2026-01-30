@@ -10,7 +10,14 @@ export default function Admin() {
     const { user, loading } = useUser();
     const router = useRouter();
 
-    const [page, setPage] = useState<number>(0);
+    const [page, setPage] = useState<number>(() => {
+        const value = document.cookie
+            .split('; ')
+            .find((row) => row.startsWith('admin_page='))
+            ?.split('=')[1];
+
+        return value ? Number(value) : 0;
+    });
 
     useEffect(() => {
         if (
@@ -27,7 +34,8 @@ export default function Admin() {
     ];
     if (user?.role === 'admin' && user?.login === 'admin@example.com')
         MENU.push(['Роли', 'roles']);
-    // if (user?.role === 'admin' user?.login === 'admin@example.com') MENU.push(['Должности', 'position_titles']);
+    if (user?.role === 'admin' && user?.login === 'admin@example.com')
+        MENU.push(['Должности', 'position_titles']);
     if (user?.role !== 'admin' || user?.login !== 'admin@example.com') {
         return;
     } else {

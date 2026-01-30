@@ -67,3 +67,7 @@ export interface PositionTitle {
   name: string;
   kind: string;
 }
+export interface PositionTitleUpdate {
+  name?: string;
+  kind?: string;
+}

@@ -1,4 +1,8 @@
-import { EmployeeUpdate, RoleUpdate } from '@/dtos/AdminDto';
+import {
+  EmployeeUpdate,
+  PositionTitleUpdate,
+  RoleUpdate,
+} from '@/dtos/AdminDto';
 import { apiRequest } from './apiClient';
 
 export async function adminData(path: string) {
@@ -73,5 +77,40 @@ export async function getPositionTitles() {
   return await apiRequest(`/org/positions/position-titles`, {
     method: 'GET',
     credentials: 'include',
+  });
+}
+
+export async function deletePositionTitle(id: number) {
+  return await apiRequest(`/org/positions/position-titles/${id}`, {
+    method: 'DELETE',
+    credentials: 'include',
+    // headers: {
+    //   'Content-Type': 'application/json',
+    // },
+  });
+}
+
+export async function updatePositionTitle(
+  data: PositionTitleUpdate,
+  id: number,
+) {
+  return await apiRequest(`/org/positions/position-titles/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
+export async function addPositionTitle(data: PositionTitleUpdate) {
+  return await apiRequest(`/org/positions/position-titles`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 }
