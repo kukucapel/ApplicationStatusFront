@@ -42,13 +42,13 @@ export default function CreateApplicationModal({
     const [showCurators, setShowCurators] = useState(false);
     const [newCuratorsName, setNewCuratorsName] = useState<string | null>(null);
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     ) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
     const handleSubmitChangeToPosition = (
         newSelected: number,
-        newUnitName: string
+        newUnitName: string,
     ) => {
         setApplication({ ...application, to_position_id: newSelected });
         setShowCurators(false);
@@ -63,6 +63,9 @@ export default function CreateApplicationModal({
         });
         onClose();
     };
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+    });
 
     useEffect(() => {
         document.body.style.overflow = 'hidden';
@@ -70,6 +73,21 @@ export default function CreateApplicationModal({
             document.body.style.overflow = '';
         };
     }, []);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onClose();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+
     useEffect(() => {
         async function load() {
             setCurators((await getCuratorsTreeForApplication()).items);
@@ -233,7 +251,7 @@ export default function CreateApplicationModal({
                             onChange={(
                                 e: React.ChangeEvent<
                                     HTMLInputElement | HTMLTextAreaElement
-                                >
+                                >,
                             ) =>
                                 setApplication({
                                     ...application,
@@ -256,7 +274,7 @@ export default function CreateApplicationModal({
                             onChange={(
                                 e: React.ChangeEvent<
                                     HTMLInputElement | HTMLTextAreaElement
-                                >
+                                >,
                             ) =>
                                 setApplication({
                                     ...application,
@@ -273,7 +291,7 @@ export default function CreateApplicationModal({
                     <Button
                         type="button"
                         styleColor="blue"
-                        className="w-80 py-2"
+                        className="w-80 py-2 select-none"
                         onClick={() => setShowCurators(true)}
                     >
                         {newCuratorsName}

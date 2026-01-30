@@ -67,26 +67,32 @@ export default function Header({}: HeaderProps) {
                             <FileText />
 
                             <span className="inline lg:hidden">
-                                {pathname === '/dashboard' ? '' : 'Обращения'}
+                                {pathname === '/dashboard' &&
+                                user?.login === 'admin@example.com'
+                                    ? ''
+                                    : 'Обращения'}
                             </span>
                             <span className="hidden lg:inline">Обращения</span>
                         </Button>
-                        {user?.role === 'admin' && (
-                            <Button
-                                onClick={handleClickAdmin}
-                                isActive={pathname === '/admin'}
-                                className="px-2 py-2 shadow-none  items-center flex gap-2"
-                                styleColor="white"
-                            >
-                                <Shield className="w-5 h-5" />
-                                <span className="inline lg:hidden">
-                                    {pathname === '/admin' ? '' : 'Управление'}
-                                </span>
-                                <span className="hidden lg:inline">
-                                    Управление
-                                </span>
-                            </Button>
-                        )}
+                        {user?.role === 'admin' &&
+                            user?.login === 'admin@example.com' && (
+                                <Button
+                                    onClick={handleClickAdmin}
+                                    isActive={pathname === '/admin'}
+                                    className="px-2 py-2 shadow-none  items-center flex gap-2"
+                                    styleColor="white"
+                                >
+                                    <Shield className="w-5 h-5" />
+                                    <span className="inline lg:hidden">
+                                        {pathname === '/admin'
+                                            ? ''
+                                            : 'Управление'}
+                                    </span>
+                                    <span className="hidden lg:inline">
+                                        Управление
+                                    </span>
+                                </Button>
+                            )}
 
                         <div className="relative" ref={profileRef}>
                             <Button

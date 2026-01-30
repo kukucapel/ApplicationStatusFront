@@ -4,6 +4,7 @@ import { Filter } from 'lucide-react';
 import { useState } from 'react';
 import Button from '../ui/Button';
 import Select from 'react-select';
+import { User } from '@/contexts/UserContext';
 
 interface FilterSideBarProps {
     filters: { status: string; toPosition: string; search: string };
@@ -16,6 +17,7 @@ interface FilterSideBarProps {
     setActiveTab: (newState: string) => void;
     uniqueToPosition: string[];
     setCreateModal: () => void;
+    user: User | null;
 }
 
 export default function FilterSideBar({
@@ -24,6 +26,7 @@ export default function FilterSideBar({
     setActiveTab,
     uniqueToPosition,
     countApp,
+    user,
     setCreateModal,
 }: FilterSideBarProps) {
     const selectOptions = [
@@ -141,13 +144,15 @@ export default function FilterSideBar({
                     )}
                 </div>
             </div>
-            {/* <Button
-                styleColor="blue"
-                onClick={setCreateModal}
-                className="w-[100%] py-2"
-            >
-                Создать заявку
-            </Button> */}
+            {user?.role === 'admin' && user?.login === 'admin@example.com' && (
+                <Button
+                    styleColor="blue"
+                    onClick={setCreateModal}
+                    className="w-[100%] py-2"
+                >
+                    Создать заявку
+                </Button>
+            )}
         </aside>
     );
 }
