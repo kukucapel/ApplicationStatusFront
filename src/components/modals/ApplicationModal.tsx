@@ -401,12 +401,14 @@ export function ApplicationModal({
                             <div className="mb-4">
                                 <p>
                                     <b>Адрес регистрации:</b>{' '}
-                                    {applicationItem.applicant.postalCode1},{' '}
+                                    {applicationItem.applicant.postal_code1 &&
+                                        `${applicationItem.applicant.postal_code1},`}{' '}
                                     {applicationItem.applicant.address1}
                                 </p>
                                 <p>
                                     <b>Адрес фактический:</b>{' '}
-                                    {applicationItem.applicant.postalCode2},{' '}
+                                    {applicationItem.applicant.postal_code2 &&
+                                        `${applicationItem.applicant.postal_code2},`}{' '}
                                     {applicationItem.applicant.address2}
                                 </p>
                             </div>
@@ -546,16 +548,16 @@ export function ApplicationModal({
                                 <ModalBodyBlockField
                                     nameField="Индекс регистрации"
                                     valueField={
-                                        applicationItem.applicant.postalCode1 ||
-                                        '-'
+                                        applicationItem.applicant
+                                            .postal_code1 || '-'
                                     }
                                     icon={FileText}
                                 />
                                 <ModalBodyBlockField
                                     nameField="Индекс проживания"
                                     valueField={
-                                        applicationItem.applicant.postalCode2 ||
-                                        '-'
+                                        applicationItem.applicant
+                                            .postal_code2 || '-'
                                     }
                                     icon={FileText}
                                 />

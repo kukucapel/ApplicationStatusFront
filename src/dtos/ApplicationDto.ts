@@ -40,8 +40,8 @@ export interface ApplicantDto {
   phone: string;
   address1: string;
   address2: string;
-  postalCode1: string;
-  postalCode2: string;
+  postal_code1: string;
+  postal_code2: string;
 }
 
 export interface ResponseDto {
