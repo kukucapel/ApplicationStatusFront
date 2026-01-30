@@ -3,36 +3,64 @@
 import { Filter } from 'lucide-react';
 import { useState } from 'react';
 import Button from '../ui/Button';
+import Select from 'react-select';
+import { User } from '@/contexts/UserContext';
 
-export default function FilterSideBar() {
-    const [filters, setFilters] = useState({
-        status: 'all',
-        recipient: 'all',
-        search: '',
-    });
+interface FilterSideBarProps {
+    filters: { status: string; toPosition: string; search: string };
+    setFilters: (newState: {
+        status: string;
+        toPosition: string;
+        search: string;
+    }) => void;
+    countApp: number;
+    setActiveTab: (newState: string) => void;
+    uniqueToPosition: string[];
+    setCreateModal: () => void;
+    user: User | null;
+}
 
+export default function FilterSideBar({
+    filters,
+    setFilters,
+    setActiveTab,
+    uniqueToPosition,
+    countApp,
+    user,
+    setCreateModal,
+}: FilterSideBarProps) {
+    const selectOptions = [
+        { value: 'all', label: 'Все руководители' },
+        ...uniqueToPosition.map((p) => ({
+            value: p,
+            label: p,
+        })),
+    ];
     return (
         <aside className="lg:w-64 space-y-4">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
                 <div className="flex items-center gap-2 mb-4">
                     <Filter className="w-4 h-4 text-blue-600" />
-                    <h3 className="font-semibold text-gray-900">Фильтры</h3>
+                    <h3 className="font-semibold text-gray-900 select-none">
+                        Фильтры
+                    </h3>
                 </div>
 
                 <div className="space-y-4">
-                    <div>
-                        <label className="text-sm font-medium text-gray-700 mb-2 block">
+                    {/* <div>
+                        <label className="select-none text-sm font-medium text-gray-700 mb-2 block">
                             Статус
                         </label>
                         <select
                             data-testid="filter-status-select"
                             value={filters.status}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                                setActiveTab('');
                                 setFilters({
                                     ...filters,
                                     status: e.target.value,
-                                })
-                            }
+                                });
+                            }}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="all">Все статусы</option>
@@ -41,59 +69,69 @@ export default function FilterSideBar() {
                             <option value="completed">Обработана</option>
                             <option value="closed">Закрыта</option>
                         </select>
-                    </div>
+                    </div> */}
 
                     <div>
-                        <label className="text-sm font-medium text-gray-700 mb-2 block">
-                            Руководитель
+                        <label className="select-none mb-2 block text-sm font-medium text-gray-700">
+                            К кому на приём
                         </label>
-                        <select
-                            data-testid="filter-recipient-select"
-                            value={filters.recipient}
-                            onChange={(e) =>
+
+                        <Select
+                            inputId="filter-recipient-select"
+                            options={selectOptions}
+                            value={selectOptions.find(
+                                (option) => option.value === filters.toPosition,
+                            )}
+                            onChange={(option) => {
+                                if (!option) return;
                                 setFilters({
                                     ...filters,
-                                    recipient: e.target.value,
-                                })
-                            }
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="all">Все руководители</option>
-                            {/* {uniqueRecipients.map((recipient) => (
-                      <option key={recipient} value={recipient}>
-                        {recipient}
-                      </option>
-                    ))} */}
-                        </select>
+                                    toPosition: option.value,
+                                });
+                            }}
+                            placeholder="Все руководители"
+                            className="mb-2"
+                            classNamePrefix="react-select"
+                        />
+
+                        {(filters.status !== 'all' ||
+                            filters.toPosition !== 'all' ||
+                            filters.search !== '') && (
+                            <span className="select-none text-sm font-medium">
+                                Найдено: {countApp}
+                            </span>
+                        )}
                     </div>
 
-                    <div>
-                        <label className="text-sm font-medium text-gray-700 mb-2 block">
-                            Поиск
+                    {/* <div>
+                        <label className="select-none text-sm font-medium text-gray-700 mb-2 block">
+                            Поиск по теме
                         </label>
                         <input
                             data-testid="filter-search-input"
                             type="text"
                             value={filters.search}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                                setActiveTab('');
                                 setFilters({
                                     ...filters,
                                     search: e.target.value,
-                                })
-                            }
-                            placeholder="ФИО или тема..."
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                });
+                            }}
+                            placeholder="Тема..."
+                            className="w-full border mb-1 border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                    </div>
+                       
+                    </div> */}
 
                     {(filters.status !== 'all' ||
-                        filters.recipient !== 'all' ||
+                        filters.toPosition !== 'all' ||
                         filters.search) && (
                         <Button
                             onClick={() =>
                                 setFilters({
                                     status: 'all',
-                                    recipient: 'all',
+                                    toPosition: 'all',
                                     search: '',
                                 })
                             }
@@ -105,6 +143,15 @@ export default function FilterSideBar() {
                     )}
                 </div>
             </div>
+            {user?.role === 'admin' && user?.login === 'admin@example.com' && (
+                <Button
+                    styleColor="blue"
+                    onClick={setCreateModal}
+                    className="w-[100%] py-2"
+                >
+                    Создать заявку
+                </Button>
+            )}
         </aside>
     );
 }

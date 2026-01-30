@@ -15,6 +15,7 @@ interface TableHeaderProps {
     setSort: (sort: [number, number]) => void;
     handleFilterChange: (key: string, value: string) => void;
     searchMode: boolean;
+    sizeId?: string;
 }
 
 export default function TableHeader({
@@ -23,9 +24,10 @@ export default function TableHeader({
     setSort,
     handleFilterChange,
     searchMode,
+    sizeId = '70px',
 }: TableHeaderProps) {
     const [filterValues, setFilterValues] = useState<Record<string, string>>(
-        {}
+        {},
     );
 
     const handleInputChange = (key: string, value: string) => {
@@ -45,8 +47,13 @@ export default function TableHeader({
         }
     };
 
+    const gridTemplateColumns = `${sizeId} ${'1fr '.repeat(HEADER.length - 1)}`;
+
     return (
-        <div className="grid grid-cols-5 gap-2 font-semibold text-gray-700 border-b border-gray-300 pb-2 mb-2 mx-1">
+        <div
+            className={`grid gap-2 font-semibold text-gray-700 border-b border-gray-300 pb-2 mb-2 mx-1`}
+            style={{ gridTemplateColumns }}
+        >
             {HEADER.map(([title, key], index) => (
                 <div
                     className={`flex items-center w-full gap-1 select-none`}

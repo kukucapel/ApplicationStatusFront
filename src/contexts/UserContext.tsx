@@ -11,8 +11,9 @@ import {
 
 export interface User {
     id: number;
-    name: string;
+    fio: string;
     role?: string;
+    login: string;
 }
 
 interface UserContextType {

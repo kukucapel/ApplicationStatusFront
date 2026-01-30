@@ -2,14 +2,20 @@
 
 import Button from '@/components/ui/Button';
 import ModalAdminMainBody from '@/components/ui/ModalUi/ModalAdminMainBody';
+import { useUser } from '@/contexts/UserContext';
 import { Employee, EmployeeUpdate, Role } from '@/dtos/AdminDto';
-import { updateEmployee } from '@/lib/adminData';
-import { useState } from 'react';
+import { addEmployee, updateEmployee } from '@/lib/adminData';
+import { useEffect, useState } from 'react';
+import { Unit } from '@/dtos/AdminDto';
+import Select from 'react-select';
+
+import { getUnitTreeForApplication } from '@/lib/updateApplication';
+// import ModalUnitTree from '../ModalUnitTree';
 
 interface ModalAdminEmployeeProps {
-    employee: Employee;
-    roleItems: Role[];
-    setModalIsActive: (state: null) => void;
+    employee: Employee | null;
+    roleItems: Role[] | null;
+    setModalIsActive: () => void;
     loadEmployees: () => Promise<void>;
 }
 
@@ -19,31 +25,47 @@ export default function ModalAdminEmployee({
     loadEmployees,
     roleItems,
 }: ModalAdminEmployeeProps) {
+    const { user } = useUser();
+
     const [form, setForm] = useState<EmployeeUpdate>({
-        fio: employee?.fio,
-        email: employee?.email,
-        role: employee?.role,
-        unit_id: employee?.unit_id,
+        fio: employee?.fio || '',
+        email: employee?.email || '',
+        role_id: employee?.user?.role_id || 2,
+        password: '',
     });
+
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
     const [successfully, setSuccessfully] = useState<string>('');
 
-    const isActive =
-        (form.fio === employee.fio &&
-            form.email === employee.email &&
-            form.role === employee.role) ||
-        form.fio === '' ||
-        form.email === '' ||
-        form.role === '';
+    const isActive: boolean = employee
+        ? (form.fio === employee.fio &&
+              form.email === employee.email &&
+              form.role_id == employee?.user?.role_id) ||
+          form.fio === '' ||
+          form.email === ''
+        : !(
+              form.unit_id !== 0 &&
+              form.email !== '' &&
+              form.fio !== '' &&
+              form.password !== ''
+          );
 
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     ) => {
         setError('');
         setSuccessfully('');
         setForm({ ...form, [e.target.name]: e.target.value });
     };
+    // const handleSubmitChangeUnit = (
+    //     newSelected: number,
+    //     newUnitName: string
+    // ) => {
+    //     setForm({ ...form, unit_id: newSelected });
+    //     setShowUnit(false);
+    //     setUnitName(newUnitName);
+    // };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -52,16 +74,36 @@ export default function ModalAdminEmployee({
         setSuccessfully('');
 
         try {
-            const result = await updateEmployee(form, employee.id);
+            const payload = { ...form };
+            if (payload.password === '') {
+                delete payload.password;
+            }
+            const result =
+                employee && payload
+                    ? await updateEmployee(payload, employee.id)
+                    : await addEmployee(form);
             await loadEmployees();
             setSuccessfully('Успешно сохранено');
+            setModalIsActive();
         } catch {
             setError('Не удалось сохранить');
         } finally {
             setLoading(false);
         }
     };
+    useEffect(() => {
+        // const load = async () =>
+        //     user?.role !== 'worker' &&
+        //     setUnit((await getUnitTreeForApplication()).items);
+        // load();
+    }, []);
 
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, []);
     return (
         <ModalAdminMainBody setModalIsActive={setModalIsActive}>
             <form
@@ -69,16 +111,17 @@ export default function ModalAdminEmployee({
                 onSubmit={handleSubmit}
             >
                 {/* ID */}
-                <div className="flex flex-col">
-                    <label className="text-sm text-gray-500">ID</label>
-                    <input
-                        type="text"
-                        value={employee?.id ?? ''}
-                        readOnly
-                        className="mt-1 rounded-md border border-gray-300 px-3 py-2 bg-gray-100 text-gray-600 cursor-not-allowed"
-                    />
-                </div>
-
+                {employee && (
+                    <div className="flex flex-col">
+                        <label className="text-sm text-gray-500">ID</label>
+                        <input
+                            type="text"
+                            value={employee?.id ?? ''}
+                            readOnly
+                            className="mt-1 rounded-md border border-gray-300 px-3 py-2 bg-gray-100 text-gray-600 cursor-not-allowed"
+                        />
+                    </div>
+                )}
                 {/* ФИО */}
                 <div className="flex flex-col">
                     <label className="text-sm text-gray-500">ФИО</label>
@@ -105,22 +148,90 @@ export default function ModalAdminEmployee({
                     />
                 </div>
 
-                {/* Роль */}
-                <div className="flex flex-col">
-                    <label className="text-sm text-gray-500">Роль</label>
-                    <select
-                        name="role"
-                        value={form.role || ''}
+                {/* Пароль */}
+                {/* <div className="flex flex-col">
+                    <label className="text-sm text-gray-500">
+                        {employee ? 'Новый пароль' : 'Пароль'}
+                    </label>
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        defaultValue={form.password}
                         onChange={handleChange}
+                        placeholder="********"
                         className="mt-1 rounded-md border border-gray-300 px-3 py-2"
+                    />
+                </div> */}
+
+                {/* Роль */}
+                {/* {user?.role === 'admin' && roleItems && (
+                    <div className="flex flex-col">
+                        <label className="text-sm text-gray-500 mb-1">
+                            Роль
+                        </label>
+
+                        <Select
+                            name="role_id"
+                            options={roleItems.map((r) => ({
+                                value: r.id,
+                                label: r.name,
+                            }))}
+                            value={roleItems
+                                .map((r) => ({
+                                    value: r.id,
+                                    label: r.name,
+                                }))
+                                .find(
+                                    (option) => option.value === form.role_id,
+                                )}
+                            onChange={(option) => {
+                                if (!option) return;
+
+                                handleChange({
+                                    target: {
+                                        name: 'role_id',
+                                        value: option.value,
+                                    },
+                                } as any);
+                            }}
+                            placeholder="Выберите роль"
+                            isSearchable
+                            menuPlacement="top"
+                        />
+                    </div>
+                )} */}
+
+                {/* Подразделение */}
+                {/* {showUnit && unit && (
+                    <ModalUnitTree
+                        selectedNow={form?.unit_id || employee?.unit_id || 0}
+                        unitTree={unit}
+                        handleChange={handleSubmitChangeUnit}
+                        onClose={() => setShowUnit(false)}
+                    ></ModalUnitTree>
+                )} */}
+                {/* <div className="flex flex-col">
+                    <label className="text-sm text-gray-500">
+                        {' '}
+                        Выбрать поздразделение
+                    </label>
+
+                    <span
+                        onClick={() => setShowUnit(true)}
+                        className={`mt-1 rounded-md border border-gray-300 px-3 py-2 cursor-pointer ${
+                            employee
+                                ? employee.unit_id !== form.unit_id &&
+                                  'border-green-300'
+                                : form.unit_id && 'border-green-300'
+                        }`}
                     >
-                        {roleItems.map((r) => (
-                            <option key={r.id} value={r.name}>
-                                {r.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                        {' '}
+                        {unitName
+                            ? unitName
+                            : employee?.unit_name || 'Выбрать поздразделение'}
+                    </span>
+                </div> */}
 
                 {error && (
                     <div>
@@ -150,7 +261,7 @@ export default function ModalAdminEmployee({
                         {loading ? 'Сохранение...' : 'Сохранить'}
                     </Button>
                     <Button
-                        onClick={() => setModalIsActive(null)}
+                        onClick={setModalIsActive}
                         styleColor="blue"
                         className="flex-1 py-2 hover:bg-blue-700"
                     >

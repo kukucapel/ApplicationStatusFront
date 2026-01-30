@@ -1,23 +1,27 @@
 'use client';
 
-import { LoginFormData, loginUser } from '@/lib/auth';
+import { loginUser } from '@/lib/auth';
+import { LoginFormData } from '@/dtos/AuthDto';
 import { useState } from 'react';
 import { useUser, User } from '@/contexts/UserContext';
 import Button from '../ui/Button';
+import Input from '../ui/Input';
+import ErrorText from '../ui/ErrorText';
 
 export default function AuthLogin() {
     const [form, setForm] = useState<LoginFormData>({
-        fio: 'a',
         email: '',
         password: '',
     });
+
     const { setUser } = useUser();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setError('');
         setForm({ ...form, [e.target.name]: e.target.value });
-
+    };
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -30,7 +34,12 @@ export default function AuthLogin() {
 
             window.location.href = 'dashboard';
         } catch (error: any) {
-            setError('Неправильный логин или пароль');
+            console.log(error);
+            if (error.message == 'Internal Server Error') {
+                setError('Сервер недоступен');
+            } else {
+                setError('Неправильный логин или пароль');
+            }
         } finally {
             setLoading(false);
         }
@@ -42,14 +51,13 @@ export default function AuthLogin() {
                 <label htmlFor="email" className="text-xl font-medium">
                     Email
                 </label>
-                <input
+                <Input
                     id="email"
                     name="email"
                     type="email"
                     required
                     value={form.email}
                     onChange={handleChange}
-                    className="mt-1 block w-full transition px-3 pt-1 pb-1 border-2 rounded-lg border-gray-200 shadow-md focus:outline-none focus:border-blue-500 focus:ring-blue-500"
                     placeholder="example@mail.ru"
                 />
             </div>
@@ -57,17 +65,18 @@ export default function AuthLogin() {
                 <label htmlFor="password" className="text-xl font-medium">
                     Пароль
                 </label>
-                <input
+                <Input
                     id="password"
                     name="password"
                     type="password"
                     required
                     value={form.password}
                     onChange={handleChange}
-                    className="mt-1 block w-full transition px-3 pt-1 pb-1 border-2 rounded-lg border-gray-200 shadow-md focus:outline-none focus:border-blue-500 focus:ring-blue-500"
                     placeholder="*********"
                 />
             </div>
+            {error && <ErrorText error={error} />}
+
             <Button
                 className={`mt-7 w-full ${
                     loading ? 'cursor-not-allowed' : 'cursor-pointer'

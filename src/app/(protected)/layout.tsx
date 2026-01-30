@@ -1,16 +1,13 @@
 'use client';
 
-import Header from '@/components/dashboard/Header';
-import { useState } from 'react';
-import CreateApplicationModal from '@/components/modals/CreateApplicationModal';
-import { createApplication } from '@/lib/createApplication';
+import Header from '@/components/ui/Header';
+
 import { useUser } from '@/contexts/UserContext';
 
 export default function ProtectedLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
     const { loading } = useUser();
-    const [showCreateModal, setShowCreateModal] = useState(false);
 
     if (loading) {
         return (
@@ -22,14 +19,8 @@ export default function ProtectedLayout({
 
     return (
         <>
-            <Header handleClickModal={() => setShowCreateModal(true)} />
+            <Header />
             {children}
-            {showCreateModal && (
-                <CreateApplicationModal
-                    onClose={() => setShowCreateModal(false)}
-                    handleSubmit={createApplication}
-                />
-            )}
         </>
     );
 }

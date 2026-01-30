@@ -1,17 +1,27 @@
-export interface NewApplicationFormData {
-  full_name?: string;
+import { apiRequest } from './apiClient';
+
+export interface NewApplicant {
+  fio?: string;
   email?: string;
   phone?: string;
-  registration_address?: string;
-  registration_postal_code?: string;
-  residence_address?: string;
-  residence_postal_code?: string;
-  recipient?: string;
-  subject?: string;
-  description?: string;
+  address1?: string;
+  address2?: string;
+  postal_code1?: string;
+  postal_code2?: string;
+}
+export interface NewApplication {
+  theme: string;
+  question: string;
+  to_position_id: number;
 }
 
-export const createApplication = async (data: NewApplicationFormData) => {
-  //доделать
-  console.log('Create');
+export const createApplication = async (data: any) => {
+  return apiRequest(`/externals/plain`, {
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };

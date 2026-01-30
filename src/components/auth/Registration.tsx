@@ -1,8 +1,10 @@
 'use client';
 
-import { RegisterFormData, registerUser } from '@/lib/auth';
+import { registerUser } from '@/lib/auth';
+
 import { useState } from 'react';
 import Button from '../ui/Button';
+import { RegisterFormData } from '@/dtos/AuthDto';
 
 export default function Registration() {
     const [form, setForm] = useState<RegisterFormData>({
