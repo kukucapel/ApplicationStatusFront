@@ -36,13 +36,13 @@ export default function Logo({
                     <img
                         src="/status/logo.png"
                         alt="Герб города"
-                        className=" h-20"
+                        className="w-30 h-auto object-contain"
                     />
                 ) : (
                     <img
                         src="/status/logo.png"
                         alt="Герб города"
-                        className=" h-30"
+                        className="h-30 w-auto object-contain"
                     />
                 )}
             </div>

@@ -14,6 +14,7 @@ import {
     CalendarArrowDown,
     CalendarArrowUp,
     UsersRound,
+    Printer,
 } from 'lucide-react';
 import {
     Application,
@@ -72,6 +73,7 @@ export function ApplicationModal({
 
     const [unit, setUnit] = useState<Curator[] | null>(null);
     const [showUnitModal, setShowUnitModal] = useState<boolean>(false);
+    const [showPrintOverlay, setShowPrintOverlay] = useState(false);
 
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -88,6 +90,11 @@ export function ApplicationModal({
     useEffect(() => {
         document.body.style.overflow = 'hidden';
     });
+
+    const handlePrint = () => {
+        if (!applicationItem) return;
+        setShowPrintOverlay(true);
+    };
 
     const handleSubmitResponseModal = async (
         e: React.FormEvent,
@@ -116,6 +123,24 @@ export function ApplicationModal({
     const loadApplication = async () => {
         setApplicationItem(await getApplicationDetail(application.id));
     };
+
+    useEffect(() => {
+        if (!showPrintOverlay) return;
+
+        const afterPrintHandler = () => {
+            setShowPrintOverlay(false);
+        };
+
+        window.addEventListener('afterprint', afterPrintHandler);
+
+        // Печатаем после рендера overlay
+        setTimeout(() => {
+            window.print();
+        }, 100);
+
+        return () =>
+            window.removeEventListener('afterprint', afterPrintHandler);
+    }, [showPrintOverlay]);
 
     //загрузка модалки данных
     useEffect(() => {
@@ -351,136 +376,208 @@ export function ApplicationModal({
     return (
         !loading &&
         applicationItem && (
-            <Modal>
-                <ModalHeader title="Детали заявки" onClose={onClose}>
-                    <div className="text-gray-400-100 hidden sm:block text-sm">
-                        <p>
-                            Создано:{' '}
-                            {applicationItem &&
-                                formatDate(application.createdAt)}
-                        </p>
-                        {applicationItem.createdAt !==
-                            applicationItem.updatedAt && (
-                            <p>
-                                Изменено:{' '}
-                                {applicationItem &&
-                                    formatDate(application.updatedAt)}
-                            </p>
-                        )}
-                    </div>
-                </ModalHeader>
+            <>
+                {showPrintOverlay && (
+                    <div className="fixed h-10 bg-white  pl-[50%] print-area">
+                        <div>
+                            <h1 className="text-center text-2xl mb-6">
+                                Заявление на личный приём
+                            </h1>
 
-                {/* Контент */}
-                <div>
-                    <ModalBody>
-                        <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
-                            <h3 className="text-sm font-semibold text-gray-700 mb-3">
-                                Текущий статус
-                            </h3>
-                            <div className="flex flex-wrap gap-2">
-                                {['new', 'in_progress', 'closed'].map(
-                                    (status) => (
-                                        <button
-                                            key={status}
-                                            data-testid={`status-btn-${status}`}
-                                            disabled={
-                                                updating ||
-                                                application.status === status
-                                            }
-                                            onClick={() => setAlert(status)}
-                                            className={` ${
-                                                application.status === status
-                                                    ? status === 'new'
-                                                        ? 'bg-red-600 hover:bg-red-700 text-white cursor-none'
-                                                        : status ===
-                                                            'in_progress'
-                                                          ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
-                                                          : 'bg-gray-600 hover:bg-gray-700 text-white'
-                                                    : 'hover:bg-blue-50'
-                                            } p-2 text-sm sm:text-base rounded-md cursor-pointer`}
-                                        >
-                                            {getStatusText(status)}
-                                        </button>
-                                    ),
-                                )}
+                            <div className="mb-4">
+                                <p>
+                                    <b>ФИО:</b> {applicationItem.applicant.fio}
+                                </p>
+                                <p>
+                                    <b>Телефон:</b>{' '}
+                                    {applicationItem.applicant.phone}
+                                </p>
+                                <p>
+                                    <b>Электронная почта:</b>{' '}
+                                    {applicationItem.applicant.email}
+                                </p>
+                            </div>
+
+                            <div className="mb-4">
+                                <p>
+                                    <b>Адрес регистрации:</b>{' '}
+                                    {applicationItem.applicant.postalCode1},{' '}
+                                    {applicationItem.applicant.address1}
+                                </p>
+                                <p>
+                                    <b>Адрес фактический:</b>{' '}
+                                    {applicationItem.applicant.postalCode2},{' '}
+                                    {applicationItem.applicant.address2}
+                                </p>
+                            </div>
+
+                            <div className="mb-4">
+                                <p>
+                                    <b>Тема:</b> {applicationItem.theme}
+                                </p>
+                                <p>
+                                    <b>Суть вопроса:</b>{' '}
+                                    {applicationItem.question}
+                                </p>
                             </div>
                         </div>
-                        <div className="flex justify-between">
-                            <Button
-                                styleColor="blue"
-                                onClick={() => setShowResponseModal(true)}
-                                className="py-2 flex-grow"
-                            >
-                                Создать ответ
-                            </Button>
-                            {user?.role !== 'worker' && (
-                                <Button
-                                    styleColor="blue"
-                                    className="py-2 w-[50%]"
-                                    onClick={() => setShowUnitModal(true)}
-                                >
-                                    Передать приём
-                                </Button>
+                    </div>
+                )}
+                <Modal>
+                    <ModalHeader title="Детали заявки" onClose={onClose}>
+                        {/* <Button
+                            styleColor="white"
+                            className="px-2 py-2"
+                            onClick={handlePrint}
+                        ></Button> */}
+
+                        <button
+                            data-testid="create-modal-close-btn"
+                            onClick={handlePrint}
+                            className=" hover:text-blue-600 cursor-pointer hover:bg-opacity-20 p-2 rounded-lg transition-colors"
+                        >
+                            <Printer />
+                        </button>
+
+                        <div className="text-gray-400-100 hidden sm:block text-sm">
+                            <p>
+                                Создано:{' '}
+                                {applicationItem &&
+                                    formatDate(application.createdAt)}
+                            </p>
+                            {applicationItem.createdAt !==
+                                applicationItem.updatedAt && (
+                                <p>
+                                    Изменено:{' '}
+                                    {applicationItem &&
+                                        formatDate(application.updatedAt)}
+                                </p>
                             )}
                         </div>
+                    </ModalHeader>
 
-                        <ModalBodyBlock title="Информация о заявителе">
-                            <ModalBodyBlockField
-                                nameField="ФИО"
-                                valueField={applicationItem.applicant.fio}
-                                icon={User}
-                            />
+                    {/* Контент */}
+                    <div>
+                        <ModalBody>
+                            <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+                                <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                                    Текущий статус
+                                </h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {['new', 'in_progress', 'closed'].map(
+                                        (status) => (
+                                            <button
+                                                key={status}
+                                                data-testid={`status-btn-${status}`}
+                                                disabled={
+                                                    updating ||
+                                                    application.status ===
+                                                        status
+                                                }
+                                                onClick={() => setAlert(status)}
+                                                className={` ${
+                                                    application.status ===
+                                                    status
+                                                        ? status === 'new'
+                                                            ? 'bg-red-600 hover:bg-red-700 text-white cursor-none'
+                                                            : status ===
+                                                                'in_progress'
+                                                              ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
+                                                              : 'bg-gray-600 hover:bg-gray-700 text-white'
+                                                        : 'hover:bg-blue-50'
+                                                } p-2 text-sm sm:text-base rounded-md cursor-pointer`}
+                                            >
+                                                {getStatusText(status)}
+                                            </button>
+                                        ),
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex justify-between">
+                                <Button
+                                    styleColor="blue"
+                                    onClick={() => setShowResponseModal(true)}
+                                    className="py-2 flex-grow"
+                                >
+                                    Создать ответ
+                                </Button>
+                                {user?.role !== 'worker' && (
+                                    <Button
+                                        styleColor="blue"
+                                        className="py-2 w-[50%]"
+                                        onClick={() => setShowUnitModal(true)}
+                                    >
+                                        Передать приём
+                                    </Button>
+                                )}
+                            </div>
 
-                            <ModalBodyBlockField
-                                nameField="Email"
-                                valueField={applicationItem.applicant.email}
-                                icon={Mail}
-                            />
-                            <ModalBodyBlockField
-                                nameField="Телефон"
-                                valueField={applicationItem.applicant.phone}
-                                icon={Phone}
-                            />
-                            <ModalBodyBlockField
-                                nameField="Адрес регистрации"
-                                valueField={applicationItem.applicant.address1}
-                                icon={MapPin}
-                            />
-                            <ModalBodyBlockField
-                                nameField="Адрес проживания"
-                                valueField={applicationItem.applicant.address2}
-                                icon={MapPin}
-                            />
-                            <ModalBodyBlockField
-                                nameField="Индекс регистрации"
-                                valueField={
-                                    applicationItem.applicant.postalCode1 || '-'
-                                }
-                                icon={FileText}
-                            />
-                            <ModalBodyBlockField
-                                nameField="Индекс проживания"
-                                valueField={
-                                    applicationItem.applicant.postalCode2 || '-'
-                                }
-                                icon={FileText}
-                            />
-                        </ModalBodyBlock>
-                        <ModalBodyBlock typeStyle={2} title="Детали обращения">
-                            <ModalBodyBlockField
+                            <ModalBodyBlock title="Информация о заявителе">
+                                <ModalBodyBlockField
+                                    nameField="ФИО"
+                                    valueField={applicationItem.applicant.fio}
+                                    icon={User}
+                                />
+
+                                <ModalBodyBlockField
+                                    nameField="Email"
+                                    valueField={applicationItem.applicant.email}
+                                    icon={Mail}
+                                />
+                                <ModalBodyBlockField
+                                    nameField="Телефон"
+                                    valueField={applicationItem.applicant.phone}
+                                    icon={Phone}
+                                />
+                                <ModalBodyBlockField
+                                    nameField="Адрес регистрации"
+                                    valueField={
+                                        applicationItem.applicant.address1
+                                    }
+                                    icon={MapPin}
+                                />
+                                <ModalBodyBlockField
+                                    nameField="Адрес проживания"
+                                    valueField={
+                                        applicationItem.applicant.address2
+                                    }
+                                    icon={MapPin}
+                                />
+                                <ModalBodyBlockField
+                                    nameField="Индекс регистрации"
+                                    valueField={
+                                        applicationItem.applicant.postalCode1 ||
+                                        '-'
+                                    }
+                                    icon={FileText}
+                                />
+                                <ModalBodyBlockField
+                                    nameField="Индекс проживания"
+                                    valueField={
+                                        applicationItem.applicant.postalCode2 ||
+                                        '-'
+                                    }
+                                    icon={FileText}
+                                />
+                            </ModalBodyBlock>
+                            <ModalBodyBlock
                                 typeStyle={2}
-                                nameField="Тема"
-                                valueField={applicationItem.theme || '-'}
-                                icon={FileText}
-                            />
-                            <ModalBodyBlockField
-                                typeStyle={2}
-                                nameField="Суть обращения"
-                                valueField={applicationItem.question || '-'}
-                                icon={FileText}
-                                bgColor="g"
-                            />
-                            {/* <ModalBodyBlockField
+                                title="Детали обращения"
+                            >
+                                <ModalBodyBlockField
+                                    typeStyle={2}
+                                    nameField="Тема"
+                                    valueField={applicationItem.theme || '-'}
+                                    icon={FileText}
+                                />
+                                <ModalBodyBlockField
+                                    typeStyle={2}
+                                    nameField="Суть обращения"
+                                    valueField={applicationItem.question || '-'}
+                                    icon={FileText}
+                                    bgColor="g"
+                                />
+                                {/* <ModalBodyBlockField
                                 typeStyle={2}
                                 nameField="Исполнительный орган"
                                 valueField={
@@ -489,17 +586,18 @@ export function ApplicationModal({
                                 icon={FileText}
                                 bgColor="g"
                             /> */}
-                            <ModalBodyBlockField
-                                typeStyle={2}
-                                nameField="К кому приём"
-                                valueField={`${applicationItem.toPosition.employee.fio}  ${
-                                    applicationItem.toPosition.unit?.unit_name
-                                        ? `• ${applicationItem.toPosition.unit?.unit_name} `
-                                        : ''
-                                }`}
-                                icon={FileText}
-                            />
-                            {/* <ModalBodyBlockField
+                                <ModalBodyBlockField
+                                    typeStyle={2}
+                                    nameField="К кому приём"
+                                    valueField={`${applicationItem.toPosition.employee.fio}  ${
+                                        applicationItem.toPosition.unit
+                                            ?.unit_name
+                                            ? `• ${applicationItem.toPosition.unit?.unit_name} `
+                                            : ''
+                                    }`}
+                                    icon={FileText}
+                                />
+                                {/* <ModalBodyBlockField
                                 typeStyle={2}
                                 nameField="Исполнитель"
                                 valueField={
@@ -507,102 +605,104 @@ export function ApplicationModal({
                                 }
                                 icon={UserPen}
                             /> */}
-                        </ModalBodyBlock>
-                        {/* Ответы */}
-                        {sortedResponseItems?.length !== 0 && (
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-semibold flex items-end justify-between text-gray-900 border-b pb-2">
-                                    Ответы
-                                    {sortedResponseItems.length !== 1 && (
-                                        <div
-                                            className="flex cursor-pointer items-center"
-                                            onClick={() =>
-                                                setSortResponsesFlag(
-                                                    (prev) => !prev,
-                                                )
-                                            }
-                                        >
-                                            {sortResponsesFlag ? (
-                                                <CalendarArrowDown className="w-8 mt-0.5 hover:scale-125 transition-all duration-150" />
-                                            ) : (
-                                                <CalendarArrowUp className="w-8 mt-0.5 hover:scale-125 transition-all duration-150" />
-                                            )}
-                                        </div>
-                                    )}
-                                </h3>
+                            </ModalBodyBlock>
+                            {/* Ответы */}
+                            {sortedResponseItems?.length !== 0 && (
+                                <div className="space-y-4">
+                                    <h3 className="text-lg font-semibold flex items-end justify-between text-gray-900 border-b pb-2">
+                                        Ответы
+                                        {sortedResponseItems.length !== 1 && (
+                                            <div
+                                                className="flex cursor-pointer items-center"
+                                                onClick={() =>
+                                                    setSortResponsesFlag(
+                                                        (prev) => !prev,
+                                                    )
+                                                }
+                                            >
+                                                {sortResponsesFlag ? (
+                                                    <CalendarArrowDown className="w-8 mt-0.5 hover:scale-125 transition-all duration-150" />
+                                                ) : (
+                                                    <CalendarArrowUp className="w-8 mt-0.5 hover:scale-125 transition-all duration-150" />
+                                                )}
+                                            </div>
+                                        )}
+                                    </h3>
 
-                                {sortedResponseItems?.map((res) => (
-                                    <div
-                                        className={`${
-                                            res.type === 'invite_yes'
-                                                ? 'bg-green-50'
-                                                : res.type === 'invite_no'
-                                                  ? 'bg-red-50'
-                                                  : res.type === 'invite'
-                                                    ? 'bg-orange-50'
-                                                    : 'bg-blue-50'
-                                        } rounded-lg p-4`}
-                                        key={res.id}
-                                    >
-                                        <div className="flex items-start justify-between gap-2 mb-2">
-                                            <div className="flex items-start gap-2">
-                                                <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
+                                    {sortedResponseItems?.map((res) => (
+                                        <div
+                                            className={`${
+                                                res.type === 'invite_yes'
+                                                    ? 'bg-green-50'
+                                                    : res.type === 'invite_no'
+                                                      ? 'bg-red-50'
+                                                      : res.type === 'invite'
+                                                        ? 'bg-orange-50'
+                                                        : 'bg-blue-50'
+                                            } rounded-lg p-4`}
+                                            key={res.id}
+                                        >
+                                            <div className="flex items-start justify-between gap-2 mb-2">
+                                                <div className="flex items-start gap-2">
+                                                    <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
+                                                    <p className="text-sm font-medium text-gray-700">
+                                                        Ответ
+                                                    </p>
+                                                </div>
                                                 <p className="text-sm font-medium text-gray-700">
-                                                    Ответ
+                                                    {'Cоздан: '}
+                                                    {formatDate(res.created_at)}
                                                 </p>
                                             </div>
-                                            <p className="text-sm font-medium text-gray-700">
-                                                {'Cоздан: '}
-                                                {formatDate(res.created_at)}
+                                            <p className=" ml-7 whitespace-pre-wrap">
+                                                {'Ответчик: '}
+                                                {(res.author &&
+                                                    res.author.fio) ||
+                                                    'Заявитель'}
+                                            </p>
+                                            <p
+                                                className="text-gray-900 ml-7 mt-4 whitespace-pre-wrap underline cursor-pointer"
+                                                onClick={() =>
+                                                    downloadFile(
+                                                        res.attachments[0].id,
+                                                    )
+                                                }
+                                            >
+                                                Скачать файл
                                             </p>
                                         </div>
-                                        <p className=" ml-7 whitespace-pre-wrap">
-                                            {'Ответчик: '}
-                                            {(res.author && res.author.fio) ||
-                                                'Заявитель'}
-                                        </p>
-                                        <p
-                                            className="text-gray-900 ml-7 mt-4 whitespace-pre-wrap underline cursor-pointer"
-                                            onClick={() =>
-                                                downloadFile(
-                                                    res.attachments[0].id,
-                                                )
-                                            }
-                                        >
-                                            Скачать файл
-                                        </p>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </ModalBody>
-                </div>
+                                    ))}
+                                </div>
+                            )}
+                        </ModalBody>
+                    </div>
 
-                {showResponseModal && (
-                    <ModalResponse
-                        handleSubmit={handleSubmitResponseModal}
-                        onClose={onCloseResponseModal}
-                    />
-                )}
-                {showUnitModal && unit && (
-                    <ModalCuratorTree
-                        selectedNow={applicationItem.toPosition.id || 0}
-                        unitTree={unit}
-                        handleSubmit={handleSubmitUnit}
-                        onClose={onCloseUnitModal}
-                    />
-                )}
-                {alert && (
-                    <ModalSubmit
-                        onClose={() => setAlert(null)}
-                        handleSubmit={() =>
-                            handleStatusChange(
-                                alert as UpdateApplicationStatusProps['new_status'],
-                            )
-                        }
-                    />
-                )}
-            </Modal>
+                    {showResponseModal && (
+                        <ModalResponse
+                            handleSubmit={handleSubmitResponseModal}
+                            onClose={onCloseResponseModal}
+                        />
+                    )}
+                    {showUnitModal && unit && (
+                        <ModalCuratorTree
+                            selectedNow={applicationItem.toPosition.id || 0}
+                            unitTree={unit}
+                            handleSubmit={handleSubmitUnit}
+                            onClose={onCloseUnitModal}
+                        />
+                    )}
+                    {alert && (
+                        <ModalSubmit
+                            onClose={() => setAlert(null)}
+                            handleSubmit={() =>
+                                handleStatusChange(
+                                    alert as UpdateApplicationStatusProps['new_status'],
+                                )
+                            }
+                        />
+                    )}
+                </Modal>
+            </>
         )
     );
 }

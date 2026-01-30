@@ -14,6 +14,25 @@
     --bg: #f6f7fb;
 }
 
+@media print {
+    body * {
+        display: none !important;
+    }
+    .print-area,
+    .print-area * {
+        display: block !important;
+        visibility: visible !important;
+    }
+    .print-area {
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        width: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}
+
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -120,9 +139,9 @@
 body {
     background: var(--background);
     color: var(--foreground);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-        Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-        sans-serif;
+    font-family:
+        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+        Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 
 /* ===== Стили для кастомного скроллбара ===== */

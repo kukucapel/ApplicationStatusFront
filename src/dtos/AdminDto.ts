@@ -8,7 +8,19 @@ export interface Employee {
     role_id: number;
     role: string;
   } | null;
-  positions: [];
+  positions: EmployeePosition[];
+  titlePosition?: string;
+}
+export interface EmployeePosition {
+  id: number;
+  kind: string;
+  title: string;
+  unit: EmployeePositionUnit;
+}
+export interface EmployeePositionUnit {
+  id: number;
+  path: string;
+  unit_name: string;
 }
 export interface EmployeeUpdate {
   fio?: string | null;
@@ -48,4 +60,10 @@ export interface Curator {
   children: Record<string, Curator>; //кураторов повторять
   unit_name: string[]; //массив с всеми юнитами над которыми курирует куратор
   unit_path: string[];
+}
+
+export interface PositionTitle {
+  id: number;
+  name: string;
+  kind: string;
 }
