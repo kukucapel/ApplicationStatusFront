@@ -75,6 +75,8 @@ export function ApplicationModal({
     const [showUnitModal, setShowUnitModal] = useState<boolean>(false);
     const [showPrintOverlay, setShowPrintOverlay] = useState(false);
 
+    const [isLoadingResponse, setIsLoadingResponse] = useState<boolean>(false);
+
     const [loading, setLoading] = useState<boolean>(false);
 
     const { user } = useUser();
@@ -102,10 +104,14 @@ export function ApplicationModal({
         file: File,
     ) => {
         e.preventDefault();
+        setIsLoadingResponse(true);
+
         const res = await addApplicationResponse(application.id, data);
+
         await addAttachmentResponse(res.id, file);
         await Promise.all([loadResponse(), loadApplication()]);
         setShowResponseModal(false);
+        setIsLoadingResponse(false);
     };
 
     const handleSubmitUnit = async (newUnit: UpdateApplicationDataProps) => {
@@ -681,6 +687,7 @@ export function ApplicationModal({
 
                     {showResponseModal && (
                         <ModalResponse
+                            isLoadingResponse={isLoadingResponse}
                             handleSubmit={handleSubmitResponseModal}
                             onClose={onCloseResponseModal}
                         />

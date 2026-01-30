@@ -89,7 +89,6 @@ export default function FilterSideBar({
                                     toPosition: option.value,
                                 });
                             }}
-                            isSearchable
                             placeholder="Все руководители"
                             className="mb-2"
                             classNamePrefix="react-select"
