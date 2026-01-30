@@ -75,6 +75,8 @@ export function ApplicationModal({
     const [showUnitModal, setShowUnitModal] = useState<boolean>(false);
     const [showPrintOverlay, setShowPrintOverlay] = useState(false);
 
+    const [isLoadingResponse, setIsLoadingResponse] = useState<boolean>(false);
+
     const [loading, setLoading] = useState<boolean>(false);
 
     const { user } = useUser();
@@ -102,10 +104,14 @@ export function ApplicationModal({
         file: File,
     ) => {
         e.preventDefault();
+        setIsLoadingResponse(true);
+
         const res = await addApplicationResponse(application.id, data);
+
         await addAttachmentResponse(res.id, file);
         await Promise.all([loadResponse(), loadApplication()]);
         setShowResponseModal(false);
+        setIsLoadingResponse(false);
     };
 
     const handleSubmitUnit = async (newUnit: UpdateApplicationDataProps) => {
@@ -401,12 +407,14 @@ export function ApplicationModal({
                             <div className="mb-4">
                                 <p>
                                     <b>Адрес регистрации:</b>{' '}
-                                    {applicationItem.applicant.postalCode1},{' '}
+                                    {applicationItem.applicant.postal_code1 &&
+                                        `${applicationItem.applicant.postal_code1},`}{' '}
                                     {applicationItem.applicant.address1}
                                 </p>
                                 <p>
                                     <b>Адрес фактический:</b>{' '}
-                                    {applicationItem.applicant.postalCode2},{' '}
+                                    {applicationItem.applicant.postal_code2 &&
+                                        `${applicationItem.applicant.postal_code2},`}{' '}
                                     {applicationItem.applicant.address2}
                                 </p>
                             </div>
@@ -546,16 +554,16 @@ export function ApplicationModal({
                                 <ModalBodyBlockField
                                     nameField="Индекс регистрации"
                                     valueField={
-                                        applicationItem.applicant.postalCode1 ||
-                                        '-'
+                                        applicationItem.applicant
+                                            .postal_code1 || '-'
                                     }
                                     icon={FileText}
                                 />
                                 <ModalBodyBlockField
                                     nameField="Индекс проживания"
                                     valueField={
-                                        applicationItem.applicant.postalCode2 ||
-                                        '-'
+                                        applicationItem.applicant
+                                            .postal_code2 || '-'
                                     }
                                     icon={FileText}
                                 />
@@ -679,6 +687,7 @@ export function ApplicationModal({
 
                     {showResponseModal && (
                         <ModalResponse
+                            isLoadingResponse={isLoadingResponse}
                             handleSubmit={handleSubmitResponseModal}
                             onClose={onCloseResponseModal}
                         />

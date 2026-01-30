@@ -13,7 +13,11 @@ export default function Admin() {
     const [page, setPage] = useState<number>(0);
 
     useEffect(() => {
-        if (!loading && user?.role === 'worker') router.push('dashboard');
+        if (
+            !loading &&
+            (user?.role === 'worker' || user?.login !== 'admin@example.com')
+        )
+            router.push('dashboard');
     }, [user, router, loading]);
 
     const MENU: [string, string][] = [
@@ -21,9 +25,10 @@ export default function Admin() {
         // ['Структура', 'units/?as=tree'],
         // ['Оценки', 'raitings'],
     ];
-    if (user?.role === 'admin') MENU.push(['Роли', 'roles']);
-    // if (user?.role === 'admin') MENU.push(['Должности', 'position_titles']);
-    if (user?.role !== 'admin') {
+    if (user?.role === 'admin' && user?.login === 'admin@example.com')
+        MENU.push(['Роли', 'roles']);
+    // if (user?.role === 'admin' user?.login === 'admin@example.com') MENU.push(['Должности', 'position_titles']);
+    if (user?.role !== 'admin' || user?.login !== 'admin@example.com') {
         return;
     } else {
         return (

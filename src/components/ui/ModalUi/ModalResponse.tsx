@@ -10,13 +10,15 @@ interface ModalResponseProps {
     handleSubmit: (
         e: React.FormEvent,
         data: ResponseCreateDto,
-        file: File
+        file: File,
     ) => Promise<void>;
+    isLoadingResponse: boolean;
 }
 
 export default function ModalResponse({
     onClose,
     handleSubmit,
+    isLoadingResponse,
 }: ModalResponseProps) {
     const [form, setForm] = useState<ResponseCreateDto>({
         comment: null,
@@ -109,7 +111,7 @@ export default function ModalResponse({
                                 setFile(
                                     e.target.files !== null
                                         ? e.target.files[0]
-                                        : null
+                                        : null,
                                 )
                             }
                         />
@@ -138,10 +140,10 @@ export default function ModalResponse({
                     </div> */}
                     <div className="transition-all duration-150 flex gap-3 pt-4 border-t">
                         <Button
-                            isActive={isActive}
+                            isActive={isActive || isLoadingResponse}
                             styleColor="blue"
                             className={`flex-1  ${
-                                isActive
+                                isActive || isLoadingResponse
                                     ? 'bg-blue-400'
                                     : 'bg-blue-600 hover:bg-blue-700'
                             }`}

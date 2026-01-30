@@ -107,6 +107,7 @@ export default function ApplicationsList({
     return (
         <div className="flex flex-col lg:flex-row gap-6">
             <FilterSideBar
+                user={user}
                 setCreateModal={() => setCreateModal(true)}
                 uniqueToPosition={[
                     ...new Set(

@@ -13,6 +13,7 @@ export interface User {
     id: number;
     fio: string;
     role?: string;
+    login: string;
 }
 
 interface UserContextType {
