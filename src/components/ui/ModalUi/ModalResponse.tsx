@@ -143,7 +143,7 @@ export default function ModalResponse({
                             isActive={isActive || isLoadingResponse}
                             styleColor="blue"
                             className={`flex-1  ${
-                                isActive
+                                isActive || isLoadingResponse
                                     ? 'bg-blue-400'
                                     : 'bg-blue-600 hover:bg-blue-700'
                             }`}
