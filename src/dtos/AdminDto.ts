@@ -71,3 +71,24 @@ export interface PositionTitleUpdate {
   name?: string;
   kind?: string;
 }
+
+export interface Position {
+  id: number;
+  title: PositionTitle;
+  titlePosition?: string;
+  unitName?: string;
+  employeeFio?: string;
+  unit: {
+    id: number;
+    unit_name: string;
+    path: string;
+  };
+  curatedCount: number;
+  assignee: {
+    employee_id: number;
+    fio: string;
+    email: string;
+    user_id?: number;
+    login?: string;
+  };
+}

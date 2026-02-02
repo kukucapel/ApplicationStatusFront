@@ -36,6 +36,8 @@ export default function Admin() {
         MENU.push(['Роли', 'roles']);
     if (user?.role === 'admin' && user?.login === 'admin@example.com')
         MENU.push(['Должности', 'position_titles']);
+    if (user?.role === 'admin' && user?.login === 'admin@example.com')
+        MENU.push(['Позиции', 'positions']);
     if (user?.role !== 'admin' || user?.login !== 'admin@example.com') {
         return;
     } else {

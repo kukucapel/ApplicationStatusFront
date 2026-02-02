@@ -1,3 +1,5 @@
+'use client';
+
 import Button from '@/components/ui/Button';
 import ModalAdminMainBody from '@/components/ui/ModalUi/ModalAdminMainBody';
 import { useUser } from '@/contexts/UserContext';

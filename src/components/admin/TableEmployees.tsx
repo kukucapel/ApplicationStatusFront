@@ -116,7 +116,7 @@ export default function TableEmployees({
         });
     }, [employeeItems, filters, searchMode, sort]);
 
-    if (loading) {
+    if (loading && !employeeItems) {
         return (
             <div className=" inset-0 z-50 flex items-center justify-center bg-white">
                 <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
@@ -139,6 +139,7 @@ export default function TableEmployees({
                 <div className="space-y-2">
                     {filtredAndSortedItems?.map((emp: Employee) => (
                         <TableRow
+                            onClickDelete={() => setModalSubmit(emp.id)}
                             deleteMode={deleteMode}
                             onClickTableModal={() => {
                                 setModalIsActive(emp.id);
@@ -154,7 +155,7 @@ export default function TableEmployees({
                                 {/* <div>{emp.email}</div>
                                         <div>{emp.user?.role || '-'}</div> */}
                             </div>
-                            {deleteMode && (
+                            {/* {deleteMode && (
                                 <button
                                     onClick={() => {
                                         setModalSubmit(emp.id);
@@ -164,7 +165,7 @@ export default function TableEmployees({
                                 >
                                     <Trash2 size={18} />
                                 </button>
-                            )}
+                            )} */}
                         </TableRow>
                     ))}
                 </div>
@@ -211,6 +212,7 @@ export default function TableEmployees({
                 <div className="space-y-2">
                     {filtredAndSortedItems?.map((emp: Employee) => (
                         <TableRow
+                            onClickDelete={() => setModalSubmit(emp.id)}
                             deleteMode={deleteMode}
                             onClickTableModal={() => {
                                 setModalIsActive(emp.id);
@@ -230,7 +232,7 @@ export default function TableEmployees({
                                         '-'}
                                 </div>
                             </div>
-                            {deleteMode && (
+                            {/* {deleteMode && (
                                 <button
                                     onClick={() => {
                                         setModalSubmit(emp.id);
@@ -240,7 +242,7 @@ export default function TableEmployees({
                                 >
                                     <Trash2 size={18} />
                                 </button>
-                            )}
+                            )} */}
                         </TableRow>
                     ))}
                 </div>
