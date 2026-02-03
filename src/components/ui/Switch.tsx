@@ -1,5 +1,4 @@
-import React, { JSX, ReactNode } from 'react';
-import Button from './Button';
+import React from 'react';
 
 interface SwitchProps {
     page: string;
@@ -7,6 +6,7 @@ interface SwitchProps {
     buttonsList: string[][];
     className?: string;
 }
+
 export default function Switch({
     page,
     onClickSwitchButton,
@@ -14,18 +14,20 @@ export default function Switch({
     className,
 }: SwitchProps) {
     return (
-        <div className={`${className} flex justify-between items-center gap-1`}>
-            {buttonsList.map((button, index) => (
-                <Button
-                    styleColor="white"
-                    isActive={page === button[1]}
-                    className="w-full py-2"
-                    onClick={() => onClickSwitchButton(button[1])}
-                    key={index}
-                >
-                    {button[0]}
-                </Button>
-            ))}
+        <div className={`${className} flex border-b border-gray-300`}>
+            {buttonsList.map((button, index) => {
+                const isActive = page === button[1];
+
+                return (
+                    <div
+                        key={index}
+                        onClick={() => onClickSwitchButton(button[1])}
+                        className={`cursor-pointer select-none text-center w-full px-4 py-2 -mb-px ${isActive ? 'border-b-2 border-blue-500 font-semibold text-blue-600' : 'text-gray-500'} transition-colors`}
+                    >
+                        {button[0]}
+                    </div>
+                );
+            })}
         </div>
     );
 }

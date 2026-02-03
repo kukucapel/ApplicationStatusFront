@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Employee, Role } from '@/dtos/AdminDto';
+import { Employee, Position, Role } from '@/dtos/AdminDto';
 import { adminData, deleteEmployee } from '@/lib/adminData';
 import TableRow from '../ui/Table/TableRow';
 import TableHeader from '../ui/Table/TableHeader';
@@ -18,6 +18,7 @@ interface TableProps {
     searchMode: boolean;
     editMode: boolean;
     employeeItems: Employee[] | null;
+    positionItems: Position[] | null;
     roleItems: Role[] | null;
     loadEmployees: () => Promise<void>;
     showAddModal: boolean;
@@ -46,6 +47,7 @@ export default function TableEmployees({
     showAddModal,
     deleteMode,
     setShowAddModal,
+    positionItems,
 }: TableProps) {
     const [loading, setLoading] = useState<boolean>(true);
     const [sort, setSort] = useState<[number, number]>([0, 0]);
@@ -53,6 +55,9 @@ export default function TableEmployees({
     const [modalIsActive, setModalIsActive] = useState<number | null>(null);
     const [modalEmployee, setModalEmployee] = useState<Employee | null>(null);
     const [modalSubmit, setModalSubmit] = useState<number | null>(null);
+    const [userFilter, setUserFilter] = useState<'all' | 'user' | 'employee'>(
+        'all',
+    );
 
     const { user } = useUser();
 
@@ -127,6 +132,7 @@ export default function TableEmployees({
     return (
         <>
             {/* Mobile */}
+
             <div className="p-6 bg-gray-50 rounded-lg md:hidden">
                 <TableHeader
                     handleFilterChange={handleFilterChange}
@@ -169,20 +175,25 @@ export default function TableEmployees({
                         </TableRow>
                     ))}
                 </div>
-                {modalIsActive && modalEmployee && roleItems && (
-                    <ModalAdminEmployee
-                        roleItems={roleItems}
-                        loadEmployees={loadEmployees}
-                        employee={modalEmployee}
-                        setModalIsActive={() => {
-                            setModalEmployee(null);
-                            setModalIsActive(null);
-                        }}
-                    />
-                )}
+                {modalIsActive &&
+                    modalEmployee &&
+                    roleItems &&
+                    positionItems && (
+                        <ModalAdminEmployee
+                            positionItems={positionItems}
+                            roleItems={roleItems}
+                            loadEmployees={loadEmployees}
+                            employee={modalEmployee}
+                            setModalIsActive={() => {
+                                setModalEmployee(null);
+                                setModalIsActive(null);
+                            }}
+                        />
+                    )}
                 {}
                 {showAddModal && (
                     <ModalAdminEmployee
+                        positionItems={positionItems}
                         roleItems={roleItems}
                         loadEmployees={loadEmployees}
                         employee={modalEmployee}
@@ -199,9 +210,39 @@ export default function TableEmployees({
                     />
                 )}
             </div>
-
             {/* Desktop */}
-            <div className="p-6 bg-gray-50 rounded-lg hidden md:block">
+            <div className="px-6 bg-gray-50 rounded-lg hidden md:block">
+                <div className="flex items-center gap-6 font-semibold text-gray-700 select-none mb-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={userFilter === 'all'}
+                            onChange={() => setUserFilter('all')}
+                            className="w-4 h-4"
+                        />
+                        <span>Все</span>
+                    </label>
+
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={userFilter === 'user'}
+                            onChange={() => setUserFilter('user')}
+                            className="w-4 h-4"
+                        />
+                        <span>Пользователи</span>
+                    </label>
+
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={userFilter === 'employee'}
+                            onChange={() => setUserFilter('employee')}
+                            className="w-4 h-4"
+                        />
+                        <span>Сотрудники</span>
+                    </label>
+                </div>
                 <TableHeader
                     handleFilterChange={handleFilterChange}
                     setSort={setSort}
@@ -210,29 +251,27 @@ export default function TableEmployees({
                     searchMode={searchMode}
                 />
                 <div className="space-y-2">
-                    {filtredAndSortedItems?.map((emp: Employee) => (
-                        <TableRow
-                            onClickDelete={() => setModalSubmit(emp.id)}
-                            deleteMode={deleteMode}
-                            onClickTableModal={() => {
-                                setModalIsActive(emp.id);
-                                setModalEmployee(emp);
-                            }}
-                            editMode={editMode}
-                            key={emp.id}
-                            id={emp.id}
-                        >
-                            <div className="grid grid-cols-[60px_1fr_1fr_1fr] gap-4">
-                                <div>{emp.id}</div>
-                                <div>{emp.fio || '-'}</div>
-                                <div>{emp.email}</div>
-                                <div>
-                                    {(emp.positions.length !== 0 &&
-                                        emp.positions[0].title) ||
-                                        '-'}
+                    {filtredAndSortedItems?.map((emp: Employee) =>
+                        userFilter === 'all' ? (
+                            <TableRow
+                                onClickDelete={() => setModalSubmit(emp.id)}
+                                deleteMode={deleteMode}
+                                admin={emp.user?.login === 'admin@example.com'}
+                                onClickTableModal={() => {
+                                    setModalIsActive(emp.id);
+                                    setModalEmployee(emp);
+                                }}
+                                editMode={editMode}
+                                key={emp.id}
+                                id={emp.id}
+                            >
+                                <div className="grid grid-cols-[60px_1fr_1fr_1fr] gap-4">
+                                    <div>{emp.id}</div>
+                                    <div>{emp.fio || '-'}</div>
+                                    <div>{emp.email}</div>
+                                    <div>{emp.position?.title || '-'}</div>
                                 </div>
-                            </div>
-                            {/* {deleteMode && (
+                                {/* {deleteMode && (
                                 <button
                                     onClick={() => {
                                         setModalSubmit(emp.id);
@@ -243,23 +282,96 @@ export default function TableEmployees({
                                     <Trash2 size={18} />
                                 </button>
                             )} */}
-                        </TableRow>
-                    ))}
+                            </TableRow>
+                        ) : userFilter === 'user' ? (
+                            emp.user && (
+                                <TableRow
+                                    onClickDelete={() => setModalSubmit(emp.id)}
+                                    deleteMode={deleteMode}
+                                    admin={
+                                        emp.user.login === 'admin@example.com'
+                                    }
+                                    onClickTableModal={() => {
+                                        setModalIsActive(emp.id);
+                                        setModalEmployee(emp);
+                                    }}
+                                    editMode={editMode}
+                                    key={emp.id}
+                                    id={emp.id}
+                                >
+                                    <div className="grid grid-cols-[60px_1fr_1fr_1fr] gap-4">
+                                        <div>{emp.id}</div>
+                                        <div>{emp.fio || '-'}</div>
+                                        <div>{emp.email}</div>
+                                        <div>{emp.position?.title || '-'}</div>
+                                    </div>
+                                    {/* {deleteMode && (
+                                <button
+                                    onClick={() => {
+                                        setModalSubmit(emp.id);
+                                    }}
+                                    className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
+        "
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                            )} */}
+                                </TableRow>
+                            )
+                        ) : (
+                            !emp.user && (
+                                <TableRow
+                                    onClickDelete={() => setModalSubmit(emp.id)}
+                                    deleteMode={deleteMode}
+                                    onClickTableModal={() => {
+                                        setModalIsActive(emp.id);
+                                        setModalEmployee(emp);
+                                    }}
+                                    editMode={editMode}
+                                    key={emp.id}
+                                    id={emp.id}
+                                >
+                                    <div className="grid grid-cols-[60px_1fr_1fr_1fr] gap-4">
+                                        <div>{emp.id}</div>
+                                        <div>{emp.fio || '-'}</div>
+                                        <div>{emp.email}</div>
+                                        <div>{emp.position?.title || '-'}</div>
+                                    </div>
+                                    {/* {deleteMode && (
+                                <button
+                                    onClick={() => {
+                                        setModalSubmit(emp.id);
+                                    }}
+                                    className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
+        "
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                            )} */}
+                                </TableRow>
+                            )
+                        ),
+                    )}
                 </div>
-                {modalIsActive && modalEmployee && roleItems && (
-                    <ModalAdminEmployee
-                        roleItems={roleItems}
-                        loadEmployees={loadEmployees}
-                        employee={modalEmployee}
-                        setModalIsActive={() => {
-                            setModalEmployee(null);
-                            setModalIsActive(null);
-                        }}
-                    />
-                )}
+                {modalIsActive &&
+                    modalEmployee &&
+                    positionItems &&
+                    roleItems && (
+                        <ModalAdminEmployee
+                            positionItems={positionItems}
+                            roleItems={roleItems}
+                            loadEmployees={loadEmployees}
+                            employee={modalEmployee}
+                            setModalIsActive={() => {
+                                setModalEmployee(null);
+                                setModalIsActive(null);
+                            }}
+                        />
+                    )}
                 {}
                 {showAddModal && (
                     <ModalAdminEmployee
+                        positionItems={positionItems}
                         roleItems={roleItems}
                         loadEmployees={loadEmployees}
                         employee={modalEmployee}

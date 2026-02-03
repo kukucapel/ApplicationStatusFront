@@ -1,6 +1,8 @@
 'use client';
 
-import { Position } from '@/dtos/AdminDto';
+import { useUser } from '@/contexts/UserContext';
+import { Position, PositionUpdate } from '@/dtos/AdminDto';
+import { useState } from 'react';
 
 interface ModalAdminPositionsProps {
     position: Position | null;
@@ -12,4 +14,11 @@ export function ModalAdminPositions({
     position,
     setModalIsActive,
     loadPositions,
-}: ModalAdminPositionsProps) {}
+}: ModalAdminPositionsProps) {
+    const { user } = useUser();
+
+    const [form, setForm] = useState<PositionUpdate>({
+        position_title_id: position?.title.id || null,
+        unit_id: position?.unit.id || null,
+    });
+}

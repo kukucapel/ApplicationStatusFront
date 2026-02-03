@@ -79,7 +79,7 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
             const employeesWithTitle = employeeData.items.map(
                 (employee: Employee) => ({
                     ...employee,
-                    titlePosition: employee.positions?.[0]?.title ?? '',
+                    titlePosition: employee.position?.title ?? '',
                 }),
             );
 
@@ -112,6 +112,7 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
                 <hr className="border-gray-300 mx-6 mb-6" />
                 {page === 0 ? (
                     <TableEmployees
+                        positionItems={positionItems}
                         showAddModal={showAddModal}
                         setShowAddModal={setShowAddModal}
                         roleItems={roleItems}

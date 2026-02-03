@@ -2,14 +2,33 @@ export interface Employee {
   id: number;
   fio?: string | null;
   email: string;
-  user: {
-    id: number;
-    login: string;
-    role_id: number;
-    role: string;
-  } | null;
-  positions: EmployeePosition[];
-  titlePosition?: string;
+  user: User | null;
+  position: EmployeePosition;
+  titlePosition?: string; //служебное
+}
+
+export interface EmployeeUpdate {
+  fio?: string | null;
+  email?: string;
+  position_id?: number | null;
+}
+
+export interface User {
+  id: number;
+  login: string;
+  role_id: number;
+  role: string;
+}
+export interface UserUpdate {
+  login?: string | null;
+  role_id?: number | null;
+  password?: string;
+}
+export interface CreateUser {
+  fio: string;
+  login?: string;
+  password: string;
+  role_id: number;
 }
 export interface EmployeePosition {
   id: number;
@@ -21,13 +40,6 @@ export interface EmployeePositionUnit {
   id: number;
   path: string;
   unit_name: string;
-}
-export interface EmployeeUpdate {
-  fio?: string | null;
-  email?: string;
-  role_id?: number | null;
-  unit_id?: number | null;
-  password?: string;
 }
 
 export interface Role {
@@ -75,9 +87,9 @@ export interface PositionTitleUpdate {
 export interface Position {
   id: number;
   title: PositionTitle;
-  titlePosition?: string;
-  unitName?: string;
-  employeeFio?: string;
+  titlePosition?: string; //служебное
+  unitName?: string; //служебное
+  employeeFio?: string; //служебное
   unit: {
     id: number;
     unit_name: string;
@@ -91,4 +103,10 @@ export interface Position {
     user_id?: number;
     login?: string;
   };
+}
+
+export interface PositionUpdate {
+  position_title_id?: number | null;
+  unit_id?: number | null;
+  // employee_id?: number | null;
 }
