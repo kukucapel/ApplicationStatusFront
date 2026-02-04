@@ -1,7 +1,10 @@
 import {
+  EmployeeCreate,
   EmployeeUpdate,
   PositionTitleUpdate,
   RoleUpdate,
+  UserCreate,
+  UserUpdate,
 } from '@/dtos/AdminDto';
 import { apiRequest } from './apiClient';
 
@@ -22,7 +25,7 @@ export async function updateEmployee(data: EmployeeUpdate, id: number) {
     },
   });
 }
-export async function addEmployee(data: EmployeeUpdate) {
+export async function addEmployee(data: EmployeeCreate) {
   return await apiRequest(`/employees`, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -41,6 +44,42 @@ export async function deleteEmployee(id: number) {
       'Content-Type': 'application/json',
     },
   });
+}
+export async function updateUser(id: number, data: UserUpdate) {
+  return await apiRequest(`/employees/users/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+export async function addUser(id: number, data: UserUpdate) {
+  return await apiRequest(`/employees/users/`, {
+    method: 'POST',
+    body: JSON.stringify({ ...data, employee_id: id }),
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+export async function createUser(data: UserCreate) {
+  const employeeData: EmployeeCreate = {
+    email: data.email,
+    fio: data.fio,
+    position_id: data.position_id,
+  };
+  const userData: UserUpdate = {
+    login: data.login,
+    password: data.password,
+    role_id: data.role_id,
+  };
+  console.log(employeeData);
+  const idEmployee = await addEmployee(employeeData);
+  console.log(idEmployee);
+  return await addUser(idEmployee.employee_id, userData);
 }
 
 export async function updateRole(data: RoleUpdate, id: number) {

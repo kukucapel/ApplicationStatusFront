@@ -128,6 +128,7 @@ export default function TableEmployees({
             </div>
         );
     }
+    console.log(employeeItems);
 
     return (
         <>
@@ -269,7 +270,7 @@ export default function TableEmployees({
                                     <div>{emp.id}</div>
                                     <div>{emp.fio || '-'}</div>
                                     <div>{emp.email}</div>
-                                    <div>{emp.position?.title || '-'}</div>
+                                    <div>{emp.position?.title.name || '-'}</div>
                                 </div>
                                 {/* {deleteMode && (
                                 <button
@@ -303,7 +304,9 @@ export default function TableEmployees({
                                         <div>{emp.id}</div>
                                         <div>{emp.fio || '-'}</div>
                                         <div>{emp.email}</div>
-                                        <div>{emp.position?.title || '-'}</div>
+                                        <div>
+                                            {emp.position?.title.name || '-'}
+                                        </div>
                                     </div>
                                     {/* {deleteMode && (
                                 <button
@@ -335,7 +338,9 @@ export default function TableEmployees({
                                         <div>{emp.id}</div>
                                         <div>{emp.fio || '-'}</div>
                                         <div>{emp.email}</div>
-                                        <div>{emp.position?.title || '-'}</div>
+                                        <div>
+                                            {emp.position?.title.name || '-'}
+                                        </div>
                                     </div>
                                     {/* {deleteMode && (
                                 <button

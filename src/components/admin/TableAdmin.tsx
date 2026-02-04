@@ -79,7 +79,7 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
             const employeesWithTitle = employeeData.items.map(
                 (employee: Employee) => ({
                     ...employee,
-                    titlePosition: employee.position?.title ?? '',
+                    titlePosition: employee.position?.title.name ?? '',
                 }),
             );
 

@@ -3,8 +3,8 @@ export interface Employee {
   fio?: string | null;
   email: string;
   user: User | null;
-  position: EmployeePosition;
-  titlePosition?: string; //служебное
+  position: EmployeePosition | null;
+  titlePosition?: string;
 }
 
 export interface EmployeeUpdate {
@@ -12,29 +12,60 @@ export interface EmployeeUpdate {
   email?: string;
   position_id?: number | null;
 }
+export interface EmployeeCreate {
+  fio: string;
+  email: string;
+  position_id: number | null;
+}
+
+export interface CuratorAccess {
+  id: number;
+  includePositionRequests: boolean;
+  curatedScope: string;
+  createdAt: string;
+  curatorPosition: CuratorPosition;
+}
+
+export interface CuratorPosition {
+  id: number;
+  title: string;
+  kind: string;
+  unit: Unit;
+}
 
 export interface User {
   id: number;
   login: string;
-  role_id: number;
-  role: string;
+  passwordChanged: boolean;
+  passwordChangedAt: string | null;
+  role: Role;
+  curatorAccess: CuratorAccess[];
 }
+
 export interface UserUpdate {
   login?: string | null;
   role_id?: number | null;
   password?: string;
 }
-export interface CreateUser {
+export interface UserCreate {
   fio: string;
-  login?: string;
+  email: string;
+  position_id: number | null;
+  login: string;
   password: string;
   role_id: number;
 }
+
 export interface EmployeePosition {
   id: number;
   kind: string;
-  title: string;
-  unit: EmployeePositionUnit;
+  title: PositionTitle;
+  unit: EmployeePositionUnit | null;
+}
+export interface PositionTitle {
+  id: number;
+  name: string;
+  kind: string;
 }
 export interface EmployeePositionUnit {
   id: number;
@@ -44,10 +75,10 @@ export interface EmployeePositionUnit {
 
 export interface Role {
   id: number;
-  created_at?: string;
+  createdAt?: string;
   description?: string;
   name?: string;
-  updated_at?: string;
+  updatedAt?: string;
 }
 export interface RoleUpdate {
   description?: string;
@@ -74,11 +105,6 @@ export interface Curator {
   unit_path: string[];
 }
 
-export interface PositionTitle {
-  id: number;
-  name: string;
-  kind: string;
-}
 export interface PositionTitleUpdate {
   name?: string;
   kind?: string;
