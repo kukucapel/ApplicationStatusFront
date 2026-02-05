@@ -20,7 +20,10 @@ export default function LeftMenu({
                         isActive={page === index}
                         className="w-full py-2 shadow-none font-normal"
                         key={index}
-                        onClick={() => handleClickMenu(index)}
+                        onClick={() => {
+                            handleClickMenu(index);
+                            document.cookie = `admin_page=${index}; path=/; max-age=86400`;
+                        }}
                     >
                         {button[0]}
                     </Button>

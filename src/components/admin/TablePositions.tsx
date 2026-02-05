@@ -1,80 +1,60 @@
 'use client';
 
-import { useUser } from '@/contexts/UserContext';
-import { PositionTitle } from '@/dtos/AdminDto';
+import { Position } from '@/dtos/AdminDto';
 import { useEffect, useMemo, useState } from 'react';
+import { useUser } from '@/contexts/UserContext';
 import TableHeader from '../ui/Table/TableHeader';
 import TableRow from '../ui/Table/TableRow';
 import { Trash2 } from 'lucide-react';
-import { deletePositionTitle } from '@/lib/adminData';
-import ModalSubmit from '../modals/ModalSubmit';
-import { ModalAdminPositionTitles } from '../modals/admin/ModalAdminPositionTitles';
 
 interface TableProps {
     page: [string, string];
     searchMode: boolean;
     editMode: boolean;
-    positionTitleItems: PositionTitle[] | null;
-    loadPostionTitles: () => Promise<void>;
+    positionItems: Position[] | null;
     showAddModal: boolean;
     deleteMode: boolean;
     setShowAddModal: (newState: boolean) => void;
+    loadPositions: () => Promise<void>;
 }
-
 const HEADER = [
     ['ID', 'id'],
-    ['Название', 'name'],
-    ['Тип', 'kind'],
+    ['Должность', 'titlePosition'],
+    ['Структура', 'unitName'],
+    ['Сотрудник', 'employeeFio'],
 ];
 
-export default function TablePositionTitles({
+export default function TablePositions({
     page,
     searchMode,
     editMode,
-    positionTitleItems = null,
-    loadPostionTitles,
+    positionItems,
     showAddModal,
     deleteMode,
     setShowAddModal,
+    loadPositions,
 }: TableProps) {
     const [loading, setLoading] = useState<boolean>(true);
     const [sort, setSort] = useState<[number, number]>([0, 0]);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [modalIsActive, setModalIsActive] = useState<number | null>(null);
-    const [modalPositionTitle, setModalPositionTitle] =
-        useState<PositionTitle | null>(null);
+    const [modalPosition, setModalPosition] = useState<Position | null>(null);
     const [modalSubmit, setModalSubmit] = useState<number | null>(null);
     const [error, setError] = useState<string>('');
     const { user } = useUser();
 
     useEffect(() => {
         if (user?.role === 'admin') {
-            if (positionTitleItems !== null) {
+            if (positionItems !== null) {
                 setLoading(false);
             }
         }
-    }, [positionTitleItems]);
-
-    const handleDelete = async (id: number) => {
-        setError('');
-        const res = await deletePositionTitle(id);
-        console.log(res);
-        if (res.id) {
-            setModalSubmit(null);
-            await loadPostionTitles();
-        } else {
-            if (res.status === 409) {
-                setError('Невозможно удалить, т.к. запись используется');
-            } else {
-                setError('Ошибка удаления');
-            }
-        }
-    };
+    }, [positionItems]);
 
     const filtredAndSortedItems = useMemo(() => {
-        if (!positionTitleItems) return [];
+        if (!positionItems) return [];
 
-        const filtered = positionTitleItems.filter((item) => {
+        const filtered = positionItems.filter((item) => {
             return Object.entries(filters).every(([key, value]) => {
                 if (!value || !searchMode) return true;
 
@@ -96,19 +76,20 @@ export default function TablePositionTitles({
             if (aVal > bVal) return direction === 0 ? 1 : -1;
             return 0;
         });
-    }, [positionTitleItems, filters, searchMode, sort]);
+    }, [positionItems, filters, searchMode, sort]);
 
     const handleFilterChange = (key: string, value: string) => {
         setFilters((prev) => ({ ...prev, [key]: value }));
     };
 
-    if (loading && !positionTitleItems) {
+    if (loading && !positionItems) {
         return (
             <div className=" inset-0 z-50 flex items-center justify-center bg-white">
                 <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
             </div>
         );
     }
+
     return (
         <>
             <div className="p-6 bg-gray-50 rounded-lg hidden md:block">
@@ -120,43 +101,49 @@ export default function TablePositionTitles({
                     searchMode={searchMode}
                 />
                 <div className="space-y-2">
-                    {filtredAndSortedItems?.map(
-                        (positionTitle: PositionTitle) => (
-                            <TableRow
-                                onClickDelete={() =>
-                                    setModalSubmit(positionTitle.id)
-                                }
-                                deleteMode={deleteMode}
-                                onClickTableModal={() => {
-                                    setModalIsActive(positionTitle.id);
-                                    setModalPositionTitle(positionTitle);
-                                }}
-                                editMode={editMode}
-                                key={positionTitle.id}
-                                id={positionTitle.id}
-                            >
-                                <div className="grid grid-cols-[60px_1fr_1fr] gap-4">
-                                    <div>{positionTitle.id}</div>
-                                    <div>{positionTitle.name || '-'}</div>
-                                    <div>{positionTitle.kind || '-'}</div>
+                    {filtredAndSortedItems?.map((position: Position) => (
+                        <TableRow
+                            // className={
+                            //     !position.assignee && !deleteMode
+                            //         ? 'border-green-600 border-2'
+                            //         : ''
+                            // }
+                            deleteMode={deleteMode}
+                            onClickDelete={() => setModalSubmit(position.id)}
+                            onClickTableModal={() => {
+                                setModalIsActive(position.id);
+                                setModalPosition(position);
+                            }}
+                            editMode={editMode}
+                            key={position.id}
+                            id={position.id}
+                        >
+                            <div className="grid grid-cols-[50px_1fr_1fr_1fr] gap-4">
+                                <div>{position.id}</div>
+                                <div>{position.titlePosition || '-'}</div>
+                                <div>{position.unitName || '-'}</div>
+                                <div
+                                    className={`${position.employeeFio ? '' : 'text-green-600'}`}
+                                >
+                                    {position.employeeFio || 'Позиция свободна'}
                                 </div>
+                            </div>
 
-                                {/* {deleteMode && (
-                                    <button
-                                        onClick={() => {
-                                            setModalSubmit(positionTitle.id);
-                                        }}
-                                        className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
+                            {/* {deleteMode && (
+                                <button
+                                    onClick={() => {
+                                        setModalSubmit(position.id);
+                                    }}
+                                    className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
         "
-                                    >
-                                        <Trash2 size={18} />
-                                    </button>
-                                )} */}
-                            </TableRow>
-                        ),
-                    )}
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                            )} */}
+                        </TableRow>
+                    ))}
                 </div>
-                {modalIsActive && modalPositionTitle && positionTitleItems && (
+                {/* {modalIsActive && modalPositionTitle && positionTitleItems && (
                     <ModalAdminPositionTitles
                         positionTitle={modalPositionTitle}
                         setModalIsActive={() => {
@@ -185,7 +172,7 @@ export default function TablePositionTitles({
                             setError('');
                         }}
                     />
-                )}
+                )} */}
             </div>
         </>
     );

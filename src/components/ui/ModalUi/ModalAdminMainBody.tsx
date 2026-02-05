@@ -4,21 +4,23 @@ import { X } from 'lucide-react';
 import Button from '../Button';
 
 interface ModalAdminMainBodyProps {
-    // employee: employee | null;
+    title?: string;
     children?: ReactNode;
+
     setModalIsActive: (state: null) => void;
 }
 
 export default function ModalAdminMainBody({
     children,
     setModalIsActive,
+    title = 'Редактирование',
 }: ModalAdminMainBodyProps) {
     return (
         <div className="fixed inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all">
             <div className="bg-white rounded-l-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto custom-scroll p-10">
                 <div className="mb-7">
                     <div className="flex flex-row justify-between items-center mb-2">
-                        <span className="text-xl ">Редактирование</span>
+                        <span className="text-xl ">{title}</span>
                         <Button
                             styleColor="white"
                             className="p-1"

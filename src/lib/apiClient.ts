@@ -17,8 +17,7 @@ export async function apiRequest(endpoint: string, options: RequestInit = {}) {
   }
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.error || `API Error: ${response.status}`);
+    return response;
   }
 
   return response.json();
