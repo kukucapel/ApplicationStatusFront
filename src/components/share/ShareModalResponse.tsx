@@ -47,7 +47,8 @@ export default function ModalBodyResponse({
                 setUrl(res.url);
             } else {
                 const data = await res.json();
-                setUrl(data.url);
+                const jsonString = JSON.stringify(data);
+                setUrl(jsonString);
             }
         }
         load();
@@ -65,6 +66,7 @@ export default function ModalBodyResponse({
             </div> */}
             <div className="text-sm font-medium ">
                 <span className="text-gray-500">Ответ:</span>
+                <span>{url}</span>
 
                 <a
                     className="text-gray-900 underline cursor-pointer"
