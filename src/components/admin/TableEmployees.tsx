@@ -26,15 +26,34 @@ interface TableProps {
     setShowAddModal: (newState: boolean) => void;
 }
 
-const HEADER = [
+const HEADER_ALL = [
     ['ID', 'id'],
     ['ФИО', 'fio'],
-    ['Email', 'email'],
+    ['Личный email', 'email'],
+];
+const HEADER_USER = [
+    ['ID', 'id_user'],
+    ['ФИО', 'fio'],
+    ['Логин', 'login'],
+    ['Роль', 'role'],
+];
+const HEADER_EMPLOYEE = [
+    ['ID', 'id'],
+    ['ФИО', 'fio'],
+    ['Личный email', 'email'],
     ['Должность', 'titlePosition'],
 ];
-const HEADER_MOBILE = [
+const HEADER_MOBILE_ALL = [
     ['ID', 'id'],
     ['ФИО', 'fio'],
+];
+const HEADER_MOBILE_USER = [
+    ['ФИО', 'fio'],
+    ['Роль', 'role'],
+];
+const HEADER_MOBILE_EMPLOYEE = [
+    ['ФИО', 'fio'],
+    ['Должность', 'titlePosition'],
 ];
 
 export default function TableEmployees({
@@ -91,29 +110,25 @@ export default function TableEmployees({
             return Object.entries(filters).every(([key, value]) => {
                 if (!value || !searchMode) return true;
                 let itemValue;
-                if (key === 'role') {
-                    itemValue = String(item.user?.role ?? '');
-                } else {
-                    itemValue = String((item as any)[key] ?? '').toLowerCase();
-                }
-                console.log(itemValue);
+
+                itemValue = String((item as any)[key] ?? '').toLowerCase();
+
                 return itemValue.includes(value.toLowerCase());
             });
         });
 
         const [fieldIndex, direction] = sort;
-        const field = HEADER[fieldIndex][1];
+        let field;
+        if (userFilter === 'all') field = HEADER_ALL[fieldIndex][1];
+        else if (userFilter === 'user') field = HEADER_USER[fieldIndex][1];
+        else {
+            field = HEADER_EMPLOYEE[fieldIndex][1];
+        }
 
         return [...filtered].sort((a, b) => {
             let aVal, bVal;
-
-            if (field === 'role') {
-                aVal = a.user?.role ?? '';
-                bVal = b.user?.role ?? '';
-            } else {
-                aVal = (a as any)[field] ?? '';
-                bVal = (b as any)[field] ?? '';
-            }
+            aVal = (a as any)[field] ?? '';
+            bVal = (b as any)[field] ?? '';
 
             if (aVal < bVal) return direction === 0 ? -1 : 1;
             if (aVal > bVal) return direction === 0 ? 1 : -1;
@@ -134,52 +149,147 @@ export default function TableEmployees({
         <>
             {/* Mobile */}
 
-            <div className="p-6 bg-gray-50 rounded-lg md:hidden">
-                <TableHeader
-                    handleFilterChange={handleFilterChange}
-                    setSort={setSort}
-                    sort={sort}
-                    sizeId="50px"
-                    HEADER={HEADER_MOBILE as [string, string][]}
-                    searchMode={searchMode}
-                />
-                <div className="space-y-2">
-                    {filtredAndSortedItems?.map((emp: Employee) => (
-                        <TableRow
-                            onClickDelete={() => setModalSubmit(emp.id)}
-                            deleteMode={deleteMode}
-                            onClickTableModal={() => {
-                                setModalIsActive(emp.id);
-                                setModalEmployee(emp);
+            <div className="px-6 bg-gray-50 rounded-lg  md:hidden">
+                <div className="items-center gap-6 font-semibold text-gray-700 select-none mb-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={userFilter === 'all'}
+                            onChange={() => {
+                                setSort([0, 0]);
+                                setUserFilter('all');
                             }}
-                            editMode={editMode}
-                            key={emp.id}
-                            id={emp.id}
-                        >
-                            <div className="grid grid-cols-[30px_1fr] gap-4">
-                                <div>{emp.id}</div>
-                                <div>{emp.fio || '-'}</div>
-                                {/* <div>{emp.email}</div>
-                                        <div>{emp.user?.role || '-'}</div> */}
-                            </div>
-                            {/* {deleteMode && (
-                                <button
-                                    onClick={() => {
-                                        setModalSubmit(emp.id);
+                            className="w-4 h-4"
+                        />
+                        <span>Все</span>
+                    </label>
+
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={userFilter === 'user'}
+                            onChange={() => {
+                                setSort([0, 0]);
+                                setUserFilter('user');
+                            }}
+                            className="w-4 h-4"
+                        />
+                        <span>Пользователи</span>
+                    </label>
+
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={userFilter === 'employee'}
+                            onChange={() => {
+                                setSort([0, 0]);
+                                setUserFilter('employee');
+                            }}
+                            className="w-4 h-4"
+                        />
+                        <span>Сотрудники</span>
+                    </label>
+                </div>
+
+                {userFilter === 'all' ? (
+                    <TableHeader
+                        handleFilterChange={handleFilterChange}
+                        setSort={setSort}
+                        sort={sort}
+                        HEADER={HEADER_MOBILE_ALL as [string, string][]}
+                        searchMode={searchMode}
+                    />
+                ) : userFilter === 'user' ? (
+                    <TableHeader
+                        sizeId="1fr"
+                        handleFilterChange={handleFilterChange}
+                        setSort={setSort}
+                        sort={sort}
+                        HEADER={HEADER_MOBILE_USER as [string, string][]}
+                        searchMode={searchMode}
+                    />
+                ) : (
+                    <TableHeader
+                        sizeId="1fr"
+                        handleFilterChange={handleFilterChange}
+                        setSort={setSort}
+                        sort={sort}
+                        HEADER={HEADER_MOBILE_EMPLOYEE as [string, string][]}
+                        searchMode={searchMode}
+                    />
+                )}
+                <div className="space-y-2">
+                    {filtredAndSortedItems?.map((emp: Employee) =>
+                        userFilter === 'all' ? (
+                            <TableRow
+                                onClickDelete={() => setModalSubmit(emp.id)}
+                                deleteMode={deleteMode}
+                                admin={emp.user?.login === 'admin@example.com'}
+                                onClickTableModal={() => {
+                                    setModalIsActive(emp.id);
+                                    setModalEmployee(emp);
+                                }}
+                                editMode={editMode}
+                                key={emp.id}
+                                id={emp.id}
+                            >
+                                <div className="grid grid-cols-[50px_1fr] gap-4">
+                                    <div>{emp.id || '-'}</div>
+                                    <div>{emp.fio || '-'}</div>
+                                </div>
+                            </TableRow>
+                        ) : userFilter === 'user' ? (
+                            emp.user && (
+                                <TableRow
+                                    onClickDelete={() => setModalSubmit(emp.id)}
+                                    deleteMode={deleteMode}
+                                    admin={
+                                        emp.user.login === 'admin@example.com'
+                                    }
+                                    onClickTableModal={() => {
+                                        setModalIsActive(emp.id);
+                                        setModalEmployee(emp);
                                     }}
-                                    className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
-        "
+                                    editMode={editMode}
+                                    key={emp.id}
+                                    id={emp.id}
                                 >
-                                    <Trash2 size={18} />
-                                </button>
-                            )} */}
-                        </TableRow>
-                    ))}
+                                    <div className="grid grid-cols-[1fr_1fr] gap-4">
+                                        <div>{emp.fio || '-'}</div>
+
+                                        <div>{emp.role || '-'}</div>
+                                    </div>
+                                </TableRow>
+                            )
+                        ) : (
+                            !emp.user && (
+                                <TableRow
+                                    onClickDelete={() => setModalSubmit(emp.id)}
+                                    deleteMode={deleteMode}
+                                    onClickTableModal={() => {
+                                        setModalIsActive(emp.id);
+                                        setModalEmployee(emp);
+                                    }}
+                                    editMode={editMode}
+                                    key={emp.id}
+                                    id={emp.id}
+                                >
+                                    <div className="grid grid-cols-[1fr_1fr] gap-4">
+                                        <div>{emp.fio || '-'}</div>
+
+                                        <div>
+                                            {emp.position?.title.name || '-'}
+                                        </div>
+                                    </div>
+                                </TableRow>
+                            )
+                        ),
+                    )}
                 </div>
                 {modalIsActive &&
                     modalEmployee &&
-                    roleItems &&
-                    positionItems && (
+                    positionItems &&
+                    roleItems && (
                         <ModalAdminEmployee
                             positionItems={positionItems}
                             roleItems={roleItems}
@@ -211,6 +321,7 @@ export default function TableEmployees({
                     />
                 )}
             </div>
+
             {/* Desktop */}
             <div className="px-6 bg-gray-50 rounded-lg hidden md:block">
                 <div className="flex items-center gap-6 font-semibold text-gray-700 select-none mb-4">
@@ -218,7 +329,10 @@ export default function TableEmployees({
                         <input
                             type="checkbox"
                             checked={userFilter === 'all'}
-                            onChange={() => setUserFilter('all')}
+                            onChange={() => {
+                                setSort([0, 0]);
+                                setUserFilter('all');
+                            }}
                             className="w-4 h-4"
                         />
                         <span>Все</span>
@@ -228,7 +342,10 @@ export default function TableEmployees({
                         <input
                             type="checkbox"
                             checked={userFilter === 'user'}
-                            onChange={() => setUserFilter('user')}
+                            onChange={() => {
+                                setSort([0, 0]);
+                                setUserFilter('user');
+                            }}
                             className="w-4 h-4"
                         />
                         <span>Пользователи</span>
@@ -238,19 +355,41 @@ export default function TableEmployees({
                         <input
                             type="checkbox"
                             checked={userFilter === 'employee'}
-                            onChange={() => setUserFilter('employee')}
+                            onChange={() => {
+                                setSort([0, 0]);
+                                setUserFilter('employee');
+                            }}
                             className="w-4 h-4"
                         />
                         <span>Сотрудники</span>
                     </label>
                 </div>
-                <TableHeader
-                    handleFilterChange={handleFilterChange}
-                    setSort={setSort}
-                    sort={sort}
-                    HEADER={HEADER as [string, string][]}
-                    searchMode={searchMode}
-                />
+
+                {userFilter === 'all' ? (
+                    <TableHeader
+                        handleFilterChange={handleFilterChange}
+                        setSort={setSort}
+                        sort={sort}
+                        HEADER={HEADER_ALL as [string, string][]}
+                        searchMode={searchMode}
+                    />
+                ) : userFilter === 'user' ? (
+                    <TableHeader
+                        handleFilterChange={handleFilterChange}
+                        setSort={setSort}
+                        sort={sort}
+                        HEADER={HEADER_USER as [string, string][]}
+                        searchMode={searchMode}
+                    />
+                ) : (
+                    <TableHeader
+                        handleFilterChange={handleFilterChange}
+                        setSort={setSort}
+                        sort={sort}
+                        HEADER={HEADER_EMPLOYEE as [string, string][]}
+                        searchMode={searchMode}
+                    />
+                )}
                 <div className="space-y-2">
                     {filtredAndSortedItems?.map((emp: Employee) =>
                         userFilter === 'all' ? (
@@ -266,23 +405,11 @@ export default function TableEmployees({
                                 key={emp.id}
                                 id={emp.id}
                             >
-                                <div className="grid grid-cols-[60px_1fr_1fr_1fr] gap-4">
+                                <div className="grid grid-cols-[50px_1fr_1fr] gap-4">
                                     <div>{emp.id}</div>
                                     <div>{emp.fio || '-'}</div>
                                     <div>{emp.email}</div>
-                                    <div>{emp.position?.title.name || '-'}</div>
                                 </div>
-                                {/* {deleteMode && (
-                                <button
-                                    onClick={() => {
-                                        setModalSubmit(emp.id);
-                                    }}
-                                    className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
-        "
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            )} */}
                             </TableRow>
                         ) : userFilter === 'user' ? (
                             emp.user && (
@@ -301,24 +428,11 @@ export default function TableEmployees({
                                     id={emp.id}
                                 >
                                     <div className="grid grid-cols-[60px_1fr_1fr_1fr] gap-4">
-                                        <div>{emp.id}</div>
+                                        <div>{emp.id_user}</div>
                                         <div>{emp.fio || '-'}</div>
-                                        <div>{emp.email}</div>
-                                        <div>
-                                            {emp.position?.title.name || '-'}
-                                        </div>
+                                        <div>{emp.login}</div>
+                                        <div>{emp.role || '-'}</div>
                                     </div>
-                                    {/* {deleteMode && (
-                                <button
-                                    onClick={() => {
-                                        setModalSubmit(emp.id);
-                                    }}
-                                    className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
-        "
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            )} */}
                                 </TableRow>
                             )
                         ) : (
@@ -334,7 +448,7 @@ export default function TableEmployees({
                                     key={emp.id}
                                     id={emp.id}
                                 >
-                                    <div className="grid grid-cols-[60px_1fr_1fr_1fr] gap-4">
+                                    <div className="grid grid-cols-[55px_1fr_1fr_1fr] gap-4">
                                         <div>{emp.id}</div>
                                         <div>{emp.fio || '-'}</div>
                                         <div>{emp.email}</div>
@@ -342,17 +456,6 @@ export default function TableEmployees({
                                             {emp.position?.title.name || '-'}
                                         </div>
                                     </div>
-                                    {/* {deleteMode && (
-                                <button
-                                    onClick={() => {
-                                        setModalSubmit(emp.id);
-                                    }}
-                                    className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
-        "
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            )} */}
                                 </TableRow>
                             )
                         ),

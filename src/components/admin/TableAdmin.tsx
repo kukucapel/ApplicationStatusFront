@@ -35,7 +35,17 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
 
     const loadEmployees = async function () {
         const employeeData = await adminData('/employees');
-        setEmployeeItems(employeeData.items);
+        const employeesWithTitle: Employee[] = employeeData.items.map(
+            (employee: Employee) => ({
+                ...employee,
+                titlePosition: employee.position?.title.name ?? '',
+                id_user: employee.user?.id ?? null,
+                role: employee.user?.role.name ?? '',
+                login: employee.user?.login ?? '',
+            }),
+        );
+
+        setEmployeeItems(employeesWithTitle);
     };
     const loadRoles = async function () {
         const roleData = await adminData('/roles');
@@ -43,7 +53,15 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
     };
     const loadPositions = async function () {
         const positionData = await adminData('/org/positions');
-        setPositionItems(positionData.items);
+        const positionWithFieldSort = positionData.items.map(
+            (position: Position) => ({
+                ...position,
+                titlePosition: position.title?.name ?? '',
+                unitName: position.unit?.unit_name ?? '',
+                employeeFio: position.assignee?.fio ?? '',
+            }),
+        );
+        setPositionItems(positionWithFieldSort);
     };
     const loadPostionTitles = async function () {
         const positionTitleData = await adminData(
@@ -54,36 +72,12 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
 
     useEffect(() => {
         async function load() {
-            const [employeeData, roleData, positionTitleData, positionData] =
-                await Promise.all([
-                    adminData('/employees'),
-                    user?.role === 'admin' && adminData('/roles'),
-                    user?.role === 'admin' &&
-                        adminData('/org/positions/position-titles'),
-                    user?.role === 'admin' && adminData('/org/positions'),
-                ]);
-            if (user?.role === 'admin') {
-                setRoleItems(roleData.items);
-                stePositionTitleItems(positionTitleData.items);
-                const positionWithFieldSort = positionData.items.map(
-                    (position: Position) => ({
-                        ...position,
-                        titlePosition: position.title?.name ?? '',
-                        unitName: position.unit?.unit_name ?? '',
-                        employeeFio: position.assignee?.fio ?? '',
-                    }),
-                );
-                setPositionItems(positionWithFieldSort);
-            }
-
-            const employeesWithTitle = employeeData.items.map(
-                (employee: Employee) => ({
-                    ...employee,
-                    titlePosition: employee.position?.title.name ?? '',
-                }),
-            );
-
-            setEmployeeItems(employeesWithTitle);
+            await Promise.all([
+                loadEmployees(),
+                loadPositions(),
+                loadPostionTitles(),
+                loadRoles(),
+            ]);
         }
         load();
     }, []);

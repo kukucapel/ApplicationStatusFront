@@ -5,6 +5,9 @@ export interface Employee {
   user: User | null;
   position: EmployeePosition | null;
   titlePosition?: string;
+  id_user?: number | null;
+  login?: string;
+  role?: string;
 }
 
 export interface EmployeeUpdate {

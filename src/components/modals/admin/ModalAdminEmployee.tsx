@@ -25,6 +25,7 @@ import Select from 'react-select';
 
 import { getUnitTreeForApplication } from '@/lib/updateApplication';
 import Switch from '@/components/ui/Switch';
+import { Trash2 } from 'lucide-react';
 // import ModalUnitTree from '../ModalUnitTree';
 
 const SWITCH_BUTTONS = [
@@ -439,12 +440,23 @@ export default function ModalAdminEmployee({
                     {employee?.user && (
                         <div className="flex flex-col">
                             <label className="text-sm text-gray-500">ID</label>
-                            <input
-                                type="text"
-                                value={employee?.user?.id ?? ''}
-                                readOnly
-                                className="mt-1 rounded-md border border-gray-300 px-3 py-2 bg-gray-100 text-gray-600 cursor-not-allowed"
-                            />
+
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="text"
+                                    value={employee?.user?.id ?? ''}
+                                    readOnly
+                                    className="flex-1 mt-1 rounded-md border border-gray-300 px-3 py-2 bg-gray-100 text-gray-600 cursor-not-allowed"
+                                />
+
+                                <Button
+                                    type="button"
+                                    className="mt-1 px-2 py-2 bg-red-500 hover:bg-red-600"
+                                    styleColor="blue"
+                                >
+                                    <Trash2 />
+                                </Button>
+                            </div>
                         </div>
                     )}
 
