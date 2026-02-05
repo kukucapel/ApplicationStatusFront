@@ -17,7 +17,7 @@ export interface UpdateApplicationStatusProps {
 
 export const updateApplicationStatus = async (
   data: UpdateApplicationStatusProps,
-  id: number
+  id: number,
 ) => {
   return apiRequest(`/requests/${id}`, {
     method: 'PATCH',
@@ -31,7 +31,7 @@ export const updateApplicationStatus = async (
 
 export const updateApplication = async (
   data: UpdateApplicationDataProps,
-  id: number
+  id: number,
 ) => {
   return apiRequest(`/requests/${id}`, {
     method: 'PATCH',
@@ -65,7 +65,7 @@ export const getApplicationResponses = async (id: number) => {
 
 export const addApplicationResponse = async (
   id: number,
-  data: ResponseCreateDto
+  data: ResponseCreateDto,
 ) => {
   return apiRequest(`/requests/${id}/responses`, {
     method: 'POST',
@@ -106,12 +106,18 @@ export const getCuratorsTreeForApplication = async () => {
   });
 };
 
-export const getUrlDownloadAttachmentLink = async (id: number) => {
-  return apiRequest(`/requests/responses/attacment/${id}/url`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
+export const getUrlDownloadAttachmentLink = async (
+  id: number,
+  token?: string,
+) => {
+  return apiRequest(
+    `/requests/responses/attacment/${id}/url?shareToken=${token}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     },
-  });
+  );
 };
