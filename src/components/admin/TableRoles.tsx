@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { Role } from '@/dtos/AdminDto';
-import { adminData, deleteRole } from '@/lib/adminData';
+import { deleteRole } from '@/lib/adminData';
 import TableRow from '../ui/Table/TableRow';
 import TableHeader from '../ui/Table/TableHeader';
 import { useMemo } from 'react';
-import ModalMainBody from '../ui/ModalUi/ModalMainBody';
-import ModalAdminMainBody from '../ui/ModalUi/ModalAdminMainBody';
-import ModalAdminEmployee from '../modals/admin/ModalAdminEmployee';
+
 import { useUser } from '@/contexts/UserContext';
 import ModalAdminRoles from '../modals/admin/ModalAdminRoles';
 import { Trash2 } from 'lucide-react';
@@ -95,7 +93,7 @@ export default function TableRoles({
         });
     }, [roleItems, filters, searchMode, sort]);
 
-    if (loading) {
+    if (loading && !roleItems) {
         return (
             <div className=" inset-0 z-50 flex items-center justify-center bg-white">
                 <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
@@ -118,6 +116,7 @@ export default function TableRoles({
                 <div className="space-y-2">
                     {filtredAndSortedItems?.map((role: Role) => (
                         <TableRow
+                            onClickDelete={() => setModalSubmit(role.id)}
                             deleteMode={deleteMode}
                             onClickTableModal={() => {
                                 setModalIsActive(role.id);
@@ -133,7 +132,7 @@ export default function TableRoles({
                                 {/* <div>{role.description || '-'}</div> */}
                             </div>
 
-                            {deleteMode && (
+                            {/* {deleteMode && (
                                 <button
                                     onClick={() => {
                                         setModalSubmit(role.id);
@@ -143,7 +142,7 @@ export default function TableRoles({
                                 >
                                     <Trash2 size={18} />
                                 </button>
-                            )}
+                            )} */}
                         </TableRow>
                     ))}
                 </div>
@@ -187,6 +186,7 @@ export default function TableRoles({
                 <div className="space-y-2">
                     {filtredAndSortedItems?.map((role: Role) => (
                         <TableRow
+                            onClickDelete={() => setModalSubmit(role.id)}
                             deleteMode={deleteMode}
                             onClickTableModal={() => {
                                 setModalIsActive(role.id);
@@ -202,7 +202,7 @@ export default function TableRoles({
                                 <div>{role.description || '-'}</div>
                             </div>
 
-                            {deleteMode && (
+                            {/* {deleteMode && (
                                 <button
                                     onClick={() => {
                                         setModalSubmit(role.id);
@@ -212,7 +212,7 @@ export default function TableRoles({
                                 >
                                     <Trash2 size={18} />
                                 </button>
-                            )}
+                            )} */}
                         </TableRow>
                     ))}
                 </div>
