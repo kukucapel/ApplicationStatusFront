@@ -81,6 +81,12 @@ export async function createUser(data: UserCreate) {
   console.log(idEmployee);
   return await addUser(idEmployee.employee_id, userData);
 }
+export async function deleteUser(id: number) {
+  return await apiRequest(`/employees/users/${id}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+}
 
 export async function updateRole(data: RoleUpdate, id: number) {
   return await apiRequest(`/roles/${id}`, {

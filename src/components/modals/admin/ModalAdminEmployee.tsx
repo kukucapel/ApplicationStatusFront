@@ -16,6 +16,7 @@ import {
     addEmployee,
     addUser,
     createUser,
+    deleteUser,
     updateEmployee,
     updateUser,
 } from '@/lib/adminData';
@@ -26,6 +27,7 @@ import Select from 'react-select';
 import { getUnitTreeForApplication } from '@/lib/updateApplication';
 import Switch from '@/components/ui/Switch';
 import { Trash2 } from 'lucide-react';
+import ModalSubmit from '../ModalSubmit';
 // import ModalUnitTree from '../ModalUnitTree';
 
 const SWITCH_BUTTONS = [
@@ -73,6 +75,7 @@ export default function ModalAdminEmployee({
     const [error, setError] = useState<string>('');
     const [successfully, setSuccessfully] = useState<string>('');
     const [page, setPage] = useState<string>(SWITCH_BUTTONS[0][1]);
+    const [modalSubmit, setModalSubmit] = useState<number | null>(null);
 
     const isActive: boolean = employee
         ? (formEmployee.fio === employee.fio &&
@@ -108,7 +111,14 @@ export default function ModalAdminEmployee({
               formCreateUser.role_id !== null &&
               formCreateUser.fio !== ''
           );
-    console.log(isActiveUpdateUser);
+
+    const handleDeleteUser = async (id: number) => {
+        await deleteUser(id);
+        loadEmployees();
+        setModalSubmit(null);
+
+        setModalIsActive();
+    };
     const handleChangeEmployee = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     ) => {
@@ -453,6 +463,9 @@ export default function ModalAdminEmployee({
                                     type="button"
                                     className="mt-1 px-2 py-2 bg-red-500 hover:bg-red-600"
                                     styleColor="blue"
+                                    onClick={() =>
+                                        setModalSubmit(employee.id_user!)
+                                    }
                                 >
                                     <Trash2 />
                                 </Button>
@@ -728,6 +741,12 @@ export default function ModalAdminEmployee({
                         </Button>
                     </div>
                 </form>
+            )}
+            {modalSubmit && (
+                <ModalSubmit
+                    handleSubmit={() => handleDeleteUser(modalSubmit)}
+                    onClose={() => setModalSubmit(null)}
+                />
             )}
         </ModalAdminMainBody>
     );
