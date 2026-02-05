@@ -45,6 +45,8 @@ export default function ModalBodyResponse({
             );
             if (!res.status) {
                 setUrl(res.url);
+            } else {
+                setUrl(res.json());
             }
         }
         load();
