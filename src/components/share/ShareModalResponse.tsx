@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import ModalAlert from '../ui/ModalUi/ModalAlert';
 import Raiting from '../ui/Share/Raiting';
 import downloadFile from '@/lib/download';
-import { getUrlDownloadAttachmentLink } from '@/lib/updateApplication';
 
 interface ModalBodyResponseProps {
     indexResponse: [number, ShareResponseDto];
@@ -29,7 +28,6 @@ export default function ModalBodyResponse({
     rating,
 }: ModalBodyResponseProps) {
     const [modalState, setModalState] = useState<string>('');
-    const [url, setUrl] = useState<string>('');
     useEffect(() => {
         if (modalState === 'no') {
             setModalState('');
@@ -38,21 +36,6 @@ export default function ModalBodyResponse({
     if (!indexResponse) return null;
 
     const [index, response] = indexResponse;
-    useEffect(() => {
-        async function load() {
-            const res = await getUrlDownloadAttachmentLink(
-                response.attachments[0].id,
-            );
-            if (!res.status) {
-                setUrl(res.url);
-            } else {
-                const data = await res.json();
-                const jsonString = JSON.stringify(data);
-                setUrl(jsonString);
-            }
-        }
-        load();
-    }, []);
 
     return (
         <div className="space-y-5">
@@ -66,15 +49,12 @@ export default function ModalBodyResponse({
             </div> */}
             <div className="text-sm font-medium ">
                 <span className="text-gray-500">Ответ:</span>
-                <span>{url}</span>
-
-                <a
+                <p
                     className="text-gray-900 underline cursor-pointer"
-                    // onClick={() => downloadFile(response.attachments[0].id)}
-                    href={url}
+                    onClick={() => downloadFile(response.attachments[0].id)}
                 >
                     Скачать файл
-                </a>
+                </p>
             </div>
             {response.rating !== null ? (
                 <div className="flex flex-col gap-0.5">

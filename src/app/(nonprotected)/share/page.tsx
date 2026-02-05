@@ -19,12 +19,12 @@ export default function SharePage() {
             <main className="max-w-[56rem] ml-auto mr-auto p-10">
                 <ShareClient />
             </main>
-            {alert && (
+            {/* {alert && (
                 <ModalAlert
                     onClose={() => setAlert(false)}
                     subTitle="Внимание, это тестовая версия системы"
                 />
-            )}
+            )} */}
         </Suspense>
     );
 }
