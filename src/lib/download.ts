@@ -6,5 +6,5 @@ export default async function downloadFile(
 ) {
   const res = await getUrlDownloadAttachmentLink(idAttachment, token);
   const fileUrl = res.url;
-  window.open(fileUrl, '_blank');
+  window.open(fileUrl);
 }
