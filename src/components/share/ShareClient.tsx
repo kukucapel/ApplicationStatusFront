@@ -170,6 +170,7 @@ export default function ShareClient() {
                             handleSubmitRating={handleSubmitRating}
                             handleSetRating={handleSetRating}
                             rating={rating}
+                            token={token}
                             handleSubmitChoise={handleSubmitChoise}
                             indexResponse={modalInvite}
                         />
