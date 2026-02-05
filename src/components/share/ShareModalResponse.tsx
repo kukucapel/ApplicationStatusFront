@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import ModalAlert from '../ui/ModalUi/ModalAlert';
 import Raiting from '../ui/Share/Raiting';
 import downloadFile from '@/lib/download';
+import { getUrlDownloadAttachmentLink } from '@/lib/updateApplication';
 
 interface ModalBodyResponseProps {
     indexResponse: [number, ShareResponseDto];
@@ -29,12 +30,30 @@ export default function ModalBodyResponse({
     rating,
 }: ModalBodyResponseProps) {
     const [modalState, setModalState] = useState<string>('');
+    const [url, setUrl] = useState<string>('');
     useEffect(() => {
         if (modalState === 'no') {
             setModalState('');
         }
     }, [modalState]);
     if (!indexResponse) return null;
+
+    useEffect(() => {
+        async function load() {
+            const res = await getUrlDownloadAttachmentLink(
+                response.attachments[0].id,
+                token,
+            );
+            if (!res.status) {
+                setUrl(res.url);
+            } else {
+                const data = await res.json();
+                const jsonString = JSON.stringify(data);
+                setUrl(jsonString);
+            }
+        }
+        load();
+    }, []);
 
     const [index, response] = indexResponse;
 
@@ -50,14 +69,15 @@ export default function ModalBodyResponse({
             </div> */}
             <div className="text-sm font-medium ">
                 <span className="text-gray-500">Ответ:</span>
-                <p
+                <a
                     className="text-gray-900 underline cursor-pointer"
-                    onClick={() =>
-                        downloadFile(response.attachments[0].id, token)
-                    }
+                    // onClick={() =>
+                    //     downloadFile(response.attachments[0].id, token)
+                    // }
+                    href={url}
                 >
                     Скачать файл
-                </p>
+                </a>
             </div>
             {response.rating !== null ? (
                 <div className="flex flex-col gap-0.5">
