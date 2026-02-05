@@ -10,7 +10,7 @@ import downloadFile from '@/lib/download';
 interface ModalBodyResponseProps {
     indexResponse: [number, ShareResponseDto];
     handleSubmitChoise: (id: number, value: 'yes' | 'no') => void;
-
+    token: string;
     handleSubmitRating: (
         id: number,
         raiting: number,
@@ -24,6 +24,7 @@ export default function ModalBodyResponse({
     indexResponse,
     handleSubmitChoise,
     handleSetRating,
+    token,
     handleSubmitRating,
     rating,
 }: ModalBodyResponseProps) {
@@ -51,7 +52,9 @@ export default function ModalBodyResponse({
                 <span className="text-gray-500">Ответ:</span>
                 <p
                     className="text-gray-900 underline cursor-pointer"
-                    onClick={() => downloadFile(response.attachments[0].id)}
+                    onClick={() =>
+                        downloadFile(response.attachments[0].id, token)
+                    }
                 >
                     Скачать файл
                 </p>
