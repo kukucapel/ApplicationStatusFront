@@ -4,13 +4,14 @@ export default async function downloadFile(idAttachment: number) {
   try {
     const res = await getUrlDownloadAttachmentLink(idAttachment);
     const fileUrl = res.url;
+    const fileName = `file_${idAttachment}.${getFileExtension(fileUrl)}`;
 
-    // Попытка 1: Скачивание через blob (работает с CORS)
-    await downloadViaBlob(fileUrl, idAttachment);
-  } catch (error) {
-    console.error('Blob download failed, trying direct download:', error);
+    // 1. Пробуем скачать через blob для контроля имени файла
+    await downloadViaBlob(fileUrl, fileName);
+  } catch (blobError) {
+    console.warn('Blob download failed, trying direct method:', blobError);
 
-    // Попытка 2: Прямое скачивание
+    // 2. Fallback: Прямое открытие ссылки
     try {
       const res = await getUrlDownloadAttachmentLink(idAttachment);
       downloadDirect(res.url);
@@ -20,35 +21,43 @@ export default async function downloadFile(idAttachment: number) {
   }
 }
 
-// Метод 1: Через blob (можно задать имя файла)
-async function downloadViaBlob(url: string, id: number) {
+// Метод 1: Улучшенное скачивание через Blob (работает с CORS)
+async function downloadViaBlob(url: string, fileName: string) {
   const response = await fetch(url);
-  if (!response.ok) throw new Error('Fetch failed');
+  if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
 
   const blob = await response.blob();
   const blobUrl = URL.createObjectURL(blob);
 
+  // Ключевое отличие для Safari: правильное создание и активация ссылки
   const a = document.createElement('a');
   a.href = blobUrl;
-  a.download = `attachment_${id}.${getFileExtension(url)}`;
+  a.download = fileName;
+  a.style.display = 'none';
   document.body.appendChild(a);
-  a.click();
 
+  // Используем dispatchEvent для надежности
+  const clickEvent = new MouseEvent('click', {
+    view: window,
+    bubbles: true,
+    cancelable: false,
+  });
+  a.dispatchEvent(clickEvent);
+
+  // Даем время на начало скачивания перед очисткой
   setTimeout(() => {
     document.body.removeChild(a);
     URL.revokeObjectURL(blobUrl);
-  }, 100);
+  }, 1000); // Увеличено время для Safari
 }
 
-// Метод 2: Прямое скачивание (работает без CORS)
+// Метод 2: Прямое открытие (не требует CORS, но не задает имя файла)
 function downloadDirect(url: string) {
-  const a = document.createElement('a');
-  a.href = url;
-  a.target = '_blank'; // Открыть в новой вкладке
-  a.rel = 'noopener noreferrer'; // Безопасность
-  a.click();
+  // Используем стандартное окно без манипуляций
+  window.open(url, '_blank');
 }
 
+// Вспомогательная функция для получения расширения файла
 function getFileExtension(url: string): string {
   try {
     const urlObj = new URL(url);
