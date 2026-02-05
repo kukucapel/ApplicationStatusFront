@@ -43,7 +43,9 @@ export default function ModalBodyResponse({
             const res = await getUrlDownloadAttachmentLink(
                 response.attachments[0].id,
             );
-            setUrl(res.url);
+            if (!res.status) {
+                setUrl(res.url);
+            }
         }
         load();
     }, []);
