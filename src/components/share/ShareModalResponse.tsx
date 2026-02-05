@@ -68,7 +68,7 @@ export default function ModalBodyResponse({
                 </p>
             </div> */}
             <div className="text-sm font-medium ">
-                <span className="text-gray-500">Ответ:</span>
+                <span className="text-gray-500">Ответ: </span>
                 <a
                     className="text-gray-900 underline cursor-pointer"
                     // onClick={() =>

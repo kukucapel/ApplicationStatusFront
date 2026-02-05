@@ -18,6 +18,7 @@ export default function Raiting({
     handleSubmit,
     id,
 }: RaitingProps) {
+    console.log(id);
     if (type === 'view' && responseRating) {
         return (
             <>
@@ -58,10 +59,11 @@ export default function Raiting({
                 </div>
                 <button
                     className={`mt-2 rounded-2xl select-none  px-1.5 border-gray-300 transition-all duration-200 ${
-                        rating[id] != 0
+                        id in rating
                             ? 'hover:scale-110 shadow-md cursor-pointer'
                             : 'text-gray-400'
                     }`}
+                    disabled={!(id in rating)}
                     onClick={handleSubmit}
                 >
                     Оценить ответ
