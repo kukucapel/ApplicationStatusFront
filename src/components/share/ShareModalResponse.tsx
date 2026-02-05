@@ -46,7 +46,8 @@ export default function ModalBodyResponse({
             if (!res.status) {
                 setUrl(res.url);
             } else {
-                setUrl(res.json());
+                const data = await res.json();
+                setUrl(data.url);
             }
         }
         load();
@@ -64,6 +65,7 @@ export default function ModalBodyResponse({
             </div> */}
             <div className="text-sm font-medium ">
                 <span className="text-gray-500">Ответ:</span>
+
                 <a
                     className="text-gray-900 underline cursor-pointer"
                     // onClick={() => downloadFile(response.attachments[0].id)}
