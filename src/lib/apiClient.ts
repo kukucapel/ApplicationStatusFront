@@ -20,7 +20,10 @@ export async function apiRequest(endpoint: string, options: RequestInit = {}) {
 
   if (!response.ok) {
     if (response.status === 401) {
-      logoutUser();
+      await logoutUser();
+      if (typeof window !== 'undefined') {
+        window.location.href = '/status/auth';
+      }
     } else {
       return response;
     }
