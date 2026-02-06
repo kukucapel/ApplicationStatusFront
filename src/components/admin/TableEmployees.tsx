@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Employee, Position, Role } from '@/dtos/AdminDto';
+import { Curator, Employee, Position, Role } from '@/dtos/AdminDto';
 import { adminData, deleteEmployee } from '@/lib/adminData';
 import TableRow from '../ui/Table/TableRow';
 import TableHeader from '../ui/Table/TableHeader';
@@ -19,6 +19,7 @@ interface TableProps {
     editMode: boolean;
     employeeItems: Employee[] | null;
     positionItems: Position[] | null;
+    curatorTreeItems: Curator[] | null;
     roleItems: Role[] | null;
     loadEmployees: () => Promise<void>;
     showAddModal: boolean;
@@ -63,6 +64,7 @@ export default function TableEmployees({
     employeeItems = null,
     roleItems = null,
     loadEmployees,
+    curatorTreeItems,
     showAddModal,
     deleteMode,
     setShowAddModal,
@@ -143,7 +145,6 @@ export default function TableEmployees({
             </div>
         );
     }
-    console.log(employeeItems);
 
     return (
         <>
@@ -291,6 +292,7 @@ export default function TableEmployees({
                     positionItems &&
                     roleItems && (
                         <ModalAdminEmployee
+                            curatorTreeItems={curatorTreeItems}
                             positionItems={positionItems}
                             roleItems={roleItems}
                             loadEmployees={loadEmployees}
@@ -304,6 +306,7 @@ export default function TableEmployees({
                 {}
                 {showAddModal && (
                     <ModalAdminEmployee
+                        curatorTreeItems={curatorTreeItems}
                         positionItems={positionItems}
                         roleItems={roleItems}
                         loadEmployees={loadEmployees}
@@ -466,6 +469,7 @@ export default function TableEmployees({
                     positionItems &&
                     roleItems && (
                         <ModalAdminEmployee
+                            curatorTreeItems={curatorTreeItems}
                             positionItems={positionItems}
                             roleItems={roleItems}
                             loadEmployees={loadEmployees}
@@ -479,6 +483,7 @@ export default function TableEmployees({
                 {}
                 {showAddModal && (
                     <ModalAdminEmployee
+                        curatorTreeItems={curatorTreeItems}
                         positionItems={positionItems}
                         roleItems={roleItems}
                         loadEmployees={loadEmployees}
