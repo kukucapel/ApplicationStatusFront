@@ -3,13 +3,20 @@
 import { Edit, Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import TableEmployees from './TableEmployees';
-import { Employee, Position, PositionTitle, Role } from '@/dtos/AdminDto';
+import {
+    Curator,
+    Employee,
+    Position,
+    PositionTitle,
+    Role,
+} from '@/dtos/AdminDto';
 import { adminData } from '@/lib/adminData';
 import { useUser } from '@/contexts/UserContext';
 import TableHeader from './TableHeader';
 import TableRoles from './TableRoles';
 import TablePositionTitles from './TablePositionTitles';
 import TablePositions from './TablePositions';
+import { getCuratorsTreeForApplication } from '@/lib/updateApplication';
 
 interface TableAdminProps {
     page: number;
@@ -32,6 +39,9 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
         PositionTitle[] | null
     >(null);
     const [positionItems, setPositionItems] = useState<Position[] | null>(null);
+    const [curatorTreeItems, setCuratorTreeItems] = useState<Curator[] | null>(
+        null,
+    );
 
     const loadEmployees = async function () {
         const employeeData = await adminData('/employees');
@@ -69,6 +79,10 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
         );
         stePositionTitleItems(positionTitleData.items);
     };
+    const loadCuratorTree = async function () {
+        const curatorTreeData = await getCuratorsTreeForApplication();
+        setCuratorTreeItems(curatorTreeData.items);
+    };
 
     useEffect(() => {
         async function load() {
@@ -77,6 +91,7 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
                 loadPositions(),
                 loadPostionTitles(),
                 loadRoles(),
+                loadCuratorTree(),
             ]);
         }
         load();
@@ -106,6 +121,7 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
                 <hr className="border-gray-300 mx-6 mb-6" />
                 {page === 0 ? (
                     <TableEmployees
+                        curatorTreeItems={curatorTreeItems}
                         positionItems={positionItems}
                         showAddModal={showAddModal}
                         setShowAddModal={setShowAddModal}
