@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Application } from '@/dtos/ApplicationDto';
+import { logoutUser } from './auth';
 
 export function useAppWS(token: string | null) {
   const [connected, setConnected] = useState(false);
@@ -30,6 +31,8 @@ export function useAppWS(token: string | null) {
         case 'auth:ok':
           console.log('Id:', msg.payload.userId);
           break;
+        case 'auth:error':
+          logoutUser();
 
         case 'request:created':
           setApplications((prev) => [...prev, msg.payload]);
@@ -54,7 +57,7 @@ export function useAppWS(token: string | null) {
 
         case 'request:removed':
           setApplications((prev) =>
-            prev.filter((app) => app.id !== msg.payload.id)
+            prev.filter((app) => app.id !== msg.payload.id),
           );
           break;
       }
