@@ -33,7 +33,10 @@ export function useAppWS(token: string | null) {
           break;
         case 'auth:error':
           logoutUser();
-
+          if (typeof window !== 'undefined') {
+            window.location.href = '/status/auth';
+          }
+          break;
         case 'request:created':
           setApplications((prev) => [...prev, msg.payload]);
           break;
