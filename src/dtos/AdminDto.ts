@@ -89,7 +89,7 @@ export interface RoleUpdate {
 }
 export interface Unit {
   id: number;
-  unit_name: string;
+  unitName: string;
   children: Record<string, Unit>;
 }
 export interface Curator {

@@ -11,6 +11,7 @@ import {
     Role,
     UserUpdate,
     EmployeeCreate,
+    Curator,
 } from '@/dtos/AdminDto';
 import {
     addEmployee,
@@ -28,7 +29,8 @@ import { getUnitTreeForApplication } from '@/lib/updateApplication';
 import Switch from '@/components/ui/Switch';
 import { Trash2 } from 'lucide-react';
 import ModalSubmit from '../ModalSubmit';
-// import ModalUnitTree from '../ModalUnitTree';
+import Access from '@/components/ui/Access';
+import ModalCuratorTree from '../ModalCuratorTree';
 
 const SWITCH_BUTTONS = [
     ['Сотрудник', 'employee'],
@@ -39,6 +41,7 @@ interface ModalAdminEmployeeProps {
     employee: Employee | null;
     positionItems: Position[] | null;
     roleItems: Role[] | null;
+    curatorTreeItems: Curator[] | null;
     setModalIsActive: () => void;
     loadEmployees: () => Promise<void>;
 }
@@ -48,6 +51,7 @@ export default function ModalAdminEmployee({
     setModalIsActive,
     loadEmployees,
     positionItems,
+    curatorTreeItems,
     roleItems,
 }: ModalAdminEmployeeProps) {
     const { user } = useUser();
@@ -76,13 +80,14 @@ export default function ModalAdminEmployee({
     const [successfully, setSuccessfully] = useState<string>('');
     const [page, setPage] = useState<string>(SWITCH_BUTTONS[0][1]);
     const [modalSubmit, setModalSubmit] = useState<number | null>(null);
+    const [modalCuratorTree, setModalCuratorTree] = useState<boolean>(false);
 
-    const isActive: boolean = employee
-        ? (formEmployee.fio === employee.fio &&
-              formEmployee.email === employee.email) ||
-          formEmployee.fio === '' ||
-          formEmployee.email === ''
-        : !(formEmployee.email !== '' && formEmployee.fio !== '');
+    // const isActive: boolean = employee
+    //     ? (formEmployee.fio === employee.fio &&
+    //           formEmployee.email === employee.email) ||
+    //       formEmployee.fio === '' ||
+    //       formEmployee.email === ''
+    //     : !(formEmployee.email !== '' && formEmployee.fio !== '');
 
     const isActiveEmployee: boolean = employee
         ? (formEmployee.fio === employee.fio &&
@@ -152,30 +157,6 @@ export default function ModalAdminEmployee({
     //     setUnitName(newUnitName);
     // };
 
-    // const handleSubmit = async (e: React.FormEvent) => {
-    //     e.preventDefault();
-    //     setLoading(true);
-    //     setError('');
-    //     setSuccessfully('');
-
-    //     try {
-    //         const payload = { ...form };
-    //         if (payload.password === '') {
-    //             delete payload.password;
-    //         }
-    //         const result =
-    //             employee && payload
-    //                 ? await updateEmployee(payload, employee.id)
-    //                 : await addEmployee(form);
-    //         await loadEmployees();
-    //         setSuccessfully('Успешно сохранено');
-    //         setModalIsActive();
-    //     } catch {
-    //         setError('Не удалось сохранить');
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
     const handleSubmitEmployee = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -704,6 +685,12 @@ export default function ModalAdminEmployee({
                             )}
                         </>
                     )}
+                    <Access
+                        handleClick={() => setModalCuratorTree(true)}
+                        curatorAccessItems={
+                            employee?.user?.curatorAccess || null
+                        }
+                    />
 
                     {error && (
                         <div>
@@ -746,6 +733,19 @@ export default function ModalAdminEmployee({
                 <ModalSubmit
                     handleSubmit={() => handleDeleteUser(modalSubmit)}
                     onClose={() => setModalSubmit(null)}
+                />
+            )}
+            {modalCuratorTree && curatorTreeItems && (
+                <ModalCuratorTree
+                    title="Настройка доступа"
+                    selectedNow={
+                        (employee?.user?.curatorAccess?.map(
+                            (item) => item.curatorPosition.id,
+                        ) as number[]) || 0
+                    }
+                    unitTree={curatorTreeItems}
+                    handleSubmit={async (d) => {}}
+                    onClose={() => setModalCuratorTree(false)}
                 />
             )}
         </ModalAdminMainBody>
