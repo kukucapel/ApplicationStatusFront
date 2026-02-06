@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Application } from '@/dtos/ApplicationDto';
+import { logoutUser } from './auth';
 
 export function useAppWS(token: string | null) {
   const [connected, setConnected] = useState(false);
@@ -23,12 +24,28 @@ export function useAppWS(token: string | null) {
       ws.send(JSON.stringify({ type: 'auth:jwt', payload: { token } }));
     };
 
-    ws.onmessage = (event) => {
+    ws.onmessage = async (event) => {
       const msg = JSON.parse(event.data);
 
       switch (msg.type) {
         case 'auth:ok':
           console.log('Id:', msg.payload.userId);
+          break;
+
+        case 'auth:error':
+          if (reconnectTimer.current) {
+            clearTimeout(reconnectTimer.current);
+            reconnectTimer.current = null;
+          }
+
+          wsRef.current?.close();
+          wsRef.current = null;
+
+          await logoutUser();
+
+          if (typeof window !== 'undefined') {
+            window.location.href = '/status/auth';
+          }
           break;
 
         case 'request:created':
@@ -48,13 +65,12 @@ export function useAppWS(token: string | null) {
               ? prev.map((app) => (app.id === id ? msg.payload : app))
               : [...prev, msg.payload];
           });
-
           break;
         }
 
         case 'request:removed':
           setApplications((prev) =>
-            prev.filter((app) => app.id !== msg.payload.id)
+            prev.filter((app) => app.id !== msg.payload.id),
           );
           break;
       }
