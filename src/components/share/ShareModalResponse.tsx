@@ -52,32 +52,47 @@ export default function ModalBodyResponse({
                 setUrl(jsonString);
             }
         }
-        load();
+        if (response.attachments.length) load();
     }, []);
 
     const [index, response] = indexResponse;
 
     return (
         <div className="space-y-5">
-            {/* <div className="text-sm font-medium ">
+            <div className="text-sm font-medium ">
                 <span className="text-gray-500">Тип ответа:</span>
-                <p className={`text-green-500`}>
-                    {response.type === 'none_invite'
-                        ? 'Промежуточный ответ'
-                        : 'Приглашение'}
+                <p
+                    className={
+                        response.attachments.length
+                            ? 'text-green-400'
+                            : response.comment ===
+                                'Ответ был дан устно по телефону'
+                              ? 'text-orange-400'
+                              : 'text-blue-400'
+                    }
+                >
+                    {response.attachments.length
+                        ? 'Ответ файлом'
+                        : response.comment === 'Ответ был дан устно по телефону'
+                          ? 'Ответ по телефону'
+                          : 'Ответ сообщением'}
                 </p>
-            </div> */}
+            </div>
             <div className="text-sm font-medium ">
                 <span className="text-gray-500">Ответ: </span>
-                <a
-                    className="text-gray-900 underline cursor-pointer"
-                    // onClick={() =>
-                    //     downloadFile(response.attachments[0].id, token)
-                    // }
-                    href={url}
-                >
-                    Скачать файл
-                </a>
+                {response.attachments.length ? (
+                    <a
+                        className="text-gray-900 underline cursor-pointer"
+                        // onClick={() =>
+                        //     downloadFile(response.attachments[0].id, token)
+                        // }
+                        href={url}
+                    >
+                        Скачать файл
+                    </a>
+                ) : (
+                    <span>{response.comment}</span>
+                )}
             </div>
             {response.rating !== null ? (
                 <div className="flex flex-col gap-0.5">

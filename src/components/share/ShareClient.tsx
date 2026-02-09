@@ -190,13 +190,12 @@ export default function ShareClient() {
                                         }
                                     }}
                                     className={`border ${
-                                        r.type === 'invite'
-                                            ? 'border-orange-400'
-                                            : r.type === 'invite_yes'
-                                              ? 'border-green-300'
-                                              : r.type === 'invite_no'
-                                                ? 'border-red-300'
-                                                : 'border-gray-300'
+                                        r.attachments.length
+                                            ? 'border-green-400'
+                                            : r.comment ===
+                                                'Ответ был дан устно по телефону'
+                                              ? 'border-orange-400'
+                                              : 'border-blue-400'
                                     } items-center justify-between  rounded-lg p-4 hover:shadow-md transition-shadow flex bg-white`}
                                 >
                                     <div
@@ -225,14 +224,11 @@ export default function ShareClient() {
                                             </span>
                                         </div>
                                         <div className="text-[--ink-900] hidden md:block whitespace-pre-wrap">
-                                            <p className="text-gray-900 underline cursor-pointer">
+                                            <p className="text-gray-700 underline cursor-pointer">
                                                 Посмотреть ответ
                                             </p>
                                         </div>
                                         <div className="text-[--ink-900] md:hidden block whitespace-pre-wrap">
-                                            {/* {r.type === 'none_invite'
-                                                ? 'Промежуточный ответ'
-                                                : 'Приглашение на личный приём'} */}
                                             <p className="text-gray-900 underline cursor-pointer">
                                                 Посмотреть ответ
                                             </p>
