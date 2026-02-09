@@ -670,45 +670,47 @@ export default function ModalAdminEmployee({
                                 />
                             </div>
 
-                            {user?.role === 'admin' && roleItems && (
-                                <div className="flex flex-col">
-                                    <label className="text-sm text-gray-500 mb-1">
-                                        Роль
-                                    </label>
+                            {user?.role === 'admin' &&
+                                employee.user &&
+                                roleItems && (
+                                    <div className="flex flex-col">
+                                        <label className="text-sm text-gray-500 mb-1">
+                                            Роль
+                                        </label>
 
-                                    <Select
-                                        name="role_id"
-                                        options={roleItems.map((r) => ({
-                                            value: r.id,
-                                            label: r.name,
-                                        }))}
-                                        className="cursor-pointer"
-                                        value={roleItems
-                                            .map((r) => ({
+                                        <Select
+                                            name="role_id"
+                                            options={roleItems.map((r) => ({
                                                 value: r.id,
                                                 label: r.name,
-                                            }))
-                                            .find(
-                                                (option) =>
-                                                    option.value ===
-                                                    formUser.role_id,
-                                            )}
-                                        onChange={(option) => {
-                                            if (!option) return;
+                                            }))}
+                                            className="cursor-pointer"
+                                            value={roleItems
+                                                .map((r) => ({
+                                                    value: r.id,
+                                                    label: r.name,
+                                                }))
+                                                .find(
+                                                    (option) =>
+                                                        option.value ===
+                                                        formUser.role_id,
+                                                )}
+                                            onChange={(option) => {
+                                                if (!option) return;
 
-                                            handleChangeUser({
-                                                target: {
-                                                    name: 'role_id',
-                                                    value: option.value,
-                                                },
-                                            } as any);
-                                        }}
-                                        placeholder="Выберите роль"
-                                        isSearchable
-                                        menuPlacement="top"
-                                    />
-                                </div>
-                            )}
+                                                handleChangeUser({
+                                                    target: {
+                                                        name: 'role_id',
+                                                        value: option.value,
+                                                    },
+                                                } as any);
+                                            }}
+                                            placeholder="Выберите роль"
+                                            isSearchable
+                                            menuPlacement="top"
+                                        />
+                                    </div>
+                                )}
                             <Access
                                 handleClick={() => setModalCuratorTree(true)}
                                 curatorAccessItems={
