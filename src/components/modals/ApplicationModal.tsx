@@ -103,15 +103,16 @@ export function ApplicationModal({
     const handleSubmitResponseModal = async (
         e: React.FormEvent,
         data: { comment: string; phone: boolean },
+        page: 'text' | 'phone' | 'file' | string,
         file?: File,
     ) => {
         e.preventDefault();
         setIsLoadingResponse(true);
-        if (data.phone) {
+        if (page === 'phone') {
             const res = await addApplicationResponse(application.id, {
                 comment: 'Ответ был дан устно по телефону',
             });
-        } else if (data.comment) {
+        } else if (page === 'text') {
             const res = await addApplicationResponse(application.id, {
                 comment: data.comment,
             });

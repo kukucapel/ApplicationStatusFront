@@ -17,6 +17,7 @@ interface ModalResponseProps {
     handleSubmit: (
         e: React.FormEvent,
         data: { comment: string; phone: boolean },
+        page: string,
         file: File,
     ) => Promise<void>;
     isLoadingResponse: boolean;
@@ -38,10 +39,9 @@ export default function ModalResponse({
         page === 'phone'
             ? !form.phone
             : page === 'text'
-              ? form.comment === null
+              ? form.comment === ''
               : file === null;
     const fileInputRef = useRef<HTMLInputElement>(null);
-
     return (
         <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50 p-4 transition-all">
             <div className="bg-white rounded-l-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto custom-scroll p-10">
@@ -67,7 +67,7 @@ export default function ModalResponse({
                 </div>
                 <form
                     className="transition-all duration-150 space-y-4 w-full "
-                    onSubmit={(e) => handleSubmit(e, form, file as File)}
+                    onSubmit={(e) => handleSubmit(e, form, page, file as File)}
                 >
                     {page === 'phone' ? (
                         <label className="flex ml-4 items-center gap-2 cursor-pointer">
