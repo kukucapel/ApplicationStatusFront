@@ -1,21 +1,25 @@
 'use client';
 
-import { Position } from '@/dtos/AdminDto';
+import { Employee, Position, PositionTitle } from '@/dtos/AdminDto';
 import { useEffect, useMemo, useState } from 'react';
 import { useUser } from '@/contexts/UserContext';
 import TableHeader from '../ui/Table/TableHeader';
 import TableRow from '../ui/Table/TableRow';
 import { Trash2 } from 'lucide-react';
+import { ModalAdminPositions } from '../modals/admin/ModalAdminPosition';
 
 interface TableProps {
     page: [string, string];
     searchMode: boolean;
     editMode: boolean;
     positionItems: Position[] | null;
+    positionTitleItems: PositionTitle[] | null;
+    employeeItems: Employee[] | null;
     showAddModal: boolean;
     deleteMode: boolean;
     setShowAddModal: (newState: boolean) => void;
     loadPositions: () => Promise<void>;
+    loadEmployees: () => Promise<void>;
 }
 const HEADER = [
     ['ID', 'id'],
@@ -29,9 +33,12 @@ export default function TablePositions({
     searchMode,
     editMode,
     positionItems,
+    employeeItems,
+    positionTitleItems,
     showAddModal,
     deleteMode,
     setShowAddModal,
+    loadEmployees,
     loadPositions,
 }: TableProps) {
     const [loading, setLoading] = useState<boolean>(true);
@@ -128,42 +135,40 @@ export default function TablePositions({
                                     {position.employeeFio || 'Позиция свободна'}
                                 </div>
                             </div>
-
-                            {/* {deleteMode && (
-                                <button
-                                    onClick={() => {
-                                        setModalSubmit(position.id);
-                                    }}
-                                    className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200 text-red-500 active:scale-95 hover:scale-110 
-        "
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            )} */}
                         </TableRow>
                     ))}
                 </div>
-                {/* {modalIsActive && modalPositionTitle && positionTitleItems && (
-                    <ModalAdminPositionTitles
-                        positionTitle={modalPositionTitle}
-                        setModalIsActive={() => {
-                            setModalPositionTitle(null);
-                            setModalIsActive(null);
-                        }}
-                        loadPositionTitles={loadPostionTitles}
-                    />
-                )}
+                {modalIsActive &&
+                    modalPosition &&
+                    positionTitleItems &&
+                    positionItems &&
+                    employeeItems && (
+                        <ModalAdminPositions
+                            position={modalPosition}
+                            employeeItems={employeeItems}
+                            positionTitleItems={positionTitleItems}
+                            setModalIsActive={() => {
+                                setModalPosition(null);
+                                setModalIsActive(null);
+                            }}
+                            loadPositions={loadPositions}
+                            loadEmployees={loadEmployees}
+                        />
+                    )}
                 {showAddModal && (
-                    <ModalAdminPositionTitles
-                        loadPositionTitles={loadPostionTitles}
-                        positionTitle={modalPositionTitle}
+                    <ModalAdminPositions
+                        // position={modalPosition}
+                        employeeItems={employeeItems}
+                        positionTitleItems={positionTitleItems}
                         setModalIsActive={() => {
-                            setModalPositionTitle(null);
+                            setModalPosition(null);
                             setShowAddModal(false);
                         }}
+                        loadPositions={loadPositions}
+                        loadEmployees={loadEmployees}
                     />
                 )}
-                {modalSubmit && (
+                {/* {modalSubmit && (
                     <ModalSubmit
                         error={error}
                         handleSubmit={() => handleDelete(modalSubmit)}

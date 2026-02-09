@@ -35,23 +35,23 @@ export default function Admin() {
     if (user?.role === 'admin' && user?.login === 'admin@example.com')
         MENU.push(['Роли', 'roles']);
     if (user?.role === 'admin' && user?.login === 'admin@example.com')
-        MENU.push(['Должности', 'position_titles']);
-    if (user?.role === 'admin' && user?.login === 'admin@example.com')
-        MENU.push(['Позиции', 'positions']);
-    if (user?.role !== 'admin' || user?.login !== 'admin@example.com') {
-        return;
-    } else {
-        return (
-            <div className="max-w-7xl mt-10 mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-                <div className="flex flex-col lg:flex-row gap-6">
-                    <LeftMenu
-                        page={page}
-                        handleClickMenu={setPage}
-                        MENU={MENU}
-                    />
-                    <TableAdmin page={page} MENU={MENU} />
-                </div>
-            </div>
-        );
-    }
+        if (user?.role === 'admin' && user?.login === 'admin@example.com')
+            // MENU.push(['Должности', 'position_titles']);
+            if (user?.role !== 'admin' || user?.login !== 'admin@example.com') {
+                // MENU.push(['Позиции', 'positions']);
+                return;
+            } else {
+                return (
+                    <div className="max-w-7xl mt-10 mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+                        <div className="flex flex-col lg:flex-row gap-6">
+                            <LeftMenu
+                                page={page}
+                                handleClickMenu={setPage}
+                                MENU={MENU}
+                            />
+                            <TableAdmin page={page} MENU={MENU} />
+                        </div>
+                    </div>
+                );
+            }
 }

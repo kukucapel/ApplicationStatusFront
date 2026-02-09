@@ -10,10 +10,24 @@ import { UpdateApplicationDataProps } from '@/lib/updateApplication';
 interface CuratorTreeModalProps {
     onClose: () => void;
     handleSubmit?: (data: UpdateApplicationDataProps) => Promise<void>;
+    handleMultiSubmit?: (added: number[], removed: number[]) => Promise<void>;
     handleChange?: (newUnitId: number, newUnitName: string) => void;
     unitTree: Curator[];
     title?: string;
     selectedNow: number | number[];
+}
+
+function diffAccess(
+    initial: number[],
+    next: number[],
+): { added: number[]; removed: number[] } {
+    const initialSet = new Set(initial);
+    const nextSet = new Set(next);
+
+    const added = next.filter((id) => !initialSet.has(id));
+    const removed = initial.filter((id) => !nextSet.has(id));
+
+    return { added, removed };
 }
 
 function TreeNode({
@@ -23,6 +37,7 @@ function TreeNode({
     setNewSelected,
     setNewUnitName,
     multipleMode,
+
     level = 0,
 }: {
     node: Curator;
@@ -149,7 +164,6 @@ function TreeNode({
     );
 }
 
-// Вспомогательная функция для сравнения массивов (с учетом порядка)
 function arraysAreEqual(arr1: number[], arr2: number[]): boolean {
     if (arr1.length !== arr2.length) return false;
     const sorted1 = [...arr1].sort();
@@ -161,6 +175,7 @@ export default function ModalCuratorTree({
     onClose,
     handleSubmit,
     unitTree,
+    handleMultiSubmit,
     selectedNow,
     handleChange,
     title = 'Назначение принимателя',
@@ -172,9 +187,6 @@ export default function ModalCuratorTree({
     );
     const [newUnitName, setNewUnitName] = useState<string>('');
 
-    // Правильная логика для isActive:
-    // - В множественном режиме: активна если массивы отличаются
-    // - В одиночном режиме: активна если newSelected отличается от selectedNow и newSelected !== 0
     const isActive = multipleMode
         ? !arraysAreEqual(newSelected as number[], selectedNow as number[])
         : (newSelected as number) !== 0 &&
@@ -188,23 +200,21 @@ export default function ModalCuratorTree({
     }, []);
 
     const handleSave = () => {
-        if (handleSubmit) {
+        if (handleSubmit || handleMultiSubmit) {
             if (multipleMode) {
-                // Для множественного режима
-                const data: any = {
-                    // Используем существующее поле или добавляем новое
-                    // Нужно проверить какие поля есть в UpdateApplicationDataProps
-                };
+                if (handleMultiSubmit) {
+                    const { added, removed } = diffAccess(
+                        selectedNow,
+                        newSelected as number[],
+                    );
 
-                // Если есть поле для массива кураторов
-                // data.curatorAccess = newSelected as number[];
-
-                handleSubmit(data);
+                    handleMultiSubmit(added, removed);
+                }
             } else {
-                // Для одиночного режима
-                handleSubmit({
-                    to_position_id: newSelected as number,
-                });
+                if (handleSubmit)
+                    handleSubmit({
+                        to_position_id: newSelected as number,
+                    });
             }
         } else if (handleChange) {
             if (!multipleMode) {
@@ -212,7 +222,8 @@ export default function ModalCuratorTree({
             }
         }
     };
-
+    // console.log(newSelected);
+    // console.log(selectedNow);
     return (
         <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50 p-4 transition-all">
             <div className="bg-white rounded-l-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
