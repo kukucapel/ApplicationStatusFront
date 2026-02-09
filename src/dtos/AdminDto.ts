@@ -137,5 +137,5 @@ export interface Position {
 export interface PositionUpdate {
   position_title_id?: number | null;
   unit_id?: number | null;
-  // employee_id?: number | null;
+  employee_id?: number | null;
 }
