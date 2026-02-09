@@ -15,6 +15,8 @@ import {
     CalendarArrowUp,
     UsersRound,
     Printer,
+    ReceiptText,
+    MessageSquareText,
 } from 'lucide-react';
 import {
     Application,
@@ -100,15 +102,25 @@ export function ApplicationModal({
 
     const handleSubmitResponseModal = async (
         e: React.FormEvent,
-        data: ResponseCreateDto,
-        file: File,
+        data: { comment: string; phone: boolean },
+        file?: File,
     ) => {
         e.preventDefault();
         setIsLoadingResponse(true);
+        if (data.phone) {
+            const res = await addApplicationResponse(application.id, {
+                comment: 'Ответ был дан устно по телефону',
+            });
+        } else if (data.comment) {
+            const res = await addApplicationResponse(application.id, {
+                comment: data.comment,
+            });
+        } else {
+            const res = await addApplicationResponse(application.id, data);
 
-        const res = await addApplicationResponse(application.id, data);
+            await addAttachmentResponse(res.id, file!);
+        }
 
-        await addAttachmentResponse(res.id, file);
         await Promise.all([loadResponse(), loadApplication()]);
         setShowResponseModal(false);
         setIsLoadingResponse(false);
@@ -224,9 +236,11 @@ export function ApplicationModal({
         }
     };
 
+    // ЗАГРУЗКА
     if (!applicationItem) {
         return (
-            <Modal className="h-full">
+            // ЗАГРУЗКА
+            <Modal>
                 <ModalHeader
                     title="Детали заявки"
                     onClose={onClose}
@@ -465,7 +479,7 @@ export function ApplicationModal({
                     </ModalHeader>
 
                     {/* Контент */}
-                    <div>
+                    <div className={showResponseModal ? `hidden` : ''}>
                         <ModalBody>
                             <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
                                 <h3 className="text-sm font-semibold text-gray-700 mb-3">
@@ -640,22 +654,41 @@ export function ApplicationModal({
                                     {sortedResponseItems?.map((res) => (
                                         <div
                                             className={`${
-                                                res.type === 'invite_yes'
+                                                res.attachments.length
                                                     ? 'bg-green-50'
-                                                    : res.type === 'invite_no'
-                                                      ? 'bg-red-50'
-                                                      : res.type === 'invite'
-                                                        ? 'bg-orange-50'
-                                                        : 'bg-blue-50'
+                                                    : res.comment ===
+                                                        'Ответ был дан устно по телефону'
+                                                      ? 'bg-orange-50'
+                                                      : 'bg-blue-50'
                                             } rounded-lg p-4`}
                                             key={res.id}
                                         >
                                             <div className="flex items-start justify-between gap-2 mb-2">
                                                 <div className="flex items-start gap-2">
-                                                    <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
-                                                    <p className="text-sm font-medium text-gray-700">
-                                                        Ответ
-                                                    </p>
+                                                    {res.attachments.length ? (
+                                                        <>
+                                                            <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
+                                                            <p className="text-sm font-medium text-gray-700">
+                                                                Ответ файлом
+                                                            </p>
+                                                        </>
+                                                    ) : res.comment ===
+                                                      'Ответ был дан устно по телефону' ? (
+                                                        <>
+                                                            <Phone className="w-5 h-5 text-blue-600 mt-0.5" />
+                                                            <p className="text-sm font-medium text-gray-700">
+                                                                Ответ по
+                                                                телефону
+                                                            </p>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <MessageSquareText className="w-5 h-5 text-blue-600 mt-0.5" />
+                                                            <p className="text-sm font-medium text-gray-700">
+                                                                Ответ сообщением
+                                                            </p>
+                                                        </>
+                                                    )}
                                                 </div>
                                                 <p className="text-sm font-medium text-gray-700">
                                                     {'Cоздан: '}
@@ -668,16 +701,24 @@ export function ApplicationModal({
                                                     res.author.fio) ||
                                                     'Заявитель'}
                                             </p>
-                                            <p
-                                                className="text-gray-900 ml-7 mt-4 whitespace-pre-wrap underline cursor-pointer"
-                                                onClick={() =>
-                                                    downloadFile(
-                                                        res.attachments[0].id,
-                                                    )
-                                                }
-                                            >
-                                                Скачать файл
-                                            </p>
+                                            {res.attachments.length ? (
+                                                <p
+                                                    className="text-gray-900 ml-7 mt-4 whitespace-pre-wrap underline cursor-pointer"
+                                                    onClick={() =>
+                                                        downloadFile(
+                                                            res.attachments[0]
+                                                                .id,
+                                                        )
+                                                    }
+                                                >
+                                                    Скачать файл
+                                                </p>
+                                            ) : (
+                                                <p className="text-gray-900 ml-7 mt-4 whitespace-pre-wrap">
+                                                    {'Ответ: '}
+                                                    {res.comment}
+                                                </p>
+                                            )}
                                         </div>
                                     ))}
                                 </div>

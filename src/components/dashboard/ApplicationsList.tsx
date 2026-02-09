@@ -22,7 +22,9 @@ export default function ApplicationsList({
 }: ApplicationsListProps) {
     const [activeTab, setActiveTab] = useState('all');
     const [loading, setLoading] = useState(true);
-    const [filteredApplications, setFilteredApplications] = useState([]);
+    const [filteredApplications, setFilteredApplications] = useState<
+        Application[]
+    >([]);
     const [filters, setFilters] = useState({
         status: 'all',
         toPosition: 'all',
@@ -31,10 +33,6 @@ export default function ApplicationsList({
     const [sortByNewest, setSortByNewest] = useState<boolean>(true);
     const { user } = useUser();
     const [createModal, setCreateModal] = useState<boolean>(false);
-
-    const handleSubmitCreateModal = () => {};
-
-    // console.log(applications);
 
     useEffect(() => {
         setLoading(!connected);
@@ -61,6 +59,15 @@ export default function ApplicationsList({
                     app.toPosition.employee.fio === filters.toPosition,
             );
         }
+        // Filter by search
+        if (filters.search.trim() !== '') {
+            const query = filters.search.toLowerCase().trim();
+
+            filtered = filtered.filter((app) =>
+                app.applicant?.fio?.toLowerCase().includes(query),
+            );
+        }
+
         // Filter by time
         filtered.sort((a, b) => {
             const dateA = new Date(a.createdAt).getTime();
@@ -99,8 +106,9 @@ export default function ApplicationsList({
         new: applications.filter((app) => app.status === 'new').length,
         in_progress: applications.filter((app) => app.status === 'in_progress')
             .length,
-        completed: applications.filter((app) => app.status === 'completed')
-            .length,
+        // completed: filteredApplications.filter(
+        //     (app) => app.status === 'completed',
+        // ).length,
         closed: applications.filter((app) => app.status === 'closed').length,
     };
 
@@ -136,13 +144,13 @@ export default function ApplicationsList({
                                     // });
                                     setActiveTab('all');
                                 }}
-                                className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
+                                className={`select-none px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
                                     activeTab === 'all'
                                         ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600'
                                         : 'cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                                 }`}
                             >
-                                Все заявки ({stats.total})
+                                Все заявки
                             </button>
                             <button
                                 data-testid="tab-new"
@@ -154,13 +162,13 @@ export default function ApplicationsList({
                                     // });
                                     setActiveTab('new');
                                 }}
-                                className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
+                                className={`select-none px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
                                     activeTab === 'new'
                                         ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600'
                                         : 'cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                                 }`}
                             >
-                                Поступившие ({stats.new})
+                                Поступившие
                             </button>
                             <button
                                 data-testid="tab-in_progress"
@@ -172,13 +180,13 @@ export default function ApplicationsList({
                                     // });
                                     setActiveTab('in_progress');
                                 }}
-                                className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
+                                className={`select-none px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
                                     activeTab === 'in_progress'
                                         ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600'
                                         : 'cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                                 }`}
                             >
-                                В работе ({stats.in_progress})
+                                В работе
                             </button>
                             {/* <button
                                 data-testid="tab-completed"
@@ -208,13 +216,13 @@ export default function ApplicationsList({
                                     // });
                                     setActiveTab('closed');
                                 }}
-                                className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
+                                className={`select-none px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
                                     activeTab === 'closed'
                                         ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600'
                                         : 'cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                                 }`}
                             >
-                                Закрытые ({stats.closed})
+                                Закрытые
                             </button>
                         </div>
                         {filteredApplications.length !== 1 &&
@@ -292,6 +300,12 @@ export default function ApplicationsList({
                                                             Тема:
                                                         </span>{' '}
                                                         {app.theme}
+                                                    </p>
+                                                    <p className="text-sm text-gray-600 mb-1">
+                                                        <span className="font-medium">
+                                                            ФИО заявителя:
+                                                        </span>{' '}
+                                                        {app.applicant.fio}
                                                     </p>
                                                     <p className="text-sm text-gray-600 mb-1">
                                                         <span className="font-medium">

@@ -74,7 +74,10 @@ export interface ResponseCreateDto {
 }
 
 export interface Application {
-  // applicantId: number;
+  applicant: {
+    id: number;
+    fio: string;
+  };
   assignedUser: {
     employee: {
       id: number;
