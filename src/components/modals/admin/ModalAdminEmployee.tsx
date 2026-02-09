@@ -709,12 +709,16 @@ export default function ModalAdminEmployee({
                                     />
                                 </div>
                             )}
-                            <Access
-                                handleClick={() => setModalCuratorTree(true)}
-                                curatorAccessItems={
-                                    employee?.user?.curatorAccess || null
-                                }
-                            />
+                            {employee.user && (
+                                <Access
+                                    handleClick={() =>
+                                        setModalCuratorTree(true)
+                                    }
+                                    curatorAccessItems={
+                                        employee?.user?.curatorAccess || null
+                                    }
+                                />
+                            )}
                         </>
                     )}
 

@@ -1,15 +1,31 @@
-import { apiRequest } from './apiClient';
+import { API_URL, apiRequest } from './apiClient';
 import { LoginFormData, RegisterFormData } from '@/dtos/AuthDto';
 
 export const loginUser = async (data: LoginFormData) => {
-  return apiRequest('/auth/signin', {
-    method: 'POST',
-    body: JSON.stringify(data),
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_URL}/auth/signin`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch {
+    throw new Error('ConnectServerError'); // сетевые ошибки
+  }
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Unauthorized'); // логин/пароль неверный
+    } else if (response.status >= 500) {
+      throw new Error('ServerError'); // ошибки сервера
+    } else {
+      throw new Error('UnknownError'); // остальные ошибки
+    }
+  }
+
+  return response.json();
 };
 
 export const registerUser = async (data: RegisterFormData) => {
