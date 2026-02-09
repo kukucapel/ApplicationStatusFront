@@ -19,7 +19,7 @@ export const loginUser = async (data: LoginFormData) => {
     if (response.status === 401) {
       throw new Error('Unauthorized'); // логин/пароль неверный
     } else if (response.status >= 500) {
-      throw new Error('ServerError'); // ошибки сервера
+      throw new Error('Internal Server Error'); // ошибки сервера
     } else {
       throw new Error('UnknownError'); // остальные ошибки
     }
