@@ -157,6 +157,9 @@ export default function TableAdmin({ page, MENU }: TableAdminProps) {
                     />
                 ) : page === 3 && user?.role === 'admin' ? (
                     <TablePositions
+                        loadEmployees={loadEmployees}
+                        employeeItems={employeeItems}
+                        positionTitleItems={positionTitleItems}
                         deleteMode={deleteMode}
                         showAddModal={showAddModal}
                         setShowAddModal={setShowAddModal}

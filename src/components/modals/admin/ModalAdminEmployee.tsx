@@ -14,10 +14,12 @@ import {
     Curator,
 } from '@/dtos/AdminDto';
 import {
+    addCuratorAccess,
     addEmployee,
     addUser,
     createUser,
     deleteUser,
+    removeCuratorAccess,
     updateEmployee,
     updateUser,
 } from '@/lib/adminData';
@@ -82,13 +84,6 @@ export default function ModalAdminEmployee({
     const [modalSubmit, setModalSubmit] = useState<number | null>(null);
     const [modalCuratorTree, setModalCuratorTree] = useState<boolean>(false);
 
-    // const isActive: boolean = employee
-    //     ? (formEmployee.fio === employee.fio &&
-    //           formEmployee.email === employee.email) ||
-    //       formEmployee.fio === '' ||
-    //       formEmployee.email === ''
-    //     : !(formEmployee.email !== '' && formEmployee.fio !== '');
-
     const isActiveEmployee: boolean = employee
         ? (formEmployee.fio === employee.fio &&
               formEmployee.email === employee.email &&
@@ -123,6 +118,37 @@ export default function ModalAdminEmployee({
         setModalSubmit(null);
 
         setModalIsActive();
+    };
+
+    const handleCuratorSumbit = async (added: number[], removed: number[]) => {
+        try {
+            if (employee?.user?.id) {
+                await Promise.all([
+                    ...added.map((id) =>
+                        addCuratorAccess(employee!.user!.id!, id),
+                    ),
+
+                    ...removed.map((positionId) => {
+                        const access = employee?.user!.curatorAccess?.find(
+                            (item) => item.curatorPosition.id === positionId,
+                        );
+
+                        if (!access) return Promise.resolve();
+
+                        return removeCuratorAccess(
+                            employee!.user!.id!,
+                            access.id,
+                        );
+                    }),
+                ]);
+
+                await loadEmployees();
+                setModalCuratorTree(false);
+                setModalIsActive();
+            }
+        } catch (error) {
+            setError('Ошибка при обновлении доступов');
+        }
     };
     const handleChangeEmployee = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -683,14 +709,14 @@ export default function ModalAdminEmployee({
                                     />
                                 </div>
                             )}
+                            <Access
+                                handleClick={() => setModalCuratorTree(true)}
+                                curatorAccessItems={
+                                    employee?.user?.curatorAccess || null
+                                }
+                            />
                         </>
                     )}
-                    <Access
-                        handleClick={() => setModalCuratorTree(true)}
-                        curatorAccessItems={
-                            employee?.user?.curatorAccess || null
-                        }
-                    />
 
                     {error && (
                         <div>
@@ -741,10 +767,10 @@ export default function ModalAdminEmployee({
                     selectedNow={
                         (employee?.user?.curatorAccess?.map(
                             (item) => item.curatorPosition.id,
-                        ) as number[]) || 0
+                        ) as number[]) || []
                     }
                     unitTree={curatorTreeItems}
-                    handleSubmit={async (d) => {}}
+                    handleMultiSubmit={handleCuratorSumbit}
                     onClose={() => setModalCuratorTree(false)}
                 />
             )}

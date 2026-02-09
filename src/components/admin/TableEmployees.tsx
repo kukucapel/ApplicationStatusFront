@@ -22,6 +22,7 @@ interface TableProps {
     curatorTreeItems: Curator[] | null;
     roleItems: Role[] | null;
     loadEmployees: () => Promise<void>;
+
     showAddModal: boolean;
     deleteMode: boolean;
     setShowAddModal: (newState: boolean) => void;

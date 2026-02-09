@@ -159,3 +159,24 @@ export async function addPositionTitle(data: PositionTitleUpdate) {
     },
   });
 }
+
+export async function addCuratorAccess(idUser: number, curatorId: number) {
+  return await apiRequest(`/access/users/${idUser}/curator-access`, {
+    method: 'POST',
+    body: JSON.stringify({ curator_position_id: curatorId }),
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
+export async function removeCuratorAccess(idUser: number, curatorId: number) {
+  return await apiRequest(
+    `/access/users/${idUser}/curator-access/${curatorId}`,
+    {
+      method: 'DELETE',
+      credentials: 'include',
+    },
+  );
+}
