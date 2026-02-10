@@ -289,7 +289,9 @@ export default function ModalAdminEmployee({
         //     setUnit((await getUnitTreeForApplication()).items);
         // load();
     }, []);
-
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+    });
     useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => {

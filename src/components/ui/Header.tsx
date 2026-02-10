@@ -118,7 +118,7 @@ export default function Header({}: HeaderProps) {
                        border border-gray-200 shadow-lg z-50 overflow-hidden"
                                 >
                                     <button
-                                        className="flex items-center gap-2 w-full px-4 py-2 text-md hover:bg-gray-100 cursor-pointer"
+                                        className="flex items-center gap-2 select-none w-full px-4 py-2 text-md hover:bg-gray-100 cursor-pointer"
                                         onClick={() => {
                                             setIsProfileOpen(false);
                                             setChangePasswordModal(true);
@@ -131,7 +131,7 @@ export default function Header({}: HeaderProps) {
                                     <div className="h-px bg-gray-200 my-1" />
 
                                     <button
-                                        className="flex items-center gap-2 w-full px-4 py-2 text-md cursor-pointer
+                                        className="flex items-center gap-2 w-full select-none px-4 py-2 text-md cursor-pointer
                            text-red-600 hover:bg-red-50"
                                         onClick={() => {
                                             setIsProfileOpen(false);

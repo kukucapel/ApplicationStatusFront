@@ -117,7 +117,7 @@ export default function ModalBodyResponse({
                     />
                 </div>
             )}
-            {response.type === 'invite' && (
+            {/* {response.type === 'invite' && (
                 <div className="mt-10">
                     <hr className="mt-5" />
 
@@ -147,7 +147,7 @@ export default function ModalBodyResponse({
                         setState={setModalState}
                     />
                 </div>
-            )}
+            )} */}
         </div>
     );
 }
