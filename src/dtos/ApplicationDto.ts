@@ -30,9 +30,18 @@ export interface ApplicationDetailDto {
     email: string;
     role: string;
   } | null;
+  attachments: AttachmentInDto[];
 
   applicant: ApplicantDto;
 }
+
+export interface AttachmentInDto {
+  created_at: string;
+  fileName: string;
+  id: number;
+  url: string;
+}
+
 export interface ApplicantDto {
   id: number;
   fio: string;

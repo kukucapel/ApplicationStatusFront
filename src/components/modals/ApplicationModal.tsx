@@ -620,14 +620,25 @@ export function ApplicationModal({
                                     }`}
                                     icon={FileText}
                                 />
-                                {/* <ModalBodyBlockField
-                                typeStyle={2}
-                                nameField="Исполнитель"
-                                valueField={
-                                    applicationItem.assignedUser?.fio || '-'
-                                }
-                                icon={UserPen}
-                            /> */}
+                                <ModalBodyBlockField
+                                    typeStyle={2}
+                                    nameField="Исполнитель"
+                                    valueField={
+                                        applicationItem.assignedUser?.fio || '-'
+                                    }
+                                    icon={UserPen}
+                                    bgColor="g"
+                                />
+                                {applicationItem.attachments.length !== 0 && (
+                                    <ModalBodyBlockField
+                                        typeStyle={2}
+                                        nameField="Прикреплённые файлы"
+                                        valueField={applicationItem.attachments}
+                                        icon={FileText}
+                                        isFiles
+                                        bgColor="b"
+                                    />
+                                )}
                             </ModalBodyBlock>
                             {/* Ответы */}
                             {sortedResponseItems?.length !== 0 && (

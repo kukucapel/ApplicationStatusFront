@@ -1,10 +1,13 @@
+import { AttachmentInDto } from '@/dtos/ApplicationDto';
+
 interface ModalBodyBlockFieldProps {
     icon?: React.ElementType;
     nameField: string;
-    valueField: string;
+    valueField: string | AttachmentInDto[];
     typeStyle?: number;
     bgColor?: 'b' | 'g';
     isLoading?: boolean;
+    isFiles?: boolean;
 }
 
 export default function ModalBodyBlockField({
@@ -14,6 +17,7 @@ export default function ModalBodyBlockField({
     typeStyle = 1,
     bgColor = 'b',
     isLoading,
+    isFiles = false,
 }: ModalBodyBlockFieldProps) {
     const IconComponent = icon;
     if (typeStyle === 1) {
@@ -28,7 +32,7 @@ export default function ModalBodyBlockField({
                         <div className="h-6 w-full max-w-[240px] animate-pulse rounded bg-gray-200" />
                     ) : (
                         <p className="font-medium text-gray-900">
-                            {valueField}
+                            {valueField as string}
                         </p>
                     )}
                 </div>
@@ -51,8 +55,22 @@ export default function ModalBodyBlockField({
                 </div>
                 {isLoading ? (
                     <div className="h-6 w-full max-w-[240px] animate-pulse rounded bg-gray-200" />
+                ) : isFiles && typeof valueField !== 'string' ? (
+                    valueField.map((file: AttachmentInDto, index) => (
+                        <div key={index} className="mt-1">
+                            <a
+                                href={file.url}
+                                className="text-gray-900 ml-7 mt-1 whitespace-pre-wrap underline cursor-pointer"
+                                target="_blank"
+                            >
+                                {file.fileName || 'Файл'}
+                            </a>
+                        </div>
+                    ))
                 ) : (
-                    <p className="font-medium text-gray-900">{valueField}</p>
+                    <p className="font-medium text-gray-900">
+                        {valueField as string}
+                    </p>
                 )}
             </div>
         );
